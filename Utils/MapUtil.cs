@@ -1,6 +1,7 @@
-﻿using Classes;
+﻿using CounterStrikeSharp.API;
+using MapCycleAndChooser_COFYYE.Classes;
 
-namespace Utils
+namespace MapCycleAndChooser_COFYYE.Utils
 {
     public class MapUtil
     {
@@ -11,77 +12,100 @@ namespace Utils
         {
             var random = new Random();
 
-            // Lista za preostale mape koje možemo dodati
+            int currentPlayers = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p)).Count();
+
             var eligibleMaps = cycleMaps
-                .Where(map => map.MapValue != currentMap && !mapForVotes.Any(votedMap => votedMap.MapValue == map.MapValue))
+                .Where(map =>
+                    map.MapValue != currentMap &&
+                    !mapForVotes.Any(votedMap => votedMap.MapValue == map.MapValue) &&
+                    (map.MapCanVote ?? true) &&
+                    (map.MapMinPlayers ?? 0) <= currentPlayers &&
+                    (map.MapMaxPlayers ?? 64) >= currentPlayers
+                )
                 .ToList();
 
-            // Ako nema dovoljno mapa, dodaj sve preostale
+            if (eligibleMaps.Count == 0)
+            {
+                mapForVotes.Clear();
+                return;
+            }
+
             if (eligibleMaps.Count <= 5)
             {
                 mapForVotes.AddRange(eligibleMaps);
                 return;
             }
 
-            // Dodavanje mapa sa proverenim uslovima
             for (int i = 0; i < 5; i++)
             {
                 if (eligibleMaps.Count == 0)
                 {
-                    break; // Ako ponestane mapa, prekini petlju
+                    break;
                 }
 
-                // Izaberi nasumičnu mapu
                 var randomIndex = random.Next(eligibleMaps.Count);
                 var selectedMap = eligibleMaps[randomIndex];
 
-                // Dodaj izabranu mapu u listu za glasanje
                 mapForVotes.Add(selectedMap);
 
-                // Ukloni mapu iz dostupnih kako bi se osigurala unikatnost
                 eligibleMaps.RemoveAt(randomIndex);
             }
         }
+
         public static Map? GetWinningMap(List<Map> mapForVotes, Dictionary<string, List<string>> votes)
         {
             if (votes == null || votes.Count == 0)
                 return null;
 
-            // Izračunaj procenat glasova za svaku mapu
-            var mapPercentages = new Dictionary<Map, double>();
-            foreach (var map in mapForVotes)
-            {
-                var mapValue = map.MapValue;
-                int totalVotes = votes.TryGetValue(mapValue, out List<string>? value) ? value.Count : 0;
+            var mapPercentages = CalculateMapsVotePercentages(votes);
 
-                if (totalVotes > 0)
-                {
-                    mapPercentages[map] = (votes[mapValue].Count / (double)totalVotes) * 100;
-                }
-                else
-                {
-                    mapPercentages[map] = 0; // Niko nije glasao za ovu mapu
-                }
-            }
-
-            // Nađi najveći procenat
             double maxPercentage = mapPercentages.Values.Max();
 
-            // Pronađi sve mape sa najvećim procentom glasova
-            var topMaps = mapPercentages
-                .Where(kvp => kvp.Value == maxPercentage)
-                .Select(kvp => kvp.Key)
+            var topMaps = mapForVotes
+                .Where(map => mapPercentages.ContainsKey(map.MapValue) && mapPercentages[map.MapValue] == maxPercentage)
                 .ToList();
 
-            // Ako ima više mapa sa istim najvećim procentom, nasumično izaberi jednu
             if (topMaps.Count > 1)
             {
                 var random = new Random();
                 return topMaps[random.Next(topMaps.Count)];
             }
 
-            // Ako postoji samo jedna mapa sa najvećim procentom, vrati je
             return topMaps.FirstOrDefault();
+        }
+
+        public static void AddPlayerToVotes(Dictionary<string, List<string>> _votes, string mapValue, string playerSteamId)
+        {
+            if (!_votes.TryGetValue(mapValue, out List<string>? value))
+            {
+                value = ([]);
+                _votes[mapValue] = value;
+            }
+
+            value.Add(playerSteamId);
+        }
+
+        public static Dictionary<string, int> CalculateMapsVotePercentages(Dictionary<string, List<string>> _votes)
+        {
+            var percentages = new Dictionary<string, int>();
+
+            int totalVotes = _votes.Values.SelectMany(voteList => voteList).Count();
+
+            if (totalVotes == 0)
+            {
+                return percentages;
+            }
+
+            foreach (var vote in _votes)
+            {
+                string map = vote.Key;
+                int votesForMap = vote.Value.Count;
+
+                int percentage = (int)Math.Round((double)votesForMap / totalVotes * 100);
+                percentages[map] = percentage;
+            }
+
+            return percentages;
         }
     }
 }

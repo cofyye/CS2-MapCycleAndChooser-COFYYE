@@ -3,9 +3,10 @@ using Microsoft.Extensions.Logging;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Cvars;
-using Utils;
-using Classes;
 using System.Diagnostics;
+using MapCycleAndChooser_COFYYE.Utils;
+using MapCycleAndChooser_COFYYE.Classes;
+using CounterStrikeSharp.API.Core.Translations;
 
 namespace MapCycleAndChooser_COFYYE;
 
@@ -21,8 +22,10 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
     private static List<Map> _cycleMaps = [];
     private static readonly List<Map> _mapForVotes = [];
     private static bool _voteStarted = false;
+    private static bool _votedForCurrentMap = false;
     private static Map? _nextmap = null;
     private static Dictionary<string, List<string>> _votes = [];
+    private static int _freezeTime = ConVar.Find("mp_freezetime")?.GetPrimitiveValue<int>() ?? 5;
     private new static readonly Stopwatch Timers = new();
 
     public void OnConfigParsed(Config.Config config)
@@ -32,33 +35,90 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         _cycleMaps = Config?.MapCycle.Maps ?? [];
         _nextmap = _cycleMaps[new Random().Next(_cycleMaps.Count)];
 
+        if (Config?.DependsOnTheRound == null || 
+            Config?.VoteMapDuration == null || 
+            Config?.VoteMapEnable == null || 
+            Config?.EnablePlayerVotingInChat == null ||
+            Config?.MapCycle == null)
+        {
+            Logger.LogError("Config fields are null.");
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        if(Config?.DependsOnTheRound == true)
+        {
+            var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>();
+
+            if(maxRounds <= 4)
+            {
+                Server.ExecuteCommand("mp_maxrounds 5");
+                Logger.LogInformation("mp_maxrounds are set to a value less than 5. I set it to 5.");
+            }
+        } 
+        else
+        {
+            var timeLimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<int>();
+
+            if (timeLimit <= 4)
+            {
+                Server.ExecuteCommand("mp_timelimit 5");
+                Logger.LogInformation("mp_timelimit are set to a value less than 5. I set it to 5.");
+            }
+        }
+
         Logger.LogInformation("Initialized {MapCount} cycle maps.", _cycleMaps.Count);
     }
 
     public override void Load(bool hotReload)
     {
         RegisterEventHandler<EventCsWinPanelMatch>(CsWinPanelMatchHandler);
-        RegisterEventHandler<EventRoundEnd>(RoundEndHandler);
+        RegisterEventHandler<EventRoundStart>(RoundStartHandler);
         RegisterEventHandler<EventPlayerChat>(PlayerChatHandler);
         RegisterEventHandler<EventPlayerConnectFull>(PlayerConnectFullHandler);
         RegisterEventHandler<EventPlayerDisconnect>(PlayerDisconnectHandler);
 
-        RegisterListener<Listeners.OnTick>(OnTick);
+        if(Config?.VoteMapEnable == true && Config?.VoteMapOnFreezeTime == true)
+        {
+            _freezeTime = ConVar.Find("mp_freezetime")?.GetPrimitiveValue<int>() ?? 5;
+            _votedForCurrentMap = false;
+            RegisterEventHandler<EventRoundEnd>(RoundEndHandler);
+        }
 
-        Timers.Start();
+        RegisterListener<Listeners.OnMapStart>(OnMapStart);
+        RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
+
+        if (Config?.VoteMapEnable == true)
+        {
+            RegisterListener<Listeners.OnTick>(OnTick);
+            if(!Timers.IsRunning) Timers.Start();
+        }
+
+        base.Load(hotReload);
     }
 
     public override void Unload(bool hotReload)
     {
         DeregisterEventHandler<EventCsWinPanelMatch>(CsWinPanelMatchHandler);
-        DeregisterEventHandler<EventRoundEnd>(RoundEndHandler);
+        DeregisterEventHandler<EventRoundStart>(RoundStartHandler);
         DeregisterEventHandler<EventPlayerChat>(PlayerChatHandler);
         DeregisterEventHandler<EventPlayerConnectFull>(PlayerConnectFullHandler);
         DeregisterEventHandler<EventPlayerDisconnect>(PlayerDisconnectHandler);
 
-        RemoveListener<Listeners.OnTick>(OnTick);
+        if (Config?.VoteMapEnable == true && Config?.VoteMapOnFreezeTime == true)
+        {
+            DeregisterEventHandler<EventRoundEnd>(RoundEndHandler);
+        }
 
-        Timers.Stop();
+        RemoveListener<Listeners.OnMapStart>(OnMapStart);
+        RemoveListener<Listeners.OnMapEnd>(OnMapEnd);
+
+        if (Config?.VoteMapEnable == true)
+        {
+            RemoveListener<Listeners.OnTick>(OnTick);
+            if(Timers.IsRunning) Timers.Stop();
+        }
+
+        base.Load(hotReload);
     }
 
     public HookResult PlayerConnectFullHandler(EventPlayerConnectFull @event, GameEventInfo info)
@@ -73,7 +133,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             CurrentIndex = 0,
             ButtonPressed = false,
             MenuOpened = false,
-            ForceMenuOpened = false,
+            Selected = false,
             Html = ""
         });
 
@@ -88,7 +148,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         if (string.IsNullOrEmpty(steamId)) return HookResult.Continue;
 
-        //MenuUtil.PlayersMenu.Remove(steamId);
+        MenuUtil.PlayersMenu.Remove(steamId);
 
         return HookResult.Continue;
     }
@@ -118,7 +178,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         return HookResult.Continue;
     }
 
-    public HookResult RoundEndHandler(EventRoundEnd @event, GameEventInfo info)
+    public HookResult RoundStartHandler(EventRoundStart @event, GameEventInfo info)
     {
         if (@event == null) return HookResult.Continue;
 
@@ -131,53 +191,171 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             return HookResult.Continue;
         }
 
-        var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0;
-
-        if(maxRounds > 0 && !_voteStarted && !gameRules.WarmupPeriod)
+        if(Config?.DependsOnTheRound == true)
         {
-            var roundLeft = maxRounds - gameRules.TotalRoundsPlayed;
+            var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0;
 
-            if (roundLeft >= 3)
+            if (maxRounds > 0 && !_voteStarted && !_votedForCurrentMap && !gameRules.WarmupPeriod)
             {
-                Server.PrintToChatAll("Vote started...");
-                MapUtil.PopulateMapsForVotes(Server.MapName, _cycleMaps, _mapForVotes);
-                _voteStarted = true;
+                var roundLeft = maxRounds - gameRules.TotalRoundsPlayed;
 
-                foreach (var map in _mapForVotes)
+                if (roundLeft <= 3)
                 {
-                    if (!_votes.ContainsKey(map.MapValue))
-                    {
-                        _votes[map.MapValue] = [];
-                    }
-                }
-
-                AddTimer(15.0f, ()  => {
-                    _voteStarted = false;
-                    var winningMap = MapUtil.GetWinningMap(_mapForVotes, _votes);
-
-                    if (winningMap != null)
-                    {
-                        _nextmap = winningMap;
-                    }
-                    else 
-                    {
-                        Logger.LogError("Winning map is null.");
-                    }
-
-                    _votes = [];
-
                     var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
 
                     foreach (var player in players)
                     {
-                        if (!MenuUtil.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
-                        MenuUtil.PlayersMenu[player.SteamID.ToString()].MenuOpened = false;
-                        MenuUtil.PlayersMenu[player.SteamID.ToString()].ForceMenuOpened = false;
-                        MenuUtil.PlayersMenu[player.SteamID.ToString()].Html = "";
+                        player.PrintToChat(Localizer.ForPlayer(player, "vote.started"));
                     }
-                    Server.PrintToChatAll($"Vote finished... Nextmap is {_nextmap?.MapValue}");
-                }, TimerFlags.STOP_ON_MAPCHANGE);
+
+                    _voteStarted = true;
+
+                    float duration = (float)(Config?.VoteMapDuration ?? 15);
+
+                    AddTimer(duration, () => {
+                        _voteStarted = false;
+                        _votedForCurrentMap = true;
+
+                        var winningMap = MapUtil.GetWinningMap(_mapForVotes, _votes);
+
+                        if (winningMap != null)
+                        {
+                            _nextmap = winningMap;
+                        }
+                        else
+                        {
+                            Logger.LogError("Winning map is null.");
+                        }
+
+                        _votes = [];
+
+                        var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
+
+                        foreach (var player in players)
+                        {
+                            player.PrintToChat(Localizer.ForPlayer(player, "vote.finished").Replace("{MAP_NAME}", _nextmap?.MapValue));
+
+                            if (!MenuUtil.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
+                            MenuUtil.PlayersMenu[player.SteamID.ToString()].MenuOpened = false;
+                            MenuUtil.PlayersMenu[player.SteamID.ToString()].Selected = false;
+                            MenuUtil.PlayersMenu[player.SteamID.ToString()].Html = "";
+                        }
+                    }, TimerFlags.STOP_ON_MAPCHANGE);
+                }
             }
+        } 
+        else
+        {
+            var timelimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<float>() ?? 0.0f;
+
+            if (timelimit > 0 && !_voteStarted && !_votedForCurrentMap && !gameRules.WarmupPeriod)
+            {
+                var timeLeft = timelimit - gameRules.TimeUntilNextPhaseStarts;
+
+                if (timeLeft <= 3)
+                {
+                    var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
+
+                    foreach (var player in players)
+                    {
+                        player.PrintToChat(Localizer.ForPlayer(player, "vote.started"));
+                    }
+
+                    _voteStarted = true;
+
+                    float duration = (float)(Config?.VoteMapDuration ?? 15);
+
+                    AddTimer(duration, () => {
+                        _voteStarted = false;
+                        _votedForCurrentMap = true;
+
+                        var winningMap = MapUtil.GetWinningMap(_mapForVotes, _votes);
+
+                        if (winningMap != null)
+                        {
+                            _nextmap = winningMap;
+                        }
+                        else
+                        {
+                            Logger.LogError("Winning map is null.");
+                        }
+
+                        _votes = [];
+
+                        var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
+
+                        foreach (var player in players)
+                        {
+                            player.PrintToChat(Localizer.ForPlayer(player, "vote.finished").Replace("{MAP_NAME}", _nextmap?.MapValue));
+
+                            if (!MenuUtil.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
+                            MenuUtil.PlayersMenu[player.SteamID.ToString()].MenuOpened = false;
+                            MenuUtil.PlayersMenu[player.SteamID.ToString()].Selected = false;
+                            MenuUtil.PlayersMenu[player.SteamID.ToString()].Html = "";
+                        }
+                    }, TimerFlags.STOP_ON_MAPCHANGE);
+                }
+            }
+        }
+
+        Server.PrintToChatAll(gameRules.TimeUntilNextPhaseStarts.ToString());
+
+        return HookResult.Continue;
+    }
+
+    public HookResult RoundEndHandler(EventRoundEnd @event, GameEventInfo info)
+    {
+        if (@event == null) return HookResult.Continue;
+        if(Config.VoteMapOnFreezeTime != true) return HookResult.Continue;
+
+        var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
+        var gameRules = gameRulesEntities.First().GameRules;
+
+        if (gameRules == null)
+        {
+            Logger.LogError("Game rules not found.");
+            return HookResult.Continue;
+        }
+
+        if (Config?.DependsOnTheRound == true)
+        {
+            var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0;
+
+            if (maxRounds > 0 && !_voteStarted && !_votedForCurrentMap && !gameRules.WarmupPeriod)
+            {
+                var roundLeft = maxRounds - gameRules.TotalRoundsPlayed;
+
+                if (roundLeft <= 3)
+                {
+                    MapUtil.PopulateMapsForVotes(Server.MapName, _cycleMaps, _mapForVotes);
+
+                    if (_mapForVotes.Count < 1)
+                    {
+                        _votedForCurrentMap = true;
+                        Logger.LogInformation("The list of voting maps is empty. I'm suspending the vote.");
+
+                        return HookResult.Continue;
+                    }
+
+                    foreach (var map in _mapForVotes)
+                    {
+                        if (!_votes.ContainsKey(map.MapValue))
+                        {
+                            _votes[map.MapValue] = [];
+                        }
+                    }
+
+                    Server.ExecuteCommand($"mp_freezetime {Config?.VoteMapDuration ?? _freezeTime + 2}");
+                }
+            }
+            else
+            {
+                Server.ExecuteCommand($"mp_freezetime {_freezeTime}");
+            }
+        }
+        else
+        {
+            // Soon
         }
 
         return HookResult.Continue;
@@ -189,15 +367,54 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         if(@event.Text.Trim() == "!nextmap" || @event.Text.Trim() == "/nextmap")
         {
-            var player = Utilities.GetPlayerFromUserid(@event.Userid);
-            player?.PrintToChat($"Nextmap is: {_nextmap?.MapValue}");
+            var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p)).ToList();
+
+            foreach (var player in players)
+            {
+                player.PrintToChat(Localizer.ForPlayer(player, "nextmap.get.command").Replace("{MAP_NAME}", _nextmap?.MapValue));
+            }
         }
 
         return HookResult.Continue;
     }
 
+    public void OnMapStart(string mapName)
+    {
+        if (Config?.VoteMapEnable == true)
+        {
+            _votedForCurrentMap = false;
+            if (!Timers.IsRunning) Timers.Start();
+        }
+
+        if (_cycleMaps.Count > 0)
+        {
+            _nextmap = _cycleMaps[new Random().Next(_cycleMaps.Count)];
+        }
+
+        if(Config?.VoteMapOnFreezeTime == true)
+        {
+            _freezeTime = ConVar.Find("mp_freezetime")?.GetPrimitiveValue<int>() ?? 5;
+        }
+    }
+
+    public void OnMapEnd()
+    {
+        if (Config?.VoteMapEnable == true)
+        {
+            _votedForCurrentMap = false;
+            if (Timers.IsRunning) Timers.Stop();
+        }
+
+        _votes.Clear();
+        _mapForVotes.Clear();
+        MenuUtil.PlayersMenu.Clear();
+        _nextmap = null;
+    }
+
     public void OnTick()
     {
+        if (Config?.VoteMapEnable != true) return;
+
         if (_voteStarted)
         {
             var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
@@ -205,12 +422,9 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             foreach (var player in players)
             {
                 if (!MenuUtil.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
-                //if (!MenuUtil.PlayersMenu[player.SteamID.ToString()].MenuOpened) continue;
-
-                MenuUtil.PlayersMenu[player.SteamID.ToString()].ForceMenuOpened = true;
                 MenuUtil.PlayersMenu[player.SteamID.ToString()].MenuOpened = true;
 
-                MenuUtil.CreateAndOpenHtmlMenu(player, _mapForVotes, Timers);
+                MenuUtil.CreateAndOpenHtmlMenu(Localizer, player, _mapForVotes, _votes, Timers);
             }
         }
     }

@@ -1,0 +1,13 @@
+{
+  "nextmap.get.command": "{lightpurple}[MapInfo] {yellow}Nextmap {orange}➤➤ {lime}{MAP_NAME}",
+
+  "vote.started": "{lightpurple}[MapInfo] {yellow}Voting for the next map has started",
+  "vote.finished": "{lightpurple}[MapInfo] {yellow}Voting for the next map has ended. The next map is {lime}{MAP_NAME}",
+  "vote.player": "{lightpurple}[MapInfo] {yellow}Player {lime}{PLAYER_NAME} {yellow}has voted for {lime}{MAP_NAME}",
+
+  "menu.title": "<b color='orange'>【</b> <span color='lime'>Vote for the next map</span> <b color='orange'>】</b> <br />",
+  "menu.item": "<span color='yellow'>{MAP_NAME}</span> <b color='orange'>•</b> <b color='lime'>{MAP_PERCENT}%</b>",
+  "menu.item.right": "<b color='orange'>►</b>",
+  "menu.item.left": "<b color='orange'>◄</b>",
+  "menu.bottom": "<br /><b color='orange'>[</b><span color='lime'>WASD</span> <b color='orange'>-</b> <span color='yellow'>Navigation</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Select</span><b color='orange'>]</b> <br />"
+}

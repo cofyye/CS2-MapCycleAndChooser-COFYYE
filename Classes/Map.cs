@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Classes
+namespace MapCycleAndChooser_COFYYE.Classes
 {
-    public class Map(string mapValue, string mapDisplay, bool mapWorkShop, bool mapCanVote, int mapMinPlayers, int mapMaxPlayers)
+    public class Map(string mapValue, string mapDisplay, bool mapWorkShop, bool? mapCanVote, int? mapMinPlayers, int? mapMaxPlayers)
     {
         [JsonPropertyName("map_value")]
         public string MapValue { get; } = mapValue;
@@ -14,12 +14,12 @@ namespace Classes
         public bool MapWorkshop { get; } = mapWorkShop;
 
         [JsonPropertyName("map_can_vote")]
-        public bool MapCanVote { get; } = mapCanVote;
+        public bool? MapCanVote { get; } = mapCanVote;
 
         [JsonPropertyName("map_min_players")]
-        public int MapMinPlayers { get; } = mapMinPlayers;
+        public int? MapMinPlayers { get; } = mapMinPlayers;
 
         [JsonPropertyName("map_max_players")]
-        public int MapMaxPlayers { get; } = mapMaxPlayers;
+        public int? MapMaxPlayers { get; } = mapMaxPlayers;
     }
 }

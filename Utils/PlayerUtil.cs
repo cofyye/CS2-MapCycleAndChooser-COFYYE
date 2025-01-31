@@ -1,6 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core;
 
-namespace Utils
+namespace MapCycleAndChooser_COFYYE.Utils
 {
     public static class PlayerUtil
     {
