@@ -1,5 +1,8 @@
 {
   "nextmap.get.command": "{lightpurple}[MapInfo] {yellow}Nextmap {orange}➤➤ {lime}{MAP_NAME}",
+  "nextmap.set.command.expected.value": "{lightpurple}[MapInfo] {yellow}Expected value: {orange}css_nextmap {lime}[map]",
+  "nextmap.set.command.new.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{ADMIN_NAME} {yellow}changed the following map to {lime}{MAP_NAME}",
+  "nextmap.set.command.info": "{lightpurple}[MapInfo] {yellow}If you want to see what the next map is, say {lime}!nextmap",
 
   "vote.started": "{lightpurple}[MapInfo] {yellow}Voting for the next map has started",
   "vote.finished": "{lightpurple}[MapInfo] {yellow}Voting for the next map has ended. The next map is {lime}{MAP_NAME}",

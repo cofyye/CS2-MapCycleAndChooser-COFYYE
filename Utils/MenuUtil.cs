@@ -2,7 +2,6 @@
 using CounterStrikeSharp.API;
 using System.Text;
 using System.Diagnostics;
-using Microsoft.Extensions.Localization;
 using CounterStrikeSharp.API.Core.Translations;
 using MapCycleAndChooser_COFYYE.Classes;
 
@@ -10,9 +9,10 @@ namespace MapCycleAndChooser_COFYYE.Utils
 {
     public static class MenuUtil
     {
+        public static readonly MapCycleAndChooser Instance = MapCycleAndChooser.Instance;
+
         public static Dictionary<string, PlayerMenu> PlayersMenu { get; } = [];
-        public static void CreateAndOpenHtmlMenu(
-            IStringLocalizer localizer, 
+        public static void CreateAndOpenHtmlVoteMenu(
             CCSPlayerController player, 
             List<Map> mapsForVote,
             Dictionary<string, List<string>> _votes,
@@ -31,9 +31,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
             int currentIndex = PlayersMenu[playerSteamId].CurrentIndex;
             currentIndex = Math.Max(0, Math.Min(menuValues.ToArray().Length - 1, currentIndex));
 
-            string bottomMenu = localizer.ForPlayer(player, "menu.bottom");
-            string imageleft = localizer.ForPlayer(player, "menu.item.left");
-            string imageRight = localizer.ForPlayer(player, "menu.item.right");
+            string bottomMenu = Instance.Localizer.ForPlayer(player, "menu.bottom");
+            string imageleft = Instance.Localizer.ForPlayer(player, "menu.item.left");
+            string imageRight = Instance.Localizer.ForPlayer(player, "menu.item.right");
 
             int visibleOptions = 5;
             int startIndex = Math.Max(0, currentIndex - (visibleOptions - 1));
@@ -69,9 +69,12 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
                             var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
 
-                            foreach (var p in players)
+                            if(Instance.Config.EnablePlayerVotingInChat == true)
                             {
-                                p.PrintToChat(localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", currentMenuOption));
+                                foreach (var p in players)
+                                {
+                                    p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", currentMenuOption));
+                                }
                             }
 
                             MapUtil.AddPlayerToVotes(_votes, currentMenuOption, playerSteamId);
@@ -90,7 +93,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             StringBuilder builder = new();
 
-            string menuTitle = localizer.ForPlayer(player, "menu.title");
+            string menuTitle = Instance.Localizer.ForPlayer(player, "menu.title");
             builder.AppendLine(menuTitle);
 
             var percentages = MapUtil.CalculateMapsVotePercentages(_votes);
@@ -103,12 +106,12 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
                 if (i == currentIndex)
                 {
-                    string lineHtml = $"{imageRight} {localizer.ForPlayer(player, "menu.item").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} {imageleft} <br />";
+                    string lineHtml = $"{imageRight} {Instance.Localizer.ForPlayer(player, "menu.item").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} {imageleft} <br />";
                     builder.AppendLine(lineHtml);
                 }
                 else
                 {
-                    string lineHtml = $"{localizer.ForPlayer(player, "menu.item").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} <br />";
+                    string lineHtml = $"{Instance.Localizer.ForPlayer(player, "menu.item").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} <br />";
                     builder.AppendLine(lineHtml);
                 }
             }

@@ -1,4 +1,5 @@
 ﻿using CounterStrikeSharp.API.Core;
+using MapCycleAndChooser_COFYYE.Classes;
 using System.Text.Json.Serialization;
 
 namespace MapCycleAndChooser_COFYYE.Config
@@ -20,7 +21,11 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("enable_player_voting_in_chat")]
         public bool EnablePlayerVotingInChat { get; init; } = true;
 
-        [JsonPropertyName("mapcycle")]
-        public MapCycle MapCycle { get; init; } = new();
+        [JsonPropertyName("maps")]
+        public List<Map> Maps { get; init; } =
+        [
+            new Map("de_dust2", "De Dust2", false, true, true, 0, 64),
+            new Map("de_inferno", "De Inferno", false, true, true, 0, 64)
+        ];
     }
 }

@@ -18,9 +18,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 .Where(map =>
                     map.MapValue != currentMap &&
                     !mapForVotes.Any(votedMap => votedMap.MapValue == map.MapValue) &&
-                    (map.MapCanVote ?? true) &&
-                    (map.MapMinPlayers ?? 0) <= currentPlayers &&
-                    (map.MapMaxPlayers ?? 64) >= currentPlayers
+                    map.MapCanVote &&
+                    map.MapMinPlayers <= currentPlayers &&
+                    map.MapMaxPlayers >= currentPlayers
                 )
                 .ToList();
 
