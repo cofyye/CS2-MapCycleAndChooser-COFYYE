@@ -9,7 +9,6 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
 using MapCycleAndChooser_COFYYE.Utils;
 using MapCycleAndChooser_COFYYE.Classes;
-
 namespace MapCycleAndChooser_COFYYE;
 
 public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
@@ -53,6 +52,9 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             Config?.VoteMapDuration == null ||
             Config?.VoteMapEnable == null ||
             Config?.EnablePlayerVotingInChat == null ||
+            Config?.VoteMapOnFreezeTime == null ||
+            Config?.Sounds == null ||
+            Config?.DisplayMapByValue == null ||
             Config?.Maps == null)
         {
             Logger.LogError("Config fields are null.");
@@ -102,6 +104,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         Instance = this;
 
         AddCommand("css_nextmap", "Set a next map", OnSetNextMap);
+        AddCommand("css_maps", "List of all maps", OnMapsList);
 
         RegisterEventHandler<EventCsWinPanelMatch>(CsWinPanelMatchHandler);
         RegisterEventHandler<EventRoundStart>(RoundStartHandler);
@@ -118,12 +121,9 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
         RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
+        RegisterListener<Listeners.OnTick>(OnTick);
 
-        if (Config?.VoteMapEnable == true)
-        {
-            RegisterListener<Listeners.OnTick>(OnTick);
-            if(!Timers.IsRunning) Timers.Start();
-        }
+        if(!Timers.IsRunning) Timers.Start();
 
         AddTimer(300.0f, () =>
         {
@@ -153,12 +153,9 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         RemoveListener<Listeners.OnMapStart>(OnMapStart);
         RemoveListener<Listeners.OnMapEnd>(OnMapEnd);
+        RemoveListener<Listeners.OnTick>(OnTick);
 
-        if (Config?.VoteMapEnable == true)
-        {
-            RemoveListener<Listeners.OnTick>(OnTick);
-            if(Timers.IsRunning) Timers.Stop();
-        }
+        if(Timers.IsRunning) Timers.Stop();
     }
 
     [RequiresPermissions("@css/changemap")]
@@ -183,6 +180,22 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         _nextmap = map;
 
         Server.PrintToChatAll(Localizer.ForPlayer(caller, "nextmap.set.command.new.map").Replace("{ADMIN_NAME}", caller?.PlayerName).Replace("{MAP_NAME}", _nextmap?.MapValue));
+        
+        return;
+    }
+
+    [RequiresPermissions("@css/changemap")]
+    public void OnMapsList(CCSPlayerController? caller, CommandInfo command)
+    {
+        if (!PlayerUtil.IsValidPlayer(caller)) return;
+        if (!MenuUtil.PlayersMenu.ContainsKey(caller?.SteamID.ToString() ?? "")) return;
+
+        var playerSteamId = caller?.SteamID.ToString() ?? "";
+
+        if(!string.IsNullOrEmpty(playerSteamId))
+        {
+            MenuUtil.PlayersMenu[playerSteamId].MenuOpened = true;
+        }
 
         return;
     }
@@ -266,9 +279,18 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
                 {
                     var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
 
+                    string soundToPlay = "";
+                    if (Config?.Sounds.Count > 0) {
+                        soundToPlay = Config.Sounds[new Random().Next(Config?.Sounds.Count ?? 1)];
+                    }
+
                     foreach (var player in players)
                     {
                         player.PrintToChat(Localizer.ForPlayer(player, "vote.started"));
+                        if (!string.IsNullOrEmpty(soundToPlay))
+                        {
+                            player.ExecuteClientCommand($"play {soundToPlay}");
+                        }
                     }
 
                     _voteStarted = true;
@@ -536,9 +558,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
     public void OnTick()
     {
-        if (Config?.VoteMapEnable != true) return;
-
-        if (_voteStarted)
+        if (_voteStarted && Config?.VoteMapEnable == true)
         {
             var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
 
@@ -548,6 +568,18 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
                 MenuUtil.PlayersMenu[player.SteamID.ToString()].MenuOpened = true;
 
                 MenuUtil.CreateAndOpenHtmlVoteMenu(player, _mapForVotes, _votes, Timers);
+            }
+        }
+        else if(!_voteStarted || Config?.VoteMapEnable == false)
+        {
+            var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
+
+            foreach (var player in players)
+            {
+                if (!MenuUtil.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
+                if (!MenuUtil.PlayersMenu[player.SteamID.ToString()].MenuOpened) continue;
+
+                MenuUtil.CreateAndOpenHtmlMapsMenu(player, _maps, Timers);
             }
         }
     }

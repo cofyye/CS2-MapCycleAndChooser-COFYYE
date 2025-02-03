@@ -59,10 +59,20 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             var mapPercentages = CalculateMapsVotePercentages(votes);
 
+            if (mapPercentages == null || mapPercentages.Count == 0)
+                return null;
+
             double maxPercentage = mapPercentages.Values.Max();
 
             var topMaps = mapForVotes
-                .Where(map => mapPercentages.ContainsKey(map.MapValue) && mapPercentages[map.MapValue] == maxPercentage)
+                .Where(map =>
+                {
+                    var mapValuePercentageExists = mapPercentages.TryGetValue(map.MapValue, out var mapValuePercentage);
+                    var mapDisplayPercentageExists = mapPercentages.TryGetValue(map.MapDisplay, out var mapDisplayPercentage);
+
+                    return (mapValuePercentageExists && mapValuePercentage == maxPercentage) ||
+                           (mapDisplayPercentageExists && mapDisplayPercentage == maxPercentage);
+                })
                 .ToList();
 
             if (topMaps.Count > 1)
@@ -73,6 +83,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             return topMaps.FirstOrDefault();
         }
+
 
         public static void AddPlayerToVotes(Dictionary<string, List<string>> _votes, string mapValue, string playerSteamId)
         {

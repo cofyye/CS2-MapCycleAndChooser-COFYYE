@@ -8,9 +8,16 @@
   "vote.finished": "{lightpurple}[MapInfo] {yellow}Voting for the next map has ended. The next map is {lime}{MAP_NAME}",
   "vote.player": "{lightpurple}[MapInfo] {yellow}Player {lime}{PLAYER_NAME} {yellow}has voted for {lime}{MAP_NAME}",
 
-  "menu.title": "<b color='orange'>【</b> <span color='lime'>Vote for the next map</span> <b color='orange'>】</b> <br />",
-  "menu.item": "<span color='yellow'>{MAP_NAME}</span> <b color='orange'>•</b> <b color='lime'>{MAP_PERCENT}%</b>",
+  "admin.change.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{PLAYER_NAME} {yellow}changed the map to {lime}{MAP_NAME}",
+  "map.not.found": "{lightpurple}[MapInfo] {yellow}Map not found",
+
+  "menu.title.vote": "<b color='orange'>【</b> <span color='lime'>Vote for the next map</span> <b color='orange'>】</b> <br />",
+  "menu.title.maps": "<b color='orange'>【</b> <span color='lime'>Pick a map to change</span> <b color='orange'>】</b> <br />",
+  "menu.item.vote": "<span color='yellow'>{MAP_NAME}</span> <b color='orange'>•</b> <b color='lime'>{MAP_PERCENT}%</b>",
+  "menu.item.map": "<span color='yellow'>{MAP_NAME}</span></b>",
   "menu.item.right": "<b color='orange'>►</b>",
   "menu.item.left": "<b color='orange'>◄</b>",
-  "menu.bottom": "<br /><b color='orange'>[</b><span color='lime'>WASD</span> <b color='orange'>-</b> <span color='yellow'>Navigation</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Select</span><b color='orange'>]</b> <br />"
+  "menu.more.items": "<img src='https://raw.githubusercontent.com/oqyh/cs2-Kill-Sound-GoldKingZ/main/Resources/arrow.gif' class=''> <img src='https://raw.githubusercontent.com/oqyh/cs2-Kill-Sound-GoldKingZ/main/Resources/arrow.gif' class=''> <img src='https://raw.githubusercontent.com/oqyh/cs2-Kill-Sound-GoldKingZ/main/Resources/arrow.gif' class=''>",
+  "menu.bottom.vote": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigation</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Select</span><b color='orange'>]</b> <br />",
+  "menu.bottom.maps": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigation</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Select</span><b color='orange'>] <br /> [</b><span color='lime'>R</span> <b color='orange'>-</b> <span color='olive'>Exit</span><b color='orange'>]</b> <br />"
 }

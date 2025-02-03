@@ -21,6 +21,16 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("enable_player_voting_in_chat")]
         public bool EnablePlayerVotingInChat { get; init; } = true;
 
+        [JsonPropertyName("display_map_by_value")]
+        public bool DisplayMapByValue { get; init; } = true;
+
+        [JsonPropertyName("sounds")]
+        public List<string> Sounds { get; init; } = 
+        [
+            "sounds/voice/gman_choose1.vsnd_c",
+            "sounds/voice/gman_choose2.vsnd_c"
+        ];
+
         [JsonPropertyName("maps")]
         public List<Map> Maps { get; init; } =
         [
