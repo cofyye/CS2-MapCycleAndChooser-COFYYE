@@ -156,6 +156,10 @@ Below is a step-by-step guide explaining the available configuration options for
 The language files are located in the following directory:
 > game/csgo/addons/counterstrikesharp/plugins/MapCycleAndChooser-COFYYE/lang
 
+Currently, there are two language files:
+- `en.json` (English)
+- `sr.json` (Serbian)
+
 ## Bug Reports & Suggestions
 
 If you encounter any bugs or issues while using the plugin, please report them on the [GitHub Issues page](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/issues). Provide a detailed description of the problem, and I will work on resolving it as soon as possible.
