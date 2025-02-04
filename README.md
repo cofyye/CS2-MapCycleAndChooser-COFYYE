@@ -155,3 +155,33 @@ Below is a step-by-step guide explaining the available configuration options for
 ### Language Support
 The language files are located in the following directory:
 > game/csgo/addons/counterstrikesharp/plugins/MapCycleAndChooser-COFYYE/lang
+
+## Bug Reports & Suggestions
+
+If you encounter any bugs or issues while using the plugin, please report them on the [GitHub Issues page](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/issues). Provide a detailed description of the problem, and I will work on resolving it as soon as possible.
+
+Feel free to submit any suggestions for improvements or new features you'd like to see in future releases. Your feedback is highly appreciated!
+
+## Important Notes
+
+- **Missing Features**: The following features are not yet implemented in this version of the plugin but will be available in future updates:
+  - `!rtv`
+  - `!nominate`
+
+These features are planned for inclusion, so stay tuned for upcoming versions!
+
+## Credits
+
+- **Code Snippets for Menu**: The menu code snippets were sourced from [oqyh's GitHub](https://github.com/oqyh). I would like to thank him for providing valuable resources that helped in building parts of this plugin.
+  
+- **Other Contributors**: A big thank you to all other authors and contributors of similar plugins that inspired the creation of this MapCycle and Chooser plugin. Their work was a key part of shaping the final version of this plugin.
+
+This plugin is my version of the MapCycle and Chooser functionality, combining various elements from the community to provide a better and more customizable experience for server admins and players alike.
+
+## Donation
+
+If you would like to support me and help maintain and improve this plugin, you can donate via PayPal:
+
+[Donate on PayPal](https://paypal.me/cofyye)
+
+Your support is greatly appreciated!
