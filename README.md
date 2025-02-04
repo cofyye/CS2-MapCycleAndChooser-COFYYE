@@ -141,3 +141,17 @@ Below is a step-by-step guide explaining the available configuration options for
      - **`map_can_vote`**: `true` if the map should appear in the voting system; `false` if it should not.  
      - **`map_min_players`**: Minimum number of players required for the map to be included in voting.  
      - **`map_max_players`**: Maximum number of players allowed for the map to be included in voting.
+
+### Installation
+
+1. Download the **[MapCycleAndChooser v1.0](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/releases/download/1.0/MapCycleAndChooser-COFYYE-v1.0.zip)** plugin as a `.zip` file.  
+2. Upload the contents of the `.zip` file into the following directory on your server:  
+   > game/csgo/addons/counterstrikesharp/plugins  
+3. After uploading, change the map or restart your server to activate the plugin.  
+4. The configuration file will be generated at:  
+   > game/csgo/addons/counterstrikesharp/configs/plugins/MapCycleAndChooser-COFYYE/MapCycleAndChooser-COFYYE.json  
+   Adjust all settings in this file as needed.
+
+### Language Support
+The language files are located in the following directory:
+> game/csgo/addons/counterstrikesharp/plugins/MapCycleAndChooser-COFYYE/lang
