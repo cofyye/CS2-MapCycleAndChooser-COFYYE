@@ -18,7 +18,7 @@
   "menu.item.map": "<span color='yellow'>{MAP_NAME}</span></b>",
   "menu.item.right": "<b color='orange'>►</b>",
   "menu.item.left": "<b color='orange'>◄</b>",
-  "menu.more.items": "<img src='https://raw.githubusercontent.com/cofyye/CS2-MapCycleAndChooser-COFYYE/resources/arrow.gif' class=''> <img src='https://raw.githubusercontent.com/cofyye/CS2-MapCycleAndChooser-COFYYE/resources/arrow.gif' class=''> <img src='https://raw.githubusercontent.com/cofyye/CS2-MapCycleAndChooser-COFYYE/resources/arrow.gif' class=''>",
+  "menu.more.items": "<img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''> <img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''> <img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''>",
   "menu.bottom.vote": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigacija</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Odabir</span><b color='orange'>]</b> <br />",
   "menu.bottom.maps": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigacija</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Odabir</span><b color='orange'>] <br /> [</b><span color='lime'>R</span> <b color='orange'>-</b> <span color='yellow'>Izadji</span><b color='orange'>]</b> <br />"
 }
