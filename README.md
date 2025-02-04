@@ -53,7 +53,7 @@ To run this plugin, you need the following dependencies:
 3. **MultiAddonManager** *(optional)*  
    Download from: [MultiAddonManager GitHub Releases](https://github.com/Source2ZE/MultiAddonManager/releases)  
 
-   - If you want to play a sound when map voting begins, this dependency is required. You can use your own custom sounds, though no tutorial is provided—search online for guidance.  
+   - If you want to play a sound when map voting begins, this dependency is required. You can use your own custom sounds, though no tutorial is provided. Search online for guidance.  
    - Alternatively, if you'd like to use pre-configured sounds, visit this link: [Steam Workshop Sounds](https://steamcommunity.com/sharedfiles/filedetails/?id=3420306144).  
 
    **Setup for Sounds:**
@@ -63,7 +63,6 @@ To run this plugin, you need the following dependencies:
      ```json
      "....,3420306144"
      ```
-
 
 ## Commands and Permissions
 
@@ -78,3 +77,67 @@ To run this plugin, you need the following dependencies:
 3. **`css_maps`**  
    - **Description**: Lists all maps and allows instant map changes.  
    - **Access**: Admins only, requires `@css/changemap` permission.
+
+## Configuration Tutorial
+
+Below is a step-by-step guide explaining the available configuration options for **MapCycleAndChooser**. These options allow you to customize how the plugin behaves and interacts with players.
+
+### General Settings
+
+1. **`vote_map_enable`**  
+   - **Possible Values**: `true`, `false`  
+   - **Description**: Enables or disables the voting system for a new map.  
+     - `true`: Voting is enabled.  
+     - `false`: Voting is disabled.
+
+2. **`vote_map_duration`**  
+   - **Possible Values**: Integer values (e.g., `30`, `60`, etc.)  
+   - **Description**: Specifies the duration (in seconds) for the map voting period.
+
+3. **`vote_map_on_freezetime`**  
+   - **Possible Values**: `true`, `false`  
+   - **Description**: Controls whether voting starts during freeze time.  
+     - `true`: Increases the freeze time in the next round and starts voting during it.  
+     - `false`: Voting starts at the beginning of the next round but does not extend freeze time. Players can vote while the round progresses.
+
+4. **`depends_on_the_round`**  
+   - **Possible Values**: `true`, `false`  
+   - **Description**: Determines whether map voting is based on rounds or time.  
+     - `true`: The plugin uses `mp_maxrounds` to trigger voting.  
+     - `false`: The plugin uses `mp_timelimit` to trigger voting.
+
+5. **`enable_player_freeze_in_menu`**  
+   - **Possible Values**: `true`, `false`  
+   - **Description**: Freezes players when the map list menu or voting menu is active.  
+     - `true`: Players cannot move until the menu closes.  
+     - `false`: Players can move even while voting.  
+     - *Note*: For the best experience, set both `vote_map_on_freezetime` and this option to `true`. Otherwise, players may remain frozen after the round starts if only this option is enabled.
+
+6. **`enable_player_voting_in_chat`**  
+   - **Possible Values**: `true`, `false`  
+   - **Description**: Logs in the chat which player voted for which map.  
+     - `true`: Displays voting logs in the chat.  
+     - `false`: Disables voting logs.
+
+7. **`display_map_by_value`**  
+   - **Possible Values**: `true`, `false`  
+   - **Description**: Defines how maps are displayed.  
+     - `true`: Displays the map by its technical name (e.g., `de_dust2`).  
+     - `false`: Displays the map by its custom tag (e.g., `Dust II`).
+
+8. **`sounds`**  
+   - **Possible Values**: An array of string paths to sound files.  
+   - **Description**: Specifies the sounds that play when map voting begins.  
+     - Add as many sounds as you'd like, and the plugin will play one randomly.  
+     - Leave this field empty (`[]`) to disable sounds.  
+
+9. **`maps`**  
+   - **Description**: A list of maps with customizable settings for each map. Each map entry contains the following:  
+     - **`map_value`**: The technical name of the map (e.g., `de_dust2`).  
+     - **`map_display`**: The custom display name for the map (e.g., `Dust II`).  
+     - **`map_is_workshop`**: `true` if the map is from the Steam Workshop; `false` otherwise.  
+     - **`map_workshop_id`**: The Workshop ID of the map (required if `map_is_workshop` is `true`, otherwise set to `""`).  
+     - **`map_cycle_enabled`**: `true` if the map should be included in the map cycle; `false` if it should only appear in the admin map list (`css_maps`).  
+     - **`map_can_vote`**: `true` if the map should appear in the voting system; `false` if it should not.  
+     - **`map_min_players`**: Minimum number of players required for the map to be included in voting.  
+     - **`map_max_players`**: Maximum number of players allowed for the map to be included in voting.
