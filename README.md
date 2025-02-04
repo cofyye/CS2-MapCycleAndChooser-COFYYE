@@ -39,3 +39,29 @@ MapCycleAndChooser is a CS2 plugin designed to give server admins complete contr
 6. **Support for Local Language Change**: Demonstrates the plugin’s support for language customization.
 
    ![Language Support](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/changed_language.png?raw=true)
+
+## Dependencies
+
+To run this plugin, you need the following dependencies:
+
+1. **Metamod:Source (2.x)**  
+   Download from: [Metamod:Source Official Site](https://www.sourcemm.net/downloads.php/?branch=master)
+
+2. **CounterStrikeSharp**  
+   You can get it from: [CounterStrikeSharp GitHub Releases](https://github.com/roflmuffin/CounterStrikeSharp/releases)
+
+Make sure both dependencies are installed on your server before using the plugin.
+
+## Commands and Permissions
+
+1. **`!nextmap`**  
+   - **Description**: Displays the next map in the cycle.  
+   - **Access**: Available to all players.
+
+2. **`css_nextmap`**  
+   - **Description**: Sets the next map in the rotation.  
+   - **Access**: Admins only, requires `@css/changemap` permission.
+
+3. **`css_maps`**  
+   - **Description**: Lists all maps and allows instant map changes.  
+   - **Access**: Admins only, requires `@css/changemap` permission.
