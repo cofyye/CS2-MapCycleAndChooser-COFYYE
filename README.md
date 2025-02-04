@@ -50,7 +50,20 @@ To run this plugin, you need the following dependencies:
 2. **CounterStrikeSharp**  
    You can get it from: [CounterStrikeSharp GitHub Releases](https://github.com/roflmuffin/CounterStrikeSharp/releases)
 
-Make sure both dependencies are installed on your server before using the plugin.
+3. **MultiAddonManager** *(optional)*  
+   Download from: [MultiAddonManager GitHub Releases](https://github.com/Source2ZE/MultiAddonManager/releases)  
+
+   - If you want to play a sound when map voting begins, this dependency is required. You can use your own custom sounds, though no tutorial is provided—search online for guidance.  
+   - Alternatively, if you'd like to use pre-configured sounds, visit this link: [Steam Workshop Sounds](https://steamcommunity.com/sharedfiles/filedetails/?id=3420306144).  
+
+   **Setup for Sounds:**
+   - To enable the sounds, you must add the `3420306144` ID to the `multiaddonmanager.cfg` file.  
+   - Path to file: `game/csgo/cfg/multiaddonmanager/multiaddonmanager.cfg`.  
+   - Add the ID under the `mm_extra_addons` section, for example:  
+     ```json
+     "....,3420306144"
+     ```
+
 
 ## Commands and Permissions
 
