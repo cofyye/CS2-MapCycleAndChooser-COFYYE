@@ -1,0 +1,24 @@
+{
+  "nextmap.get.command": "{lightpurple}[MapInfo] {yellow}Sledeca mapa {orange}➤➤ {lime}{MAP_NAME}",
+  "nextmap.get.command.info": "{lightpurple}[MapInfo] {yellow}Ako zelis da vidis sledecu mapu, kucaj {lime}!nextmap",
+  "nextmap.set.command.expected.value": "{lightpurple}[MapInfo] {yellow}Ocekivana vrednost: {orange}css_nextmap {lime}[map]",
+  "nextmap.set.command.new.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{ADMIN_NAME} {yellow}je stavio novu mapu {lime}{MAP_NAME}",
+
+  "admin.change.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{PLAYER_NAME} {yellow}je promenio mapu na {lime}{MAP_NAME}",
+  "map.not.found": "{lightpurple}[MapInfo] {yellow}Mapa ne postoji",
+  "command.no.perm": "[MapInfo] Nemas permisiju da koristis ovu komandu",
+
+  "vote.started": "{lightpurple}[MapInfo] {yellow}Glasanje za sledecu mapu je pocelo",
+  "vote.finished": "{lightpurple}[MapInfo] {yellow}Glasanje za sledecu mapu je zavrseno. Sledeca mapa je {lime}{MAP_NAME}",
+  "vote.player": "{lightpurple}[MapInfo] {yellow}Igrac {lime}{PLAYER_NAME} {yellow}je glasao za {lime}{MAP_NAME}",
+
+  "menu.title.vote": "<b color='orange'>【</b> <span color='lime'>Glasaj za sledecu mapu</span> <b color='orange'>】</b> <br />",
+  "menu.title.maps": "<b color='orange'>【</b> <span color='lime'>Izaberi mapu da promenis</span> <b color='orange'>】</b> <br />",
+  "menu.item.vote": "<span color='yellow'>{MAP_NAME}</span> <b color='orange'>•</b> <b color='lime'>{MAP_PERCENT}%</b>",
+  "menu.item.map": "<span color='yellow'>{MAP_NAME}</span></b>",
+  "menu.item.right": "<b color='orange'>►</b>",
+  "menu.item.left": "<b color='orange'>◄</b>",
+  "menu.more.items": "<img src='https://raw.githubusercontent.com/cofyye/CS2-MapCycleAndChooser-COFYYE/resources/arrow.gif' class=''> <img src='https://raw.githubusercontent.com/cofyye/CS2-MapCycleAndChooser-COFYYE/resources/arrow.gif' class=''> <img src='https://raw.githubusercontent.com/cofyye/CS2-MapCycleAndChooser-COFYYE/resources/arrow.gif' class=''>",
+  "menu.bottom.vote": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigacija</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Odabir</span><b color='orange'>]</b> <br />",
+  "menu.bottom.maps": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigacija</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Odabir</span><b color='orange'>] <br /> [</b><span color='lime'>R</span> <b color='orange'>-</b> <span color='yellow'>Izadji</span><b color='orange'>]</b> <br />"
+}

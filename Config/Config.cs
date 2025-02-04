@@ -18,6 +18,9 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("depends_on_the_round")]
         public bool DependsOnTheRound { get; init; } = true;
 
+        [JsonPropertyName("enable_player_freeze_in_menu")]
+        public bool EnablePlayerFreezeInMenu { get; init; } = true;
+
         [JsonPropertyName("enable_player_voting_in_chat")]
         public bool EnablePlayerVotingInChat { get; init; } = true;
 
@@ -34,8 +37,8 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("maps")]
         public List<Map> Maps { get; init; } =
         [
-            new Map("de_dust2", "De Dust2", false, true, true, 0, 64),
-            new Map("de_inferno", "De Inferno", false, true, true, 0, 64)
+            new Map("de_dust2", "De Dust2", false, "", true, true, 0, 64),
+            new Map("de_inferno", "De Inferno", false, "", true, true, 0, 64)
         ];
     }
 }

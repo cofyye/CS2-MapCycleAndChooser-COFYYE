@@ -213,7 +213,14 @@ namespace MapCycleAndChooser_COFYYE.Utils
                                 {
                                     if (map.MapIsWorkshop)
                                     {
-                                        Server.ExecuteCommand("");
+                                        if (string.IsNullOrEmpty(map.MapWorkshopId))
+                                        {
+                                            Server.ExecuteCommand($"ds_workshop_changelevel {map.MapValue}");
+                                        }
+                                        else
+                                        {
+                                            Server.ExecuteCommand($"host_workshop_map {map.MapWorkshopId}");
+                                        }
                                     }
                                     else
                                     {
@@ -225,6 +232,8 @@ namespace MapCycleAndChooser_COFYYE.Utils
                             {
                                 player.PrintToChat(Instance.Localizer.ForPlayer(player, "map.not.found"));
                             }
+
+                            PlayersMenu[playerSteamId].MenuOpened = false;
 
                             break;
                         }

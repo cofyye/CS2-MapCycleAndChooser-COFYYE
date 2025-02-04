@@ -17,7 +17,6 @@ namespace MapCycleAndChooser_COFYYE.Utils
             var eligibleMaps = cycleMaps
                 .Where(map =>
                     map.MapValue != currentMap &&
-                    !mapForVotes.Any(votedMap => votedMap.MapValue == map.MapValue) &&
                     map.MapCanVote &&
                     map.MapMinPlayers <= currentPlayers &&
                     map.MapMaxPlayers >= currentPlayers
