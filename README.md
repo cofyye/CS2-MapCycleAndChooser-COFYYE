@@ -2,6 +2,11 @@
 
 MapCycleAndChooser is a CS2 plugin designed to give server admins complete control over map rotations and player interactions. With this plugin, you can manage map cycles, enable map voting, and customize various settings to optimize gameplay for all players.
 
+## See it in action
+You can check out the plugin live on my server:  
+**IP**: 5.180.82.79:27015  
+Join and experience this plugin, along with all the other custom plugins I create for a unique gameplay experience.
+
 ## Features
 
 - **Next Map Configuration & Display**: Set the next map in the cycle and display it for players.
