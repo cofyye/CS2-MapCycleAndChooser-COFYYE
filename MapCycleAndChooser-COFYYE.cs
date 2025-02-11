@@ -27,6 +27,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
     private static readonly List<Map> _mapForVotes = [];
     private static bool _voteStarted = false;
     private static bool _votedForCurrentMap = false;
+    private static bool _votedForExtendMap = false;
     private static Map? _nextmap = null;
     public static string _lastmap = "";
     private static float _timeleft = 0; // in seconds
@@ -56,6 +57,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             Config?.VoteMapEnable == null ||
             Config?.EnablePlayerVotingInChat == null ||
             Config?.VoteMapOnFreezeTime == null ||
+            Config?.VoteMapOnNextRound == null ||
             Config?.Sounds == null ||
             Config?.DisplayMapByValue == null ||
             Config?.EnablePlayerFreezeInMenu == null ||
@@ -67,7 +69,11 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             Config?.EnableNextMapCommand == null ||
             Config?.EnableLastMapCommand == null ||
             Config?.EnableCurrentMapCommand == null ||
-            Config?.EnableReVoteCommand == null ||
+            Config?.EnableDontVote == null ||
+            Config?.DontVotePosition == null ||
+            Config?.EnableExtendMap == null ||
+            Config?.ExtendMapPosition == null ||
+            Config?.ExtendMapTime == null ||
             Config?.Maps == null)
         {
             Logger.LogError("Config fields are null.");
@@ -148,7 +154,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         if(Config?.EnableCommandAdsInChat == true)
         {
-            AddTimer(30.0f, () =>
+            AddTimer(300.0f, () =>
             {
                 var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p)).ToList();
 
@@ -382,15 +388,23 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
                         _voteStarted = false;
                         _votedForCurrentMap = true;
 
-                        var winningMap = MapUtil.GetWinningMap(_mapForVotes, _votes);
+                        var (winningMap, type) = MapUtil.GetWinningMap(_mapForVotes, _votes);
 
                         if (winningMap != null)
                         {
                             _nextmap = winningMap;
                         }
+                        else if (winningMap == null && type == "extendmap")
+                        {
+                            Server.PrintToChatAll("Extend map rounds");
+                        }
+                        else if (winningMap == null && type == "dontvote")
+                        {
+                            _nextmap = _cycleMaps.FirstOrDefault();
+                        }
                         else
                         {
-                            Logger.LogError("Winning map is null.");
+                            Logger.LogWarning("Winning map is null.");
                         }
 
                         _votes = [];
@@ -462,15 +476,23 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
                         _voteStarted = false;
                         _votedForCurrentMap = true;
 
-                        var winningMap = MapUtil.GetWinningMap(_mapForVotes, _votes);
+                        var (winningMap, type) = MapUtil.GetWinningMap(_mapForVotes, _votes);
 
                         if (winningMap != null)
                         {
                             _nextmap = winningMap;
                         }
+                        else if (winningMap == null && type == "extendmap")
+                        {
+                            Server.PrintToChatAll("Extend map minutes");
+                        }
+                        else if (winningMap == null && type == "dontvote")
+                        {
+                            _nextmap = _cycleMaps.FirstOrDefault();
+                        }
                         else
                         {
-                            Logger.LogError("Winning map is null.");
+                            Logger.LogWarning("Winning map is null.");
                         }
 
                         _votes = [];

@@ -24,17 +24,51 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             List<string> menuValues = [];
 
+            if(Instance?.Config?.EnableDontVote == true && Instance.Config?.DontVotePosition == "top")
+            {
+                menuValues.Add("{menu.item.dont.vote}{splitdontvote}" + Instance?.Localizer.ForPlayer(player, "menu.item.dont.vote") ?? "-");
+            }
+
+            if (Instance?.Config?.EnableExtendMap == true && Instance.Config?.ExtendMapPosition == "top")
+            {
+                if(Instance?.Config?.DependsOnTheRound == true)
+                {
+                    menuValues.Add("{menu.item.extend.map}{splitextendmap}" + Instance?.Localizer.ForPlayer(player, "menu.item.extend.map.round").Replace("{EXTEND_TIME}", Instance?.Config?.ExtendMapTime.ToString()) ?? "-");
+                }
+                else
+                {
+                    menuValues.Add("{menu.item.extend.map}{splitextendmap}" + Instance?.Localizer.ForPlayer(player, "menu.item.extend.map.timeleft").Replace("{EXTEND_TIME}", Instance?.Config?.ExtendMapTime.ToString()) ?? "-");
+                }
+            }
+
             foreach (Map map in mapsForVote)
             {
-                menuValues.Add(Instance.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay);
+                menuValues.Add(Instance?.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay);
+            }
+
+            if (Instance?.Config?.EnableDontVote == true && Instance.Config?.DontVotePosition == "bottom")
+            {
+                menuValues.Add("{menu.item.dont.vote}{splitdontvote}" + Instance?.Localizer.ForPlayer(player, "menu.item.dont.vote") ?? "-");
+            }
+
+            if (Instance?.Config?.EnableExtendMap == true && Instance?.Config?.ExtendMapPosition == "bottom")
+            {
+                if (Instance.Config?.DependsOnTheRound == true)
+                {
+                    menuValues.Add("{menu.item.extend.map}{splitextendmap}" + Instance?.Localizer.ForPlayer(player, "menu.item.extend.map.round").Replace("{EXTEND_TIME}", Instance?.Config?.ExtendMapTime.ToString()) ?? "-");
+                }
+                else
+                {
+                    menuValues.Add("{menu.item.extend.map}{splitextendmap}" + Instance?.Localizer.ForPlayer(player, "menu.item.extend.map.timeleft").Replace("{EXTEND_TIME}", Instance?.Config?.ExtendMapTime.ToString()) ?? "-");
+                }
             }
 
             int currentIndex = PlayersMenu[playerSteamId].CurrentIndex;
             currentIndex = Math.Max(0, Math.Min(menuValues.ToArray().Length - 1, currentIndex));
 
-            string bottomMenu = Instance.Localizer.ForPlayer(player, "menu.bottom.vote");
-            string imageleft = Instance.Localizer.ForPlayer(player, "menu.item.left");
-            string imageRight = Instance.Localizer.ForPlayer(player, "menu.item.right");
+            string bottomMenu = Instance?.Localizer.ForPlayer(player, "menu.bottom.vote") ?? "";
+            string imageleft = Instance?.Localizer.ForPlayer(player, "menu.item.left") ?? "";
+            string imageRight = Instance?.Localizer.ForPlayer(player, "menu.item.right") ?? "";
 
             int visibleOptions = 5;
             int startIndex = Math.Max(0, currentIndex - (visibleOptions - 1));
@@ -70,15 +104,40 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
                             var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
 
-                            if(Instance.Config?.EnablePlayerVotingInChat == true)
+                            var isDontVoteOption = currentMenuOption.Split("{splitdontvote}");
+                            var isExtendMapOption = currentMenuOption.Split("{splitextendmap}");
+
+                            if (Instance?.Config?.EnablePlayerVotingInChat == true)
                             {
                                 foreach (var p in players)
                                 {
-                                    p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", currentMenuOption));
+                                    if(isDontVoteOption.Length > 1)
+                                    {
+                                        p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", isDontVoteOption[1]));
+                                    }
+                                    else if(isExtendMapOption.Length > 1)
+                                    {
+                                        p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", isExtendMapOption[1]));
+                                    }
+                                    else
+                                    {
+                                        p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", currentMenuOption));
+                                    }
                                 }
                             }
 
-                            MapUtil.AddPlayerToVotes(_votes, currentMenuOption, playerSteamId);
+                            if (isDontVoteOption.Length > 1)
+                            {
+                                MapUtil.AddPlayerToVotes(_votes, isDontVoteOption[0], playerSteamId);
+                            }
+                            else if (isExtendMapOption.Length > 1)
+                            {
+                                MapUtil.AddPlayerToVotes(_votes, isExtendMapOption[0], playerSteamId);
+                            }
+                            else
+                            {
+                                MapUtil.AddPlayerToVotes(_votes, currentMenuOption, playerSteamId);
+                            }
 
                             player.ExecuteClientCommand("play sounds/ui/item_sticker_select.vsnd_c");
                             pm.ButtonPressed = true;
@@ -94,7 +153,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             StringBuilder builder = new();
 
-            string menuTitle = Instance.Localizer.ForPlayer(player, "menu.title.vote");
+            string menuTitle = Instance?.Localizer.ForPlayer(player, "menu.title.vote") ?? "";
             builder.AppendLine(menuTitle);
 
             var percentages = MapUtil.CalculateMapsVotePercentages(_votes);
@@ -103,18 +162,67 @@ namespace MapCycleAndChooser_COFYYE.Utils
             {
                 string currentMenuOption = menuValues.ToArray()[i];
 
-                var percentage = percentages.TryGetValue(currentMenuOption, out int mapPercent) ? mapPercent : 0;
+                int percentage = 0;
+                var isDontVoteOption = currentMenuOption.Split("{splitdontvote}");
+                var isExtendMapOption = currentMenuOption.Split("{splitextendmap}");
+
+                if (isDontVoteOption.Length > 1)
+                {
+                    percentage = percentages.TryGetValue(isDontVoteOption[0], out int mapPercent) ? mapPercent : 0;
+                }
+                else if(isExtendMapOption.Length > 1)
+                {
+                    percentage = percentages.TryGetValue(isExtendMapOption[0], out int mapPercent) ? mapPercent : 0;
+                }
+                else
+                {
+                    percentage = percentages.TryGetValue(currentMenuOption, out int mapPercent) ? mapPercent : 0;
+                }
 
                 if (i == currentIndex)
                 {
-                    string lineHtml = $"{imageRight} {Instance.Localizer.ForPlayer(player, "menu.item.vote").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} {imageleft} <br />";
+                    string lineHtml = "";
+
+                    if(isDontVoteOption.Length > 1)
+                    {
+                        lineHtml = $"{imageRight} <span color='yellow'>{isDontVoteOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> {imageleft} <br />";
+                    }
+                    else if (isExtendMapOption.Length > 1)
+                    {
+                        lineHtml = $"{imageRight} <span color='yellow'>{isExtendMapOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> {imageleft} <br />";
+                    }
+                    else
+                    {
+                        lineHtml = $"{imageRight} {Instance?.Localizer.ForPlayer(player, "menu.item.vote").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} {imageleft} <br />";
+                    }
+
                     builder.AppendLine(lineHtml);
                 }
                 else
                 {
-                    string lineHtml = $"{Instance.Localizer.ForPlayer(player, "menu.item.vote").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} <br />";
+                    string lineHtml = "";
+
+                    if (isDontVoteOption.Length > 1)
+                    {
+                        lineHtml = $"<span color='yellow'>{isDontVoteOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> <br />";
+                    }
+                    else if (isExtendMapOption.Length > 1)
+                    {
+                        lineHtml = $"<span color='yellow'>{isExtendMapOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> <br />";
+                    }
+                    else
+                    {
+                        lineHtml = $"{Instance?.Localizer.ForPlayer(player, "menu.item.vote").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} <br />";
+                    }
+
                     builder.AppendLine(lineHtml);
                 }
+            }
+
+            if (startIndex + visibleOptions < menuValues.ToArray().Length)
+            {
+                string moreItemsIndicator = Instance?.Localizer.ForPlayer(player, "menu.more.items") ?? "";
+                builder.AppendLine(moreItemsIndicator);
             }
 
             builder.AppendLine(bottomMenu);

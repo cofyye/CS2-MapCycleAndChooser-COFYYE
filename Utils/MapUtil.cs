@@ -51,15 +51,15 @@ namespace MapCycleAndChooser_COFYYE.Utils
             }
         }
 
-        public static Map? GetWinningMap(List<Map> mapForVotes, Dictionary<string, List<string>> votes)
+        public static (Map?, string) GetWinningMap(List<Map> mapForVotes, Dictionary<string, List<string>> votes)
         {
             if (votes == null || votes.Count == 0)
-                return null;
+                return (null, "");
 
             var mapPercentages = CalculateMapsVotePercentages(votes);
 
             if (mapPercentages == null || mapPercentages.Count == 0)
-                return null;
+                return (null, "");
 
             double maxPercentage = mapPercentages.Values.Max();
 
@@ -74,15 +74,50 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 })
                 .ToList();
 
+            if (votes.ContainsKey("{menu.item.dont.vote}"))
+            {
+                var dontVotePercentage = mapPercentages.GetValueOrDefault("{menu.item.dont.vote}", 0);
+                if (dontVotePercentage == maxPercentage)
+                {
+                    topMaps.Add(new Map("{menu.item.dont.vote}", "Don't Vote", false, "", true, true, 0, 64));
+                }
+            }
+
+            if (votes.ContainsKey("{menu.item.extend.map}"))
+            {
+                var extendMapPercentage = mapPercentages.GetValueOrDefault("{menu.item.extend.map}", 0);
+                if (extendMapPercentage == maxPercentage)
+                {
+                    topMaps.Add(new Map("{menu.item.extend.map}", "Extend Map", false, "", true, true, 0, 64));
+                }
+            }
+
+            var dontVoteOption = topMaps.FirstOrDefault(map => map.MapValue.Equals("{menu.item.dont.vote}", StringComparison.OrdinalIgnoreCase));
+            if (dontVoteOption != null)
+            {
+                if (mapForVotes.Count != 0)
+                {
+                    var random = new Random();
+                    return (mapForVotes[random.Next(mapForVotes.Count)], "dontvote");
+                }
+
+                return (null, "dontvote");
+            }
+
+            var extendMapOption = topMaps.FirstOrDefault(map => map.MapValue.Equals("{menu.item.extend.map}", StringComparison.OrdinalIgnoreCase));
+            if (extendMapOption != null)
+            {
+                return (null, "extendmap");
+            }
+
             if (topMaps.Count > 1)
             {
                 var random = new Random();
-                return topMaps[random.Next(topMaps.Count)];
+                return (topMaps[random.Next(topMaps.Count)], "");
             }
 
-            return topMaps.FirstOrDefault();
+            return (topMaps.FirstOrDefault(), "");
         }
-
 
         public static void AddPlayerToVotes(Dictionary<string, List<string>> _votes, string mapValue, string playerSteamId)
         {

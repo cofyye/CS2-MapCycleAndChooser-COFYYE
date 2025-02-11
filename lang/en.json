@@ -20,12 +20,16 @@
 
   "vote.started": "{lightpurple}[MapInfo] {yellow}Voting for the next map has started",
   "vote.finished": "{lightpurple}[MapInfo] {yellow}Voting ended. Next map: {lime}{MAP_NAME}",
+  "vote.finished.extend.map": "{lightpurple}[MapInfo] {yellow}Voting ended. Current map extended by {lime}{EXTENDED_TIME} {yellow}{EXTENDED_TYPE}",
   "vote.player": "{lightpurple}[MapInfo] {yellow}Player {lime}{PLAYER_NAME} {yellow}has voted for {lime}{MAP_NAME}",
 
   "menu.title.vote": "<b color='orange'>【</b> <span color='lime'>Vote for the next map</span> <b color='orange'>】</b> <br />",
   "menu.title.maps": "<b color='orange'>【</b> <span color='lime'>Pick a map to change</span> <b color='orange'>】</b> <br />",
+  "menu.item.dont.vote": "Don't Vote",
+  "menu.item.extend.map.round": "Extend For {EXTEND_TIME} Rounds",
+  "menu.item.extend.map.timeleft": "Extend For {EXTEND_TIME} Minutes",
   "menu.item.vote": "<span color='yellow'>{MAP_NAME}</span> <b color='orange'>•</b> <b color='lime'>{MAP_PERCENT}%</b>",
-  "menu.item.map": "<span color='yellow'>{MAP_NAME}</span></b>",
+  "menu.item.map": "<span color='yellow'>{MAP_NAME}</span>",
   "menu.item.right": "<b color='orange'>►</b>",
   "menu.item.left": "<b color='orange'>◄</b>",
   "menu.more.items": "<img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''> <img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''> <img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''>",
