@@ -211,6 +211,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
                                 Instance.AddTimer(2.0f, () =>
                                 {
+                                    MapCycleAndChooser._lastmap = Server.MapName;
                                     if (map.MapIsWorkshop)
                                     {
                                         if (string.IsNullOrEmpty(map.MapWorkshopId))

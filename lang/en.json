@@ -1,15 +1,25 @@
 {
-  "nextmap.get.command": "{lightpurple}[MapInfo] {yellow}Nextmap {orange}➤➤ {lime}{MAP_NAME}",
+  "nextmap.get.command": "{lightpurple}[MapInfo] {yellow}Next Map {orange}➤➤ {lime}{MAP_NAME}",
   "nextmap.get.command.info": "{lightpurple}[MapInfo] {yellow}If you want to see what the next map is, say {lime}!nextmap",
+  "nextmap.get.command.disabled": "{lightpurple}[MapInfo] {yellow}The next map command is currently {red}disabled",
   "nextmap.set.command.expected.value": "{lightpurple}[MapInfo] {yellow}Expected value: {orange}css_nextmap {lime}[map]",
   "nextmap.set.command.new.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{ADMIN_NAME} {yellow}changed the following map to {lime}{MAP_NAME}",
+
+  "lastmap.get.command": "{lightpurple}[MapInfo] {yellow}Last Map {orange}➤➤ {lime}{MAP_NAME}",
+  "lastmap.get.command.info": "{lightpurple}[MapInfo] {yellow}If you want to see the last map, say {lime}!lastmap",
+  "lastmap.get.command.disabled": "{lightpurple}[MapInfo] {yellow}The last map command is currently {red}disabled",
+  "lastmap.get.command.null": "{lightpurple}[MapInfo] {yellow}The last map is currently unavailable",
+
+  "currentmap.get.command": "{lightpurple}[MapInfo] {yellow}Current Map {orange}➤➤ {lime}{MAP_NAME}",
+  "currentmap.get.command.info": "{lightpurple}[MapInfo] {yellow}If you want to see the current map, say {lime}!currentmap",
+  "currentmap.get.command.disabled": "{lightpurple}[MapInfo] {yellow}The current map command is currently {red}disabled",
 
   "admin.change.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{PLAYER_NAME} {yellow}changed the map to {lime}{MAP_NAME}",
   "map.not.found": "{lightpurple}[MapInfo] {yellow}Map not found",
   "command.no.perm": "[MapInfo] You do not have permission for this command",
 
   "vote.started": "{lightpurple}[MapInfo] {yellow}Voting for the next map has started",
-  "vote.finished": "{lightpurple}[MapInfo] {yellow}Voting for the next map has ended. The next map is {lime}{MAP_NAME}",
+  "vote.finished": "{lightpurple}[MapInfo] {yellow}Voting ended. Next map: {lime}{MAP_NAME}",
   "vote.player": "{lightpurple}[MapInfo] {yellow}Player {lime}{PLAYER_NAME} {yellow}has voted for {lime}{MAP_NAME}",
 
   "menu.title.vote": "<b color='orange'>【</b> <span color='lime'>Vote for the next map</span> <b color='orange'>】</b> <br />",

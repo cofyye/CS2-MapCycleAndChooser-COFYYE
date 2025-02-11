@@ -15,7 +15,7 @@ namespace MapCycleAndChooser_COFYYE;
 public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 {
     public override string ModuleName => "Map Cycle and Chooser";
-    public override string ModuleVersion => "1.0";
+    public override string ModuleVersion => "1.1";
     public override string ModuleAuthor => "cofyye";
     public override string ModuleDescription => "https://github.com/cofyye";
 
@@ -28,7 +28,9 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
     private static bool _voteStarted = false;
     private static bool _votedForCurrentMap = false;
     private static Map? _nextmap = null;
+    public static string _lastmap = "";
     private static float _timeleft = 0; // in seconds
+    private static int _messageIndex = 0;
     private static Dictionary<string, List<string>> _votes = [];
     private static int _freezeTime = ConVar.Find("mp_freezetime")?.GetPrimitiveValue<int>() ?? 5;
     public new static readonly Stopwatch Timers = new();
@@ -57,46 +59,63 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             Config?.Sounds == null ||
             Config?.DisplayMapByValue == null ||
             Config?.EnablePlayerFreezeInMenu == null ||
+            Config?.CommandsCSSMaps == null ||
+            Config?.CommandsLastMap == null ||
+            Config?.CommandsNextMap == null ||
+            Config?.CommandsReVote == null ||
+            Config?.CommandsCurrentMap == null ||
+            Config?.EnableNextMapCommand == null ||
+            Config?.EnableLastMapCommand == null ||
+            Config?.EnableCurrentMapCommand == null ||
+            Config?.EnableReVoteCommand == null ||
             Config?.Maps == null)
         {
             Logger.LogError("Config fields are null.");
             throw new ArgumentNullException(nameof(config));
         }
 
-        if (Config?.DependsOnTheRound == true)
-        {
-            var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>();
-
-            if (maxRounds <= 4)
-            {
-                Server.ExecuteCommand("mp_maxrounds 5");
-                Logger.LogInformation("mp_maxrounds are set to a value less than 5. I set it to 5.");
-            }
-
-            Server.ExecuteCommand("mp_timelimit 0");
-        }
-        else
-        {
-            var timeLimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<float>();
-
-            if (timeLimit <= 4.0f)
-            {
-                Server.ExecuteCommand("mp_timelimit 5");
-                Logger.LogInformation("mp_timelimit are set to a value less than 5. I set it to 5.");
-                _timeleft = 5 * 60; // in seconds
-            }
-            else
-            {
-                _timeleft = (timeLimit ?? 5.0f) * 60; // in seconds
-            }
-
-            Server.ExecuteCommand("mp_maxrounds 0");
-        }
-
         Server.ExecuteCommand("mp_match_restart_delay 8");
         Logger.LogInformation("mp_match_restart_delay are set to 8.");
 
         Logger.LogInformation("Initialized {MapCount} cycle maps.", _cycleMaps.Count);
+    }
+
+    public override void OnAllPluginsLoaded(bool hotReload)
+    {
+        base.OnAllPluginsLoaded(hotReload);
+
+        AddTimer(3.0f, () =>
+        {
+            if (Config?.DependsOnTheRound == true)
+            {
+                var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>();
+
+                if (maxRounds <= 4)
+                {
+                    Server.ExecuteCommand("mp_maxrounds 5");
+                    Logger.LogInformation("mp_maxrounds are set to a value less than 5. I set it to 5.");
+                }
+
+                Server.ExecuteCommand("mp_timelimit 0");
+            }
+            else
+            {
+                var timeLimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<float>();
+
+                if (timeLimit <= 4.0f)
+                {
+                    Server.ExecuteCommand("mp_timelimit 5");
+                    Logger.LogInformation("mp_timelimit are set to a value less than 5. I set it to 5.");
+                    _timeleft = 5 * 60; // in seconds
+                }
+                else
+                {
+                    _timeleft = (timeLimit ?? 5.0f) * 60; // in seconds
+                }
+
+                Server.ExecuteCommand("mp_maxrounds 0");
+            }
+        }, TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     public override void Load(bool hotReload)
@@ -127,15 +146,49 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         if(!Timers.IsRunning) Timers.Start();
 
-        AddTimer(300.0f, () =>
+        if(Config?.EnableCommandAdsInChat == true)
         {
-            var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p)).ToList();
-
-            foreach (var player in players)
+            AddTimer(30.0f, () =>
             {
-                player.PrintToChat(Localizer.ForPlayer(player, "nextmap.get.command.info"));
-            }
-        }, TimerFlags.REPEAT);
+                var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p)).ToList();
+
+                foreach (var player in players)
+                {
+                    switch (_messageIndex)
+                    {
+                        case 0:
+                            {
+                                player.PrintToChat(Localizer.ForPlayer(player, "nextmap.get.command.info"));
+                                break;
+                            }
+                        case 1:
+                            {
+                                player.PrintToChat(Localizer.ForPlayer(player, "currentmap.get.command.info"));
+                                break;
+                            }
+                        case 2:
+                            {
+                                player.PrintToChat(Localizer.ForPlayer(player, "lastmap.get.command.info"));
+                                break;
+                            }
+                        default:
+                            {
+                                _messageIndex = 0;
+                                break;
+                            }
+                    }
+                }
+
+                if(_messageIndex + 1 >= 3)
+                {
+                    _messageIndex = 0;
+                }
+                else
+                {
+                    _messageIndex += 1;
+                }
+            }, TimerFlags.REPEAT);
+        }
     }
 
     public override void Unload(bool hotReload)
@@ -253,6 +306,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         {
             if (_nextmap != null)
             {
+                _lastmap = Server.MapName;
                 if (_nextmap.MapIsWorkshop)
                 {
                     if (string.IsNullOrEmpty(_nextmap.MapWorkshopId))
@@ -293,6 +347,13 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
             if (maxRounds > 0 && !_voteStarted && !_votedForCurrentMap && !gameRules.WarmupPeriod)
             {
+                if (_mapForVotes.Count < 1)
+                {
+                    Logger.LogInformation("The list of voting maps is empty. I'm suspending the vote.");
+
+                    return HookResult.Continue;
+                }
+
                 var roundLeft = maxRounds - gameRules.TotalRoundsPlayed;
 
                 if (roundLeft <= 3)
@@ -365,6 +426,13 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
             if (timelimit > 0 && !_voteStarted && !_votedForCurrentMap && !gameRules.WarmupPeriod)
             {
+                if (_mapForVotes.Count < 1)
+                {
+                    Logger.LogInformation("The list of voting maps is empty. I'm suspending the vote.");
+
+                    return HookResult.Continue;
+                }
+
                 var timeLeft = _timeleft - Server.CurrentTime;
 
                 if (timeLeft <= 180)
@@ -535,13 +603,61 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
     {
         if(@event == null) return HookResult.Continue;
 
-        if(@event.Text.Trim() == "!nextmap" || @event.Text.Trim() == "/nextmap")
+        if (Config?.CommandsNextMap?.Contains(@event.Text.Trim()) == true)
         {
             var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p)).ToList();
 
             foreach (var player in players)
             {
-                player.PrintToChat(Localizer.ForPlayer(player, "nextmap.get.command").Replace("{MAP_NAME}", _nextmap?.MapValue));
+                if (Config?.EnableNextMapCommand != true)
+                {
+                    player.PrintToChat(Localizer.ForPlayer(player, "nextmap.get.command.disabled"));
+                }
+                else
+                {
+                    player.PrintToChat(Localizer.ForPlayer(player, "nextmap.get.command").Replace("{MAP_NAME}", _nextmap?.MapValue));
+                }
+            }
+        }
+
+        if (Config?.CommandsCurrentMap?.Contains(@event.Text.Trim()) == true)
+        {
+            var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p)).ToList();
+
+            foreach (var player in players)
+            {
+                if (Config?.EnableCurrentMapCommand != true)
+                {
+                    player.PrintToChat(Localizer.ForPlayer(player, "currentmap.get.command.disabled"));
+                }
+                else
+                {
+                    player.PrintToChat(Localizer.ForPlayer(player, "currentmap.get.command").Replace("{MAP_NAME}", Server.MapName));
+                }
+            }
+        }
+
+        if (Config?.CommandsLastMap?.Contains(@event.Text.Trim()) == true)
+        {
+            var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p)).ToList();
+
+            foreach (var player in players)
+            {
+                if (Config?.EnableLastMapCommand != true)
+                {
+                    player.PrintToChat(Localizer.ForPlayer(player, "lastmap.get.command.disabled"));
+                }
+                else
+                {
+                    if(string.IsNullOrEmpty(_lastmap))
+                    {
+                        player.PrintToChat(Localizer.ForPlayer(player, "lastmap.get.command.null"));
+                    }
+                    else
+                    {
+                        player.PrintToChat(Localizer.ForPlayer(player, "lastmap.get.command").Replace("{MAP_NAME}", _lastmap));
+                    }
+                }
             }
         }
 
@@ -550,36 +666,6 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
     public void OnMapStart(string mapName)
     {
-        if (Config?.DependsOnTheRound == true)
-        {
-            var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>();
-
-            if (maxRounds <= 4)
-            {
-                Server.ExecuteCommand("mp_maxrounds 5");
-                Logger.LogInformation("mp_maxrounds are set to a value less than 5. I set it to 5.");
-            }
-
-            Server.ExecuteCommand("mp_timelimit 0");
-        }
-        else
-        {
-            var timeLimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<float>();
-
-            if (timeLimit <= 4.0f)
-            {
-                Server.ExecuteCommand("mp_timelimit 5");
-                Logger.LogInformation("mp_timelimit are set to a value less than 5. I set it to 5.");
-                _timeleft = 5 * 60; // in seconds
-            }
-            else
-            {
-                _timeleft = (timeLimit ?? 5.0f) * 60; // in seconds
-            }
-
-            Server.ExecuteCommand("mp_maxrounds 0");
-        }
-
         if (Config?.VoteMapEnable == true)
         {
             _votedForCurrentMap = false;
