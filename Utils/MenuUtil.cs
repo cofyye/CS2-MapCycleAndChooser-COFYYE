@@ -29,7 +29,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 menuValues.Add("{menu.item.dont.vote}{splitdontvote}" + Instance?.Localizer.ForPlayer(player, "menu.item.dont.vote") ?? "-");
             }
 
-            if (Instance?.Config?.EnableExtendMap == true && Instance.Config?.ExtendMapPosition == "top")
+            if (Instance?.Config?.EnableExtendMap == true && Instance.Config?.ExtendMapPosition == "top" && MapCycleAndChooser._votedForExtendMap == false)
             {
                 if(Instance?.Config?.DependsOnTheRound == true)
                 {
@@ -51,7 +51,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 menuValues.Add("{menu.item.dont.vote}{splitdontvote}" + Instance?.Localizer.ForPlayer(player, "menu.item.dont.vote") ?? "-");
             }
 
-            if (Instance?.Config?.EnableExtendMap == true && Instance?.Config?.ExtendMapPosition == "bottom")
+            if (Instance?.Config?.EnableExtendMap == true && Instance?.Config?.ExtendMapPosition == "bottom" && MapCycleAndChooser._votedForExtendMap == false)
             {
                 if (Instance.Config?.DependsOnTheRound == true)
                 {

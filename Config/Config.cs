@@ -36,6 +36,9 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("enable_currentmap_command")]
         public bool EnableCurrentMapCommand { get; init; } = true;
 
+        [JsonPropertyName("enable_timeleft_command")]
+        public bool EnableTimeLeftCommand { get; init; } = true;
+
         [JsonPropertyName("enable_command_ads_in_chat")]
         public bool EnableCommandAdsInChat { get; init; } = true;
 
@@ -92,11 +95,11 @@ namespace MapCycleAndChooser_COFYYE.Config
             "!trenutnamapa"
         ];
 
-        [JsonPropertyName("commands_revote")]
-        public List<string> CommandsReVote { get; init; } =
+        [JsonPropertyName("commands_timeleft")]
+        public List<string> CommandsTimeLeft { get; init; } =
         [
-            "!revote",
-            "!revotuj"
+            "!timeleft",
+            "!preostalovreme"
         ];
 
         [JsonPropertyName("sounds")]
