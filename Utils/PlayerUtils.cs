@@ -2,7 +2,7 @@
 
 namespace MapCycleAndChooser_COFYYE.Utils
 {
-    public static class PlayerUtil
+    public static class PlayerUtils
     {
         public static bool IsValidPlayer(CCSPlayerController? p)
         {

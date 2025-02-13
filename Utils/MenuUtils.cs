@@ -1,23 +1,19 @@
 ﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API;
 using System.Text;
-using System.Diagnostics;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Timers;
 using MapCycleAndChooser_COFYYE.Classes;
+using MapCycleAndChooser_COFYYE.Variables;
 
 namespace MapCycleAndChooser_COFYYE.Utils
 {
-    public static class MenuUtil
+    public static class MenuUtils
     {
         public static readonly MapCycleAndChooser Instance = MapCycleAndChooser.Instance;
         public static Dictionary<string, PlayerMenu> PlayersMenu { get; } = [];
 
-        public static void CreateAndOpenHtmlVoteMenu(
-            CCSPlayerController player, 
-            List<Map> mapsForVote,
-            Dictionary<string, List<string>> _votes,
-            Stopwatch timers)
+        public static void CreateAndOpenHtmlVoteMenu(CCSPlayerController player)
         {
             string playerSteamId = player.SteamID.ToString();
             if (!PlayersMenu.TryGetValue(playerSteamId, out PlayerMenu? pm)) return;
@@ -29,7 +25,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 menuValues.Add("{menu.item.dont.vote}{splitdontvote}" + Instance?.Localizer.ForPlayer(player, "menu.item.dont.vote") ?? "-");
             }
 
-            if (Instance?.Config?.EnableExtendMap == true && Instance.Config?.ExtendMapPosition == "top" && MapCycleAndChooser._votedForExtendMap == false)
+            if (Instance?.Config?.EnableExtendMap == true && Instance.Config?.ExtendMapPosition == "top" && GlobalVariables.VotedForExtendMap == false)
             {
                 if(Instance?.Config?.DependsOnTheRound == true)
                 {
@@ -41,7 +37,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 }
             }
 
-            foreach (Map map in mapsForVote)
+            foreach (Map map in GlobalVariables.MapForVotes)
             {
                 menuValues.Add(Instance?.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay);
             }
@@ -51,7 +47,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 menuValues.Add("{menu.item.dont.vote}{splitdontvote}" + Instance?.Localizer.ForPlayer(player, "menu.item.dont.vote") ?? "-");
             }
 
-            if (Instance?.Config?.EnableExtendMap == true && Instance?.Config?.ExtendMapPosition == "bottom" && MapCycleAndChooser._votedForExtendMap == false)
+            if (Instance?.Config?.EnableExtendMap == true && Instance?.Config?.ExtendMapPosition == "bottom" && GlobalVariables.VotedForExtendMap == false)
             {
                 if (Instance.Config?.DependsOnTheRound == true)
                 {
@@ -73,7 +69,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
             int visibleOptions = 5;
             int startIndex = Math.Max(0, currentIndex - (visibleOptions - 1));
 
-            if (timers.ElapsedMilliseconds >= 70 && !pm.Selected)
+            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70 && !pm.Selected)
             {
                 switch (player.Buttons)
                 {
@@ -102,7 +98,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
                         {
                             string currentMenuOption = menuValues.ToArray()[currentIndex];
 
-                            var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
+                            var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
 
                             var isDontVoteOption = currentMenuOption.Split("{splitdontvote}");
                             var isExtendMapOption = currentMenuOption.Split("{splitextendmap}");
@@ -128,15 +124,15 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
                             if (isDontVoteOption.Length > 1)
                             {
-                                MapUtil.AddPlayerToVotes(_votes, isDontVoteOption[0], playerSteamId);
+                                MapUtils.AddPlayerToVotes(isDontVoteOption[0], playerSteamId);
                             }
                             else if (isExtendMapOption.Length > 1)
                             {
-                                MapUtil.AddPlayerToVotes(_votes, isExtendMapOption[0], playerSteamId);
+                                MapUtils.AddPlayerToVotes(isExtendMapOption[0], playerSteamId);
                             }
                             else
                             {
-                                MapUtil.AddPlayerToVotes(_votes, currentMenuOption, playerSteamId);
+                                MapUtils.AddPlayerToVotes(currentMenuOption, playerSteamId);
                             }
 
                             player.ExecuteClientCommand("play sounds/ui/item_sticker_select.vsnd_c");
@@ -156,7 +152,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
             string menuTitle = Instance?.Localizer.ForPlayer(player, "menu.title.vote") ?? "";
             builder.AppendLine(menuTitle);
 
-            var percentages = MapUtil.CalculateMapsVotePercentages(_votes);
+            var percentages = MapUtils.CalculateMapsVotePercentages();
 
             for (int i = startIndex; i < startIndex + visibleOptions && i < menuValues.ToArray().Length; i++)
             {
@@ -232,26 +228,23 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             if (string.IsNullOrEmpty(PlayersMenu[playerSteamId].Html)) PlayersMenu[playerSteamId].Html = centerhtml;
 
-            if (timers.ElapsedMilliseconds >= 70)
+            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70)
             {
                 PlayersMenu[playerSteamId].Html = centerhtml;
-                timers.Restart();
+                GlobalVariables.Timers.Restart();
             }
 
             player?.PrintToCenterHtml(PlayersMenu[playerSteamId].Html);
         }
 
-        public static void CreateAndOpenHtmlMapsMenu(
-            CCSPlayerController player,
-            List<Map> maps,
-            Stopwatch timers)
+        public static void CreateAndOpenHtmlMapsMenu(CCSPlayerController player)
         {
             string playerSteamId = player.SteamID.ToString();
             if (!PlayersMenu.TryGetValue(playerSteamId, out PlayerMenu? pm)) return;
 
             List<string> menuValues = [];
 
-            foreach (Map map in maps)
+            foreach (Map map in GlobalVariables.Maps)
             {
                 menuValues.Add(Instance.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay);
             }
@@ -266,7 +259,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
             int visibleOptions = 4;
             int startIndex = Math.Max(0, currentIndex - (visibleOptions - 1));
 
-            if (timers.ElapsedMilliseconds >= 70 && !pm.Selected)
+            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70 && !pm.Selected)
             {
                 switch (player.Buttons)
                 {
@@ -306,11 +299,11 @@ namespace MapCycleAndChooser_COFYYE.Utils
                             pm.ButtonPressed = true;
                             pm.Selected = true;
 
-                            Map? map = maps.Find(map => map.MapValue == currentMenuOption || map.MapDisplay == currentMenuOption);
+                            Map? map = GlobalVariables.Maps.Find(map => map.MapValue == currentMenuOption || map.MapDisplay == currentMenuOption);
 
                             if(map != null)
                             {
-                                var players = Utilities.GetPlayers().Where(p => PlayerUtil.IsValidPlayer(p));
+                                var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
 
                                 foreach (var p in players)
                                 {
@@ -319,7 +312,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
                                 Instance.AddTimer(2.0f, () =>
                                 {
-                                    MapCycleAndChooser._lastmap = Server.MapName;
+                                    GlobalVariables.LastMap = Server.MapName;
                                     if (map.MapIsWorkshop)
                                     {
                                         if (string.IsNullOrEmpty(map.MapWorkshopId))
@@ -387,10 +380,10 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             if (string.IsNullOrEmpty(PlayersMenu[playerSteamId].Html)) PlayersMenu[playerSteamId].Html = centerhtml;
 
-            if (timers.ElapsedMilliseconds >= 70)
+            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70)
             {
                 PlayersMenu[playerSteamId].Html = centerhtml;
-                timers.Restart();
+                GlobalVariables.Timers.Restart();
             }
 
             player?.PrintToCenterHtml(PlayersMenu[playerSteamId].Html);
