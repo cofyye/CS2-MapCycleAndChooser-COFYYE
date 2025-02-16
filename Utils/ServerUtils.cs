@@ -10,7 +10,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
     {
         public static readonly MapCycleAndChooser Instance = MapCycleAndChooser.Instance;
 
-        public static void InitializeCvarsAndGameRules()
+        public static void InitializeCvars()
         {
             GlobalVariables.FreezeTime = ConVar.Find("mp_freezetime")?.GetPrimitiveValue<int>() ?? 5;
 

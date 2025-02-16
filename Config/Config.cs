@@ -15,9 +15,6 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("vote_map_on_freezetime")]
         public bool VoteMapOnFreezeTime { get; init; } = true;
 
-        [JsonPropertyName("vote_map_on_next_round")]
-        public bool VoteMapOnNextRound { get; init; } = true;
-
         [JsonPropertyName("depends_on_the_round")]
         public bool DependsOnTheRound { get; init; } = true;
 
@@ -42,20 +39,26 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("enable_command_ads_in_chat")]
         public bool EnableCommandAdsInChat { get; init; } = true;
 
-        [JsonPropertyName("enable_dont_vote")]
-        public bool EnableDontVote { get; init; } = true;
+        [JsonPropertyName("enable_ignore_vote")]
+        public bool EnableIgnoreVote { get; init; } = true;
 
-        [JsonPropertyName("dont_vote_position")]
-        public string DontVotePosition { get; init; } = "top";
+        [JsonPropertyName("ignore_vote_position")]
+        public string IgnoreVotePosition { get; init; } = "top";
 
         [JsonPropertyName("enable_extend_map")]
         public bool EnableExtendMap { get; init; } = true;
 
         [JsonPropertyName("extend_map_time")]
-        public int ExtendMapTime { get; init; } = 8;
+        public int ExtendMapTime { get; init; } = 8; // rounds or minutes if depends on round is false
 
         [JsonPropertyName("extend_map_position")]
         public string ExtendMapPosition { get; init; } = "bottom";
+
+        [JsonPropertyName("delay_to_change_map_in_the_end")]
+        public int DelayToChangeMapInTheEnd { get; init; } = 8; // in seconds
+
+        [JsonPropertyName("vote_trigger_time_before_map_end")]
+        public int VoteTriggerTimeBeforeMapEnd { get; init; } = 3; // rounds or minutes if depends on round is false
 
         [JsonPropertyName("display_map_by_value")]
         public bool DisplayMapByValue { get; init; } = true;

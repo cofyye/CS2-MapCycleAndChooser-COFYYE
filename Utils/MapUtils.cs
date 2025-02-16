@@ -13,6 +13,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
     public class MapUtils
     {
         public static readonly MapCycleAndChooser Instance = MapCycleAndChooser.Instance;
+        private static bool _isBusy = false;
         public static void PopulateMapsForVotes()
         {
             var random = new Random();
@@ -79,12 +80,12 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 })
                 .ToList();
 
-            if (GlobalVariables.Votes.ContainsKey("{menu.item.dont.vote}"))
+            if (GlobalVariables.Votes.ContainsKey("{menu.item.ignore.vote}"))
             {
-                var dontVotePercentage = mapPercentages.GetValueOrDefault("{menu.item.dont.vote}", 0);
-                if (dontVotePercentage == maxPercentage)
+                var ignoreVotePercentage = mapPercentages.GetValueOrDefault("{menu.item.ignore.vote}", 0);
+                if (ignoreVotePercentage == maxPercentage)
                 {
-                    topMaps.Add(new Map("{menu.item.dont.vote}", "Don't Vote", false, "", true, true, 0, 64));
+                    topMaps.Add(new Map("{menu.item.ignore.vote}", "Ignore Vote", false, "", true, true, 0, 64));
                 }
             }
 
@@ -97,16 +98,16 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 }
             }
 
-            var dontVoteOption = topMaps.FirstOrDefault(map => map.MapValue.Equals("{menu.item.dont.vote}", StringComparison.OrdinalIgnoreCase));
-            if (dontVoteOption != null)
+            var ignoreVoteOption = topMaps.FirstOrDefault(map => map.MapValue.Equals("{menu.item.ignore.vote}", StringComparison.OrdinalIgnoreCase));
+            if (ignoreVoteOption != null)
             {
                 if (GlobalVariables.MapForVotes.Count != 0)
                 {
                     var random = new Random();
-                    return (GlobalVariables.MapForVotes[random.Next(GlobalVariables.MapForVotes.Count)], "dontvote");
+                    return (GlobalVariables.MapForVotes[random.Next(GlobalVariables.MapForVotes.Count)], "ignorevote");
                 }
 
-                return (null, "dontvote");
+                return (null, "ignorevote");
             }
 
             var extendMapOption = topMaps.FirstOrDefault(map => map.MapValue.Equals("{menu.item.extend.map}", StringComparison.OrdinalIgnoreCase));
@@ -160,32 +161,33 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
         public static HookResult CheckAndPickMapsForVoting()
         {
-            object maxLimit;
-            object timeLeft;
+            float maxLimit;
+            float timeLeft;
             int minValue;
+
             if (Instance?.Config?.DependsOnTheRound == true)
             {
-                maxLimit = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0;
-                minValue = 3;
+                maxLimit = (float)(ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0);
+                minValue = Instance?.Config?.VoteTriggerTimeBeforeMapEnd ?? 3; // rounds
             }
             else
             {
                 maxLimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<float>() ?? 0.0f;
-                minValue = 180;
+                minValue = (Instance?.Config?.VoteTriggerTimeBeforeMapEnd ?? 3) * 60; // from minutes to seconds
             }
 
-            if ((int)maxLimit > 0 && !GlobalVariables.VoteStarted && !GlobalVariables.VotedForCurrentMap && ServerUtils.GetGameRules()?.WarmupPeriod == false)
+            if (maxLimit > 0 && !GlobalVariables.VoteStarted && !GlobalVariables.VotedForCurrentMap && ServerUtils.GetGameRules()?.WarmupPeriod == false)
             {
                 if (Instance?.Config?.DependsOnTheRound == true)
                 {
-                    timeLeft = (int)maxLimit - ServerUtils.GetGameRules()?.TotalRoundsPlayed ?? 0;
+                    timeLeft = maxLimit - ServerUtils.GetGameRules()?.TotalRoundsPlayed ?? 0;
                 }
                 else
                 {
-                    timeLeft = GlobalVariables.TimeLeft - Server.CurrentTime;
+                    timeLeft = GlobalVariables.TimeLeft - GlobalVariables.CurrentTime;
                 }
 
-                if ((int)timeLeft <= minValue)
+                if (timeLeft <= minValue)
                 {
                     MapUtils.PopulateMapsForVotes();
 
@@ -205,19 +207,25 @@ namespace MapCycleAndChooser_COFYYE.Utils
                         }
                     }
 
-                    if (Instance?.Config?.VoteMapOnFreezeTime == true)
+                    if (Instance?.Config?.DependsOnTheRound == true && Instance?.Config?.VoteMapOnFreezeTime == true)
                     {
                         Server.ExecuteCommand($"mp_freezetime {(Instance?.Config?.VoteMapDuration ?? GlobalVariables.FreezeTime) + 2}");
                     }
                 }
                 else
                 {
-                    Server.ExecuteCommand($"mp_freezetime {GlobalVariables.FreezeTime}");
+                    if(Instance?.Config?.DependsOnTheRound == true)
+                    {
+                        Server.ExecuteCommand($"mp_freezetime {GlobalVariables.FreezeTime}");
+                    }
                 }
             }
             else
             {
-                Server.ExecuteCommand($"mp_freezetime {GlobalVariables.FreezeTime}");
+                if (Instance?.Config?.DependsOnTheRound == true)
+                {
+                    Server.ExecuteCommand($"mp_freezetime {GlobalVariables.FreezeTime}");
+                }
             }
 
             return HookResult.Continue;
@@ -225,41 +233,43 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
         public static HookResult CheckAndStartMapVoting()
         {
-            object maxLimit;
-            object timeLeft;
+            float maxLimit;
+            float timeLeft;
             int minValue;
 
             if (Instance?.Config?.DependsOnTheRound == true)
             {
-                maxLimit = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0;
-                minValue = 3;
+                maxLimit = (float)(ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0);
+                minValue = Instance?.Config?.VoteTriggerTimeBeforeMapEnd ?? 3; // rounds
             }
             else
             {
                 maxLimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<float>() ?? 0.0f;
-                minValue = 180;
+                minValue = (Instance?.Config?.VoteTriggerTimeBeforeMapEnd ?? 3) * 60; // from minutes to seconds
             }
 
-            if ((int)maxLimit > 0 && !GlobalVariables.VoteStarted && !GlobalVariables.VotedForCurrentMap && ServerUtils.GetGameRules()?.WarmupPeriod == false)
+            if (maxLimit > 0 && !GlobalVariables.VoteStarted && !GlobalVariables.VotedForCurrentMap && ServerUtils.GetGameRules()?.WarmupPeriod == false)
             {
-                if (GlobalVariables.MapForVotes.Count < 1)
-                {
-                    Instance?.Logger.LogInformation("The list of voting maps is empty. I'm suspending the vote.");
-
-                    return HookResult.Continue;
-                }
-
                 if(Instance?.Config?.DependsOnTheRound == true)
                 {
-                    timeLeft = (int)maxLimit - ServerUtils.GetGameRules()?.TotalRoundsPlayed ?? 0;
+                    timeLeft = maxLimit - ServerUtils.GetGameRules()?.TotalRoundsPlayed ?? 0;
                 }
                 else
                 {
-                    timeLeft = GlobalVariables.TimeLeft - Server.CurrentTime;
+                    timeLeft = GlobalVariables.TimeLeft - GlobalVariables.CurrentTime;
                 }
 
-                if ((int)timeLeft <= minValue)
+                if (timeLeft <= minValue)
                 {
+                    if (GlobalVariables.MapForVotes.Count < 1)
+                    {
+                        Instance?.Logger.LogInformation("The list of voting maps is empty. I'm suspending the vote.");
+
+                        return HookResult.Continue;
+                    }
+
+                    GlobalVariables.VoteStarted = true;
+
                     var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
 
                     string? soundToPlay = "";
@@ -278,14 +288,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
                         }
                     }
 
-                    GlobalVariables.VoteStarted = true;
-
                     float duration = (float)(Instance?.Config?.VoteMapDuration ?? 15);
 
                     Instance?.AddTimer(duration, () => {
-                        GlobalVariables.VoteStarted = false;
-                        GlobalVariables.VotedForCurrentMap = true;
-
                         var (winningMap, type) = MapUtils.GetWinningMap();
 
                         if (winningMap != null)
@@ -296,16 +301,16 @@ namespace MapCycleAndChooser_COFYYE.Utils
                         {
                             if(Instance?.Config?.DependsOnTheRound == true)
                             {
-                                Server.ExecuteCommand($"mp_maxrounds {(int)timeLeft + Instance?.Config?.ExtendMapTime}");
+                                Server.ExecuteCommand($"mp_maxrounds {(int)timeLeft + Instance?.Config?.ExtendMapTime ?? 5}");
                             }
                             else
                             {
-                                Server.ExecuteCommand($"mp_timelimit {Math.Round((float)timeLeft / 60) + Instance?.Config?.ExtendMapTime}");
+                                Server.ExecuteCommand($"mp_timelimit {Math.Ceiling((float)timeLeft / 60) + Instance?.Config?.ExtendMapTime ?? 5}");
                             }
                             GlobalVariables.VotedForExtendMap = true;
                             GlobalVariables.VotedForCurrentMap = false;
                         }
-                        else if (winningMap == null && type == "dontvote")
+                        else if (winningMap == null && type == "ignorevote")
                         {
                             GlobalVariables.NextMap = GlobalVariables.CycleMaps.FirstOrDefault();
                         }
@@ -344,6 +349,13 @@ namespace MapCycleAndChooser_COFYYE.Utils
                                     Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
                                 }
                             }
+                        }
+
+                        GlobalVariables.VoteStarted = false;
+
+                        if(type != "extendmap")
+                        {
+                            GlobalVariables.VotedForCurrentMap = true;
                         }
                     }, TimerFlags.STOP_ON_MAPCHANGE);
                 }

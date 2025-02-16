@@ -43,7 +43,6 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             Config?.VoteMapEnable == null ||
             Config?.EnablePlayerVotingInChat == null ||
             Config?.VoteMapOnFreezeTime == null ||
-            Config?.VoteMapOnNextRound == null ||
             Config?.Sounds == null ||
             Config?.DisplayMapByValue == null ||
             Config?.EnablePlayerFreezeInMenu == null ||
@@ -56,19 +55,21 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             Config?.EnableLastMapCommand == null ||
             Config?.EnableCurrentMapCommand == null ||
             Config?.EnableTimeLeftCommand == null ||
-            Config?.EnableDontVote == null ||
-            Config?.DontVotePosition == null ||
+            Config?.EnableIgnoreVote == null ||
+            Config?.IgnoreVotePosition == null ||
             Config?.EnableExtendMap == null ||
             Config?.ExtendMapPosition == null ||
             Config?.ExtendMapTime == null ||
+            Config?.DelayToChangeMapInTheEnd == null ||
+            Config?.VoteTriggerTimeBeforeMapEnd == null ||
             Config?.Maps == null)
         {
             Logger.LogError("Config fields are null.");
             throw new ArgumentNullException(nameof(config));
         }
 
-        Server.ExecuteCommand("mp_match_restart_delay 8");
-        Logger.LogInformation("mp_match_restart_delay are set to 8.");
+        Server.ExecuteCommand($"mp_match_restart_delay {Config?.DelayToChangeMapInTheEnd ?? 8}");
+        Logger.LogInformation($"mp_match_restart_delay are set to {Config?.DelayToChangeMapInTheEnd ?? 8}.");
 
         Logger.LogInformation("Initialized {MapCount} cycle maps.", GlobalVariables.CycleMaps.Count);
     }
@@ -79,7 +80,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         AddTimer(3.0f, () =>
         {
-            ServerUtils.InitializeCvarsAndGameRules();
+            ServerUtils.InitializeCvars();
         }, TimerFlags.STOP_ON_MAPCHANGE);
     }
 
@@ -95,6 +96,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         RegisterEventHandler<EventCsWinPanelMatch>(CsWinPanelMatchHandler);
         RegisterEventHandler<EventRoundStart>(RoundStartHandler);
         RegisterEventHandler<EventPlayerChat>(PlayerChatHandler);
+        RegisterEventHandler<EventWarmupEnd>(WarmupEndHandler);
         RegisterEventHandler<EventPlayerConnectFull>(PlayerConnectFullHandler);
         RegisterEventHandler<EventPlayerDisconnect>(PlayerDisconnectHandler);
 
@@ -136,6 +138,11 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
                                 player.PrintToChat(Localizer.ForPlayer(player, "lastmap.get.command.info"));
                                 break;
                             }
+                        case 3:
+                            {
+                                player.PrintToChat(Localizer.ForPlayer(player, "timeleft.get.command.info"));
+                                break;
+                            }
                         default:
                             {
                                 GlobalVariables.MessageIndex = 0;
@@ -165,6 +172,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         DeregisterEventHandler<EventPlayerChat>(PlayerChatHandler);
         DeregisterEventHandler<EventPlayerConnectFull>(PlayerConnectFullHandler);
         DeregisterEventHandler<EventPlayerDisconnect>(PlayerDisconnectHandler);
+        DeregisterEventHandler<EventWarmupEnd>(WarmupEndHandler);
 
         if (Config?.VoteMapEnable == true)
         {
@@ -263,11 +271,35 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         return HookResult.Continue;
     }
 
+    public HookResult WarmupEndHandler(EventWarmupEnd @event, GameEventInfo info)
+    {
+        if (@event == null) return HookResult.Continue;
+
+        GlobalVariables.TimeLeftTimer ??= AddTimer(1.0f, () =>
+            {
+                var timeLimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<float>();
+
+                GlobalVariables.TimeLeft = (timeLimit ?? 5.0f) * 60; // in seconds
+                GlobalVariables.CurrentTime += 1;
+            }, TimerFlags.REPEAT);
+
+        if (Config?.DependsOnTheRound == false)
+        {
+            GlobalVariables.VotingTimer ??= AddTimer(3.0f, () =>
+                {
+                    MapUtils.CheckAndPickMapsForVoting();
+                    MapUtils.CheckAndStartMapVoting();
+                }, TimerFlags.REPEAT);
+        }
+
+        return HookResult.Continue;
+    }
+
     public HookResult CsWinPanelMatchHandler(EventCsWinPanelMatch @event, GameEventInfo info)
     {
         if (@event == null) return HookResult.Continue;
 
-        AddTimer(5.0f, () =>
+        AddTimer((Config?.DelayToChangeMapInTheEnd ?? 8.0f) - 2.0f, () =>
         {
             if (GlobalVariables.NextMap != null)
             {
@@ -297,14 +329,25 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
     {
         if (@event == null) return HookResult.Continue;
 
-        return MapUtils.CheckAndStartMapVoting();
+        if(Config?.DependsOnTheRound == true)
+        {
+            return MapUtils.CheckAndStartMapVoting();
+        }
+
+        return HookResult.Continue;
     }
 
     public HookResult RoundEndHandler(EventRoundEnd @event, GameEventInfo info)
     {
         if (@event == null) return HookResult.Continue;
         
-        return MapUtils.CheckAndPickMapsForVoting();
+
+        if(Config?.DependsOnTheRound == true)
+        {
+            return MapUtils.CheckAndPickMapsForVoting();
+        }
+
+        return HookResult.Continue;
     }
 
     public HookResult PlayerChatHandler(EventPlayerChat @event, GameEventInfo info)
@@ -347,14 +390,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         if (Config?.CommandsTimeLeft?.Contains(@event.Text.Trim()) == true)
         {
-            var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
-            var gameRules = gameRulesEntities.First().GameRules;
-
-            if (gameRules == null)
-            {
-                Logger.LogError("Game rules not found.");
-                return HookResult.Continue;
-            }
+            var gameRules = ServerUtils.GetGameRules();
 
             var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p)).ToList();
 
@@ -375,8 +411,8 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
                     }
                     else
                     {
-                        var timeLeft = GlobalVariables.TimeLeft - Server.CurrentTime;
-                        var minutes = Math.Round(timeLeft / 60);
+                        var timeLeft = GlobalVariables.TimeLeft - GlobalVariables.CurrentTime;
+                        var minutes = Math.Ceiling(timeLeft / 60);
                         player.PrintToChat(Localizer.ForPlayer(player, "timeleft.get.command.timeleft").Replace("{TIME_LEFT}", minutes.ToString()));
                     }
                 }
@@ -432,6 +468,12 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         GlobalVariables.Votes.Clear();
         GlobalVariables.MapForVotes.Clear();
         MenuUtils.PlayersMenu.Clear();
+        GlobalVariables.TimeLeft = 0.0f;
+        GlobalVariables.CurrentTime = 0.0f;
+        GlobalVariables.TimeLeftTimer?.Kill();
+        GlobalVariables.TimeLeftTimer = null;
+        GlobalVariables.VotingTimer?.Kill();
+        GlobalVariables.VotingTimer = null;
     }
 
     public void OnMapEnd()
@@ -446,7 +488,13 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         GlobalVariables.Votes.Clear();
         GlobalVariables.MapForVotes.Clear();
         MenuUtils.PlayersMenu.Clear();
+        GlobalVariables.TimeLeft = 0.0f;
+        GlobalVariables.CurrentTime = 0.0f;
         GlobalVariables.NextMap = null;
+        GlobalVariables.TimeLeftTimer?.Kill();
+        GlobalVariables.TimeLeftTimer = null;
+        GlobalVariables.VotingTimer?.Kill();
+        GlobalVariables.VotingTimer = null;
     }
 
     public void OnTick()

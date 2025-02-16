@@ -20,9 +20,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             List<string> menuValues = [];
 
-            if(Instance?.Config?.EnableDontVote == true && Instance.Config?.DontVotePosition == "top")
+            if(Instance?.Config?.EnableIgnoreVote == true && Instance.Config?.IgnoreVotePosition == "top")
             {
-                menuValues.Add("{menu.item.dont.vote}{splitdontvote}" + Instance?.Localizer.ForPlayer(player, "menu.item.dont.vote") ?? "-");
+                menuValues.Add("{menu.item.ignore.vote}{splitignorevote}" + Instance?.Localizer.ForPlayer(player, "menu.item.ignore.vote") ?? "-");
             }
 
             if (Instance?.Config?.EnableExtendMap == true && Instance.Config?.ExtendMapPosition == "top" && GlobalVariables.VotedForExtendMap == false)
@@ -42,9 +42,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 menuValues.Add(Instance?.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay);
             }
 
-            if (Instance?.Config?.EnableDontVote == true && Instance.Config?.DontVotePosition == "bottom")
+            if (Instance?.Config?.EnableIgnoreVote == true && Instance.Config?.IgnoreVotePosition == "bottom")
             {
-                menuValues.Add("{menu.item.dont.vote}{splitdontvote}" + Instance?.Localizer.ForPlayer(player, "menu.item.dont.vote") ?? "-");
+                menuValues.Add("{menu.item.ignore.vote}{splitignorevote}" + Instance?.Localizer.ForPlayer(player, "menu.item.ignore.vote") ?? "-");
             }
 
             if (Instance?.Config?.EnableExtendMap == true && Instance?.Config?.ExtendMapPosition == "bottom" && GlobalVariables.VotedForExtendMap == false)
@@ -100,16 +100,16 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
                             var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
 
-                            var isDontVoteOption = currentMenuOption.Split("{splitdontvote}");
+                            var isIgnoreVoteOption = currentMenuOption.Split("{splitignorevote}");
                             var isExtendMapOption = currentMenuOption.Split("{splitextendmap}");
 
                             if (Instance?.Config?.EnablePlayerVotingInChat == true)
                             {
                                 foreach (var p in players)
                                 {
-                                    if(isDontVoteOption.Length > 1)
+                                    if(isIgnoreVoteOption.Length > 1)
                                     {
-                                        p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", isDontVoteOption[1]));
+                                        p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", isIgnoreVoteOption[1]));
                                     }
                                     else if(isExtendMapOption.Length > 1)
                                     {
@@ -122,9 +122,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
                                 }
                             }
 
-                            if (isDontVoteOption.Length > 1)
+                            if (isIgnoreVoteOption.Length > 1)
                             {
-                                MapUtils.AddPlayerToVotes(isDontVoteOption[0], playerSteamId);
+                                MapUtils.AddPlayerToVotes(isIgnoreVoteOption[0], playerSteamId);
                             }
                             else if (isExtendMapOption.Length > 1)
                             {
@@ -159,12 +159,12 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 string currentMenuOption = menuValues.ToArray()[i];
 
                 int percentage = 0;
-                var isDontVoteOption = currentMenuOption.Split("{splitdontvote}");
+                var isIgnoreVoteOption = currentMenuOption.Split("{splitignorevote}");
                 var isExtendMapOption = currentMenuOption.Split("{splitextendmap}");
 
-                if (isDontVoteOption.Length > 1)
+                if (isIgnoreVoteOption.Length > 1)
                 {
-                    percentage = percentages.TryGetValue(isDontVoteOption[0], out int mapPercent) ? mapPercent : 0;
+                    percentage = percentages.TryGetValue(isIgnoreVoteOption[0], out int mapPercent) ? mapPercent : 0;
                 }
                 else if(isExtendMapOption.Length > 1)
                 {
@@ -179,9 +179,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 {
                     string lineHtml = "";
 
-                    if(isDontVoteOption.Length > 1)
+                    if(isIgnoreVoteOption.Length > 1)
                     {
-                        lineHtml = $"{imageRight} <span color='yellow'>{isDontVoteOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> {imageleft} <br />";
+                        lineHtml = $"{imageRight} <span color='yellow'>{isIgnoreVoteOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> {imageleft} <br />";
                     }
                     else if (isExtendMapOption.Length > 1)
                     {
@@ -198,9 +198,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 {
                     string lineHtml = "";
 
-                    if (isDontVoteOption.Length > 1)
+                    if (isIgnoreVoteOption.Length > 1)
                     {
-                        lineHtml = $"<span color='yellow'>{isDontVoteOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> <br />";
+                        lineHtml = $"<span color='yellow'>{isIgnoreVoteOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> <br />";
                     }
                     else if (isExtendMapOption.Length > 1)
                     {

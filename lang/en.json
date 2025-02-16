@@ -31,7 +31,7 @@
 
   "menu.title.vote": "<b color='orange'>【</b> <span color='lime'>Vote for the next map</span> <b color='orange'>】</b> <br />",
   "menu.title.maps": "<b color='orange'>【</b> <span color='lime'>Pick a map to change</span> <b color='orange'>】</b> <br />",
-  "menu.item.dont.vote": "Don't Vote",
+  "menu.item.ignore.vote": "Ignore Vote",
   "menu.item.extend.map.round": "Extend For {EXTEND_TIME} Rounds",
   "menu.item.extend.map.timeleft": "Extend For {EXTEND_TIME} Minutes",
   "menu.item.vote": "<span color='yellow'>{MAP_NAME}</span> <b color='orange'>•</b> <b color='lime'>{MAP_PERCENT}%</b>",
