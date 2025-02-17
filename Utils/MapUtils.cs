@@ -10,10 +10,9 @@ using Microsoft.Extensions.Logging;
 
 namespace MapCycleAndChooser_COFYYE.Utils
 {
-    public class MapUtils
+    public static class MapUtils
     {
-        public static readonly MapCycleAndChooser Instance = MapCycleAndChooser.Instance;
-        private static bool _isBusy = false;
+        public static MapCycleAndChooser Instance => MapCycleAndChooser.Instance;
         public static void PopulateMapsForVotes()
         {
             var random = new Random();
@@ -125,6 +124,34 @@ namespace MapCycleAndChooser_COFYYE.Utils
             return (topMaps.FirstOrDefault(), "");
         }
 
+        public static void AutoSetNextMap()
+        {
+            if (GlobalVariables.CycleMaps.Count > 0)
+            {
+                if (Instance?.Config?.EnableRandomNextMap == true)
+                {
+                    GlobalVariables.NextMap = GlobalVariables.CycleMaps[new Random().Next(GlobalVariables.CycleMaps.Count)];
+                }
+                else
+                {
+                    GlobalVariables.CycleMaps.ForEach(map => Console.WriteLine("Map : " + map.MapValue + " \n"));
+
+                    if (GlobalVariables.NextMapIndex > GlobalVariables.CycleMaps.Count - 1)
+                    {
+                        GlobalVariables.NextMapIndex = 0;
+                    }
+
+                    GlobalVariables.NextMap = GlobalVariables.CycleMaps[GlobalVariables.NextMapIndex];
+
+                    GlobalVariables.NextMapIndex += 1;
+                }
+            }
+            else
+            {
+                GlobalVariables.NextMap = new Map(Server.MapName, Server.MapName, false, "", false, false, 0, 64);
+            }
+        }
+
         public static void AddPlayerToVotes(string mapValue, string playerSteamId)
         {
             if (!GlobalVariables.Votes.TryGetValue(mapValue, out List<string>? value))
@@ -167,7 +194,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             if (Instance?.Config?.DependsOnTheRound == true)
             {
-                maxLimit = (float)(ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0);
+                maxLimit = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0;
                 minValue = Instance?.Config?.VoteTriggerTimeBeforeMapEnd ?? 3; // rounds
             }
             else

@@ -16,6 +16,7 @@
 
   "timeleft.get.command.round": "{lightpurple}[MapInfo] {yellow}Time Left {orange}➤➤ {lime}{TIME_LEFT} {yellow}rounds remaining",
   "timeleft.get.command.timeleft": "{lightpurple}[MapInfo] {yellow}Time Left {orange}➤➤ {lime}{TIME_LEFT} {yellow}minutes remaining",
+  "timeleft.get.command.expired": "{lightpurple}[MapInfo] {yellow}Time Left {orange}➤➤ {yellow}The time has expired",
   "timeleft.get.command.info": "{lightpurple}[MapInfo] {yellow}If you want to see the time left, say {lime}!timeleft",
   "timeleft.get.command.disabled": "{lightpurple}[MapInfo] {yellow}The time left command is currently {lightred}disabled",
 

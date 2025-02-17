@@ -18,6 +18,9 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("depends_on_the_round")]
         public bool DependsOnTheRound { get; init; } = true;
 
+        [JsonPropertyName("enable_random_nextmap")]
+        public bool EnableRandomNextMap { get; init; } = false;
+
         [JsonPropertyName("enable_player_freeze_in_menu")]
         public bool EnablePlayerFreezeInMenu { get; init; } = true;
 
@@ -55,7 +58,7 @@ namespace MapCycleAndChooser_COFYYE.Config
         public string ExtendMapPosition { get; init; } = "bottom";
 
         [JsonPropertyName("delay_to_change_map_in_the_end")]
-        public int DelayToChangeMapInTheEnd { get; init; } = 8; // in seconds
+        public int DelayToChangeMapInTheEnd { get; init; } = 10; // in seconds
 
         [JsonPropertyName("vote_trigger_time_before_map_end")]
         public int VoteTriggerTimeBeforeMapEnd { get; init; } = 3; // rounds or minutes if depends on round is false

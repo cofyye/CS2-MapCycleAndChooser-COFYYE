@@ -10,7 +10,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
 {
     public static class MenuUtils
     {
-        public static readonly MapCycleAndChooser Instance = MapCycleAndChooser.Instance;
+        public static MapCycleAndChooser Instance => MapCycleAndChooser.Instance;
         public static Dictionary<string, PlayerMenu> PlayersMenu { get; } = [];
 
         public static void CreateAndOpenHtmlVoteMenu(CCSPlayerController player)

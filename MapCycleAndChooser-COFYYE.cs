@@ -24,52 +24,17 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
     public void OnConfigParsed(Config.Config config)
     {
+        Instance = this;
+
         Config = config ?? throw new ArgumentNullException(nameof(config));
+
+        ServerUtils.CheckAndValidateConfig();
 
         GlobalVariables.Maps = Config?.Maps ?? [];
         GlobalVariables.CycleMaps = Config?.Maps?.Where(map => map.MapCycleEnabled == true).ToList() ?? [];
 
-        if (GlobalVariables.CycleMaps.Count > 0)
-        {
-            GlobalVariables.NextMap = GlobalVariables.CycleMaps[new Random().Next(GlobalVariables.CycleMaps.Count)];
-        }
-        else
-        {
-            GlobalVariables.NextMap = new Map(Server.MapName, Server.MapName, false, "", false, false, 0, 64);
-        }
-
-        if (Config?.DependsOnTheRound == null ||
-            Config?.VoteMapDuration == null ||
-            Config?.VoteMapEnable == null ||
-            Config?.EnablePlayerVotingInChat == null ||
-            Config?.VoteMapOnFreezeTime == null ||
-            Config?.Sounds == null ||
-            Config?.DisplayMapByValue == null ||
-            Config?.EnablePlayerFreezeInMenu == null ||
-            Config?.CommandsCSSMaps == null ||
-            Config?.CommandsLastMap == null ||
-            Config?.CommandsNextMap == null ||
-            Config?.CommandsTimeLeft == null ||
-            Config?.CommandsCurrentMap == null ||
-            Config?.EnableNextMapCommand == null ||
-            Config?.EnableLastMapCommand == null ||
-            Config?.EnableCurrentMapCommand == null ||
-            Config?.EnableTimeLeftCommand == null ||
-            Config?.EnableIgnoreVote == null ||
-            Config?.IgnoreVotePosition == null ||
-            Config?.EnableExtendMap == null ||
-            Config?.ExtendMapPosition == null ||
-            Config?.ExtendMapTime == null ||
-            Config?.DelayToChangeMapInTheEnd == null ||
-            Config?.VoteTriggerTimeBeforeMapEnd == null ||
-            Config?.Maps == null)
-        {
-            Logger.LogError("Config fields are null.");
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        Server.ExecuteCommand($"mp_match_restart_delay {Config?.DelayToChangeMapInTheEnd ?? 8}");
-        Logger.LogInformation($"mp_match_restart_delay are set to {Config?.DelayToChangeMapInTheEnd ?? 8}.");
+        Server.ExecuteCommand($"mp_match_restart_delay {Config?.DelayToChangeMapInTheEnd ?? 10}");
+        Logger.LogInformation("mp_match_restart_delay are set to {RestartDelay}.", Config?.DelayToChangeMapInTheEnd ?? 10);
 
         Logger.LogInformation("Initialized {MapCount} cycle maps.", GlobalVariables.CycleMaps.Count);
     }
@@ -87,8 +52,6 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
     public override void Load(bool hotReload)
     {
         base.Load(hotReload);
-
-        Instance = this;
 
         AddCommand("css_nextmap", "Set a next map", OnSetNextMap);
         AddCommand("css_maps", "List of all maps", OnMapsList);
@@ -299,7 +262,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
     {
         if (@event == null) return HookResult.Continue;
 
-        AddTimer((Config?.DelayToChangeMapInTheEnd ?? 8.0f) - 2.0f, () =>
+        AddTimer((Config?.DelayToChangeMapInTheEnd ?? 10.0f) - 3.0f, () =>
         {
             if (GlobalVariables.NextMap != null)
             {
@@ -407,13 +370,28 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
                         var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0;
                         var roundLeft = maxRounds - gameRules.TotalRoundsPlayed;
 
-                        player.PrintToChat(Localizer.ForPlayer(player, "timeleft.get.command.round").Replace("{TIME_LEFT}", roundLeft.ToString()));
+                        if(roundLeft > 0)
+                        {
+                            player.PrintToChat(Localizer.ForPlayer(player, "timeleft.get.command.round").Replace("{TIME_LEFT}", roundLeft.ToString()));
+                        }
+                        else
+                        {
+                            player.PrintToChat(Localizer.ForPlayer(player, "timeleft.get.command.expired"));
+                        }
                     }
                     else
                     {
                         var timeLeft = GlobalVariables.TimeLeft - GlobalVariables.CurrentTime;
                         var minutes = Math.Ceiling(timeLeft / 60);
-                        player.PrintToChat(Localizer.ForPlayer(player, "timeleft.get.command.timeleft").Replace("{TIME_LEFT}", minutes.ToString()));
+
+                        if(minutes > 0)
+                        {
+                            player.PrintToChat(Localizer.ForPlayer(player, "timeleft.get.command.timeleft").Replace("{TIME_LEFT}", minutes.ToString()));
+                        }
+                        else
+                        {
+                            player.PrintToChat(Localizer.ForPlayer(player, "timeleft.get.command.expired"));
+                        }
                     }
                 }
             }
@@ -455,12 +433,9 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             if (!GlobalVariables.Timers.IsRunning) GlobalVariables.Timers.Start();
         }
 
-        if (GlobalVariables.CycleMaps.Count > 0)
-        {
-            GlobalVariables.NextMap = GlobalVariables.CycleMaps[new Random().Next(GlobalVariables.CycleMaps.Count)];
-        }
+        MapUtils.AutoSetNextMap();
 
-        if(Config?.VoteMapOnFreezeTime == true)
+        if (Config?.VoteMapOnFreezeTime == true)
         {
             GlobalVariables.FreezeTime = ConVar.Find("mp_freezetime")?.GetPrimitiveValue<int>() ?? 5;
         }
@@ -468,7 +443,6 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         GlobalVariables.Votes.Clear();
         GlobalVariables.MapForVotes.Clear();
         MenuUtils.PlayersMenu.Clear();
-        GlobalVariables.TimeLeft = 0.0f;
         GlobalVariables.CurrentTime = 0.0f;
         GlobalVariables.TimeLeftTimer?.Kill();
         GlobalVariables.TimeLeftTimer = null;
@@ -488,7 +462,6 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         GlobalVariables.Votes.Clear();
         GlobalVariables.MapForVotes.Clear();
         MenuUtils.PlayersMenu.Clear();
-        GlobalVariables.TimeLeft = 0.0f;
         GlobalVariables.CurrentTime = 0.0f;
         GlobalVariables.NextMap = null;
         GlobalVariables.TimeLeftTimer?.Kill();

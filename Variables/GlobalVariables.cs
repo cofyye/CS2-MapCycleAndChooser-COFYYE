@@ -16,6 +16,7 @@ namespace MapCycleAndChooser_COFYYE.Variables
         private static float _timeleft = 0; // in seconds
         private static float _currentTime = 0; // in seconds
         private static int _messageIndex = 0;
+        private static int _nextmapIndex = 0;
         private static readonly Dictionary<string, List<string>> _votes = [];
         private static int _freezeTime = 0;
         private static readonly Stopwatch _timers = new();
@@ -33,6 +34,7 @@ namespace MapCycleAndChooser_COFYYE.Variables
         public static float TimeLeft { get { return _timeleft; } set { _timeleft = value; } }
         public static float CurrentTime { get { return _currentTime; } set { _currentTime = value; } }
         public static int MessageIndex { get { return _messageIndex; } set { _messageIndex = value; } }
+        public static int NextMapIndex { get { return _nextmapIndex; } set { _nextmapIndex = value; } }
         public static Dictionary<string, List<string>> Votes { get { return _votes; } }
         public static int FreezeTime { get { return _freezeTime; } set { _freezeTime = value; } }
         public static Stopwatch Timers { get { return _timers; } }
