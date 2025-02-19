@@ -95,7 +95,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
             }
 
             // DelayToChangeMapInTheEnd
-            if (Instance?.Config?.DelayToChangeMapInTheEnd < 0)
+            if (Instance?.Config?.DelayToChangeMapInTheEnd < 5)
             {
                 Instance?.Logger.LogError("delay_to_change_map_in_the_end has bad value. Value must be greater than 0");
                 throw new ArgumentException(nameof(Instance.Config));
