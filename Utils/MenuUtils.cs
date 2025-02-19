@@ -13,6 +13,123 @@ namespace MapCycleAndChooser_COFYYE.Utils
         public static MapCycleAndChooser Instance => MapCycleAndChooser.Instance;
         public static Dictionary<string, PlayerMenu> PlayersMenu { get; } = [];
 
+        //private static ScreenMenu? ScreenMenu = null;
+
+        //private static void HandleChoosedOption(CCSPlayerController player, IMenuOption option)
+        //{
+        //    string playerSteamId = player.SteamID.ToString();
+        //    if (!PlayersMenu.TryGetValue(playerSteamId, out PlayerMenu? pm) || Instance == null) return;
+        //    if (pm.Selected) return;
+
+        //    var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+
+        //    var isIgnoreVoteOption = option.Text.Split("{splitignorevote}");
+        //    var isExtendMapOption = option.Text.Split("{splitextendmap}");
+
+        //    if (Instance?.Config?.EnablePlayerVotingInChat == true)
+        //    {
+        //        foreach (var p in players)
+        //        {
+        //            if (isIgnoreVoteOption.Length > 1)
+        //            {
+        //                p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", isIgnoreVoteOption[1]));
+        //            }
+        //            else if (isExtendMapOption.Length > 1)
+        //            {
+        //                p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", isExtendMapOption[1]));
+        //            }
+        //            else
+        //            {
+        //                p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", option.Text));
+        //            }
+        //        }
+        //    }
+
+        //    if (isIgnoreVoteOption.Length > 1)
+        //    {
+        //        MapUtils.AddPlayerToVotes(isIgnoreVoteOption[0], playerSteamId);
+        //    }
+        //    else if (isExtendMapOption.Length > 1)
+        //    {
+        //        MapUtils.AddPlayerToVotes(isExtendMapOption[0], playerSteamId);
+        //    }
+        //    else
+        //    {
+        //        MapUtils.AddPlayerToVotes(option.Text, playerSteamId);
+        //    }
+
+        //    player.ExecuteClientCommand("play sounds/ui/item_sticker_select.vsnd_c");
+        //}
+
+        //public static void CreateAndOpenScreenVoteMenu(CCSPlayerController player)
+        //{
+        //    string playerSteamId = player.SteamID.ToString();
+        //    if (!PlayersMenu.TryGetValue(playerSteamId, out PlayerMenu? pm) || Instance == null) return;
+
+        //    var titleRGB = (Instance?.Localizer.ForPlayer(player, "screen.title.vote.rgb") ?? "255,165,0").Split(",");
+        //    var itemRGB = (Instance?.Localizer.ForPlayer(player, "screen.item.rgb") ?? "255,255,224").Split(",");
+
+        //    ScreenMenu = new("test menu", Instance!)
+        //    {
+        //        HasExitOption = false,
+        //        TextColor = Color.FromArgb(int.Parse(titleRGB[0]), int.Parse(titleRGB[1]), int.Parse(titleRGB[2])),
+        //        PostSelectAction = PostSelectAction.Nothing,
+        //    };
+
+        //    if (Instance?.Config?.EnableIgnoreVote == true && Instance.Config?.IgnoreVotePosition == "top")
+        //    {
+        //        ScreenMenu.AddOption("{screen.item.ignore.vote}{splitignorevote}" + Instance?.Localizer.ForPlayer(player, "screen.item.ignore.vote") ?? "-", HandleChoosedOption);
+        //    }
+
+        //    if (Instance?.Config?.EnableExtendMap == true && Instance.Config?.ExtendMapPosition == "top" && GlobalVariables.VotedForExtendMap == false)
+        //    {
+        //        if (Instance?.Config?.DependsOnTheRound == true)
+        //        {
+        //            ScreenMenu.AddOption("{screen.item.extend.map}{splitextendmap}" + Instance?.Localizer.ForPlayer(player, "screen.item.extend.map.round").Replace("{EXTEND_TIME}", Instance?.Config?.ExtendMapTime.ToString()) ?? "-", HandleChoosedOption);
+        //        }
+        //        else
+        //        {
+        //            ScreenMenu.AddOption("{screen.item.extend.map}{splitextendmap}" + Instance?.Localizer.ForPlayer(player, "screen.item.extend.map.timeleft").Replace("{EXTEND_TIME}", Instance?.Config?.ExtendMapTime.ToString()) ?? "-", HandleChoosedOption);
+        //        }
+        //    }
+
+        //    ScreenMenu.TextColor = Color.Yellow;
+        //    foreach (Map map in GlobalVariables.MapForVotes)
+        //    {
+        //        ScreenMenu.AddOption(Instance?.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay, HandleChoosedOption);
+        //    }
+        //    ScreenMenu.TextColor = Color.Orange;
+
+        //    if (Instance?.Config?.EnableIgnoreVote == true && Instance.Config?.IgnoreVotePosition == "bottom")
+        //    {
+        //        ScreenMenu.AddOption("{screen.item.ignore.vote}{splitignorevote}" + Instance?.Localizer.ForPlayer(player, "screen.item.ignore.vote") ?? "-", HandleChoosedOption);
+        //    }
+
+        //    if (Instance?.Config?.EnableExtendMap == true && Instance?.Config?.ExtendMapPosition == "bottom" && GlobalVariables.VotedForExtendMap == false)
+        //    {
+        //        if (Instance.Config?.DependsOnTheRound == true)
+        //        {
+        //            ScreenMenu.AddOption("{screen.item.extend.map}{splitextendmap}" + Instance?.Localizer.ForPlayer(player, "screen.item.extend.map.round").Replace("{EXTEND_TIME}", Instance?.Config?.ExtendMapTime.ToString()) ?? "-", HandleChoosedOption);
+        //        }
+        //        else
+        //        {
+        //            ScreenMenu.AddOption("{screen.item.extend.map}{splitextendmap}" + Instance?.Localizer.ForPlayer(player, "screen.item.extend.map.timeleft").Replace("{EXTEND_TIME}", Instance?.Config?.ExtendMapTime.ToString()) ?? "-", HandleChoosedOption);
+        //        }
+        //    }
+
+        //    MenuAPI.OpenMenu(Instance!, player, ScreenMenu);
+        //}
+
+        //public static void CloseScreenMenu()
+        //{
+        //    var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+
+        //    foreach(var player in players)
+        //    {
+        //        MenuAPI.CloseActiveMenu(player);
+        //    }
+        //}
+
         public static void CreateAndOpenHtmlVoteMenu(CCSPlayerController player)
         {
             string playerSteamId = player.SteamID.ToString();

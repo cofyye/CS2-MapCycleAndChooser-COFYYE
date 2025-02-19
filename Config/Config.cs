@@ -18,6 +18,9 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("depends_on_the_round")]
         public bool DependsOnTheRound { get; init; } = true;
 
+        //[JsonPropertyName("enable_screen_menu")]
+        //public bool EnableScreenMenu { get; init; } = true;
+
         [JsonPropertyName("enable_random_nextmap")]
         public bool EnableRandomNextMap { get; init; } = false;
 

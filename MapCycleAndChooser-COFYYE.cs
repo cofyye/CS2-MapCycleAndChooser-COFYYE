@@ -39,16 +39,6 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         Logger.LogInformation("Initialized {MapCount} cycle maps.", GlobalVariables.CycleMaps.Count);
     }
 
-    public override void OnAllPluginsLoaded(bool hotReload)
-    {
-        base.OnAllPluginsLoaded(hotReload);
-
-        AddTimer(3.0f, () =>
-        {
-            ServerUtils.InitializeCvars();
-        }, TimerFlags.STOP_ON_MAPCHANGE);
-    }
-
     public override void Load(bool hotReload)
     {
         base.Load(hotReload);
@@ -72,7 +62,11 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
         RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
-        RegisterListener<Listeners.OnTick>(OnTick);
+
+        //if(Config?.EnableScreenMenu == false)
+        //{
+            RegisterListener<Listeners.OnTick>(OnTick);
+        //}
 
         if(!GlobalVariables.Timers.IsRunning) GlobalVariables.Timers.Start();
 
@@ -144,7 +138,11 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         RemoveListener<Listeners.OnMapStart>(OnMapStart);
         RemoveListener<Listeners.OnMapEnd>(OnMapEnd);
-        RemoveListener<Listeners.OnTick>(OnTick);
+
+        //if(Config?.EnableScreenMenu == false)
+        //{
+            RemoveListener<Listeners.OnTick>(OnTick);
+        //}
 
         if(GlobalVariables.Timers.IsRunning) GlobalVariables.Timers.Stop();
     }
@@ -238,6 +236,8 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
     {
         if (@event == null) return HookResult.Continue;
 
+        ServerUtils.InitializeCvars();
+
         GlobalVariables.TimeLeftTimer ??= AddTimer(1.0f, () =>
             {
                 var timeLimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<float>();
@@ -250,6 +250,8 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         {
             GlobalVariables.VotingTimer ??= AddTimer(3.0f, () =>
                 {
+                    if (GlobalVariables.IsVotingInProgress) return;
+
                     MapUtils.CheckAndPickMapsForVoting();
                     MapUtils.CheckAndStartMapVoting();
                 }, TimerFlags.REPEAT);
@@ -292,7 +294,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
     {
         if (@event == null) return HookResult.Continue;
 
-        if(Config?.DependsOnTheRound == true)
+        if (Config?.DependsOnTheRound == true)
         {
             return MapUtils.CheckAndStartMapVoting();
         }

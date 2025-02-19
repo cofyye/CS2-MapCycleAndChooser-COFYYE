@@ -134,8 +134,6 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 }
                 else
                 {
-                    GlobalVariables.CycleMaps.ForEach(map => Console.WriteLine("Map : " + map.MapValue + " \n"));
-
                     if (GlobalVariables.NextMapIndex > GlobalVariables.CycleMaps.Count - 1)
                     {
                         GlobalVariables.NextMapIndex = 0;
@@ -296,6 +294,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
                     }
 
                     GlobalVariables.VoteStarted = true;
+                    GlobalVariables.IsVotingInProgress = true;
 
                     var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
 
@@ -313,6 +312,11 @@ namespace MapCycleAndChooser_COFYYE.Utils
                         {
                             player.ExecuteClientCommand($"play {soundToPlay}");
                         }
+
+                        //if(Instance?.Config.EnableScreenMenu == true)
+                        //{
+                        //    MenuUtils.CreateAndOpenScreenVoteMenu(player);
+                        //}
                     }
 
                     float duration = (float)(Instance?.Config?.VoteMapDuration ?? 15);
@@ -380,10 +384,17 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
                         GlobalVariables.VoteStarted = false;
 
+                        Instance?.AddTimer(1.0f, () => GlobalVariables.IsVotingInProgress = false);
+
                         if(type != "extendmap")
                         {
                             GlobalVariables.VotedForCurrentMap = true;
                         }
+
+                        //if (Instance?.Config?.EnableScreenMenu == true)
+                        //{
+                        //    MenuUtils.CloseScreenMenu();
+                        //}
                     }, TimerFlags.STOP_ON_MAPCHANGE);
                 }
             }

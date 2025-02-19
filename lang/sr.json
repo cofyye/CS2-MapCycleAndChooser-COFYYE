@@ -1,24 +1,54 @@
 {
   "nextmap.get.command": "{lightpurple}[MapInfo] {yellow}Sledeca mapa {orange}➤➤ {lime}{MAP_NAME}",
-  "nextmap.get.command.info": "{lightpurple}[MapInfo] {yellow}Ako zelis da vidis sledecu mapu, kucaj {lime}!nextmap",
+  "nextmap.get.command.info": "{lightpurple}[MapInfo] {yellow}Da vidis koja je sledeca mapa, kucaj {lime}!nextmap",
+  "nextmap.get.command.disabled": "{lightpurple}[MapInfo] {yellow}Ova komanda trenutno nije dostupna",
   "nextmap.set.command.expected.value": "{lightpurple}[MapInfo] {yellow}Ocekivana vrednost: {orange}css_nextmap {lime}[map]",
-  "nextmap.set.command.new.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{ADMIN_NAME} {yellow}je stavio novu mapu {lime}{MAP_NAME}",
+  "nextmap.set.command.new.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{ADMIN_NAME} {yellow}je postavio novu mapu {lime}{MAP_NAME}",
+
+  "lastmap.get.command": "{lightpurple}[MapInfo] {yellow}Prethodna mapa {orange}➤➤ {lime}{MAP_NAME}",
+  "lastmap.get.command.info": "{lightpurple}[MapInfo] {yellow}Da vidis prethodnu mapu, kucaj {lime}!lastmap",
+  "lastmap.get.command.disabled": "{lightpurple}[MapInfo] {yellow}Ova komanda trenutno nije dostupna",
+  "lastmap.get.command.null": "{lightpurple}[MapInfo] {yellow}Prethodna mapa trenutno nije dostupna",
+
+  "currentmap.get.command": "{lightpurple}[MapInfo] {yellow}Trenutna mapa {orange}➤➤ {lime}{MAP_NAME}",
+  "currentmap.get.command.info": "{lightpurple}[MapInfo] {yellow}Da vidis trenutnu mapu, kucaj {lime}!currentmap",
+  "currentmap.get.command.disabled": "{lightpurple}[MapInfo] {yellow}Ova komanda trenutno nije dostupna",
+
+  "timeleft.get.command.round": "{lightpurple}[MapInfo] {yellow}Preostalo Vreme {orange}➤➤ {lime}{TIME_LEFT} {yellow}rundi preostalo",
+  "timeleft.get.command.timeleft": "{lightpurple}[MapInfo] {yellow}Preostalo Vreme {orange}➤➤ {lime}{TIME_LEFT} {yellow}minuta preostalo",
+  "timeleft.get.command.expired": "{lightpurple}[MapInfo] {yellow}Preostalo Vreme {orange}➤➤ {yellow}Vreme je isteklo",
+  "timeleft.get.command.info": "{lightpurple}[MapInfo] {yellow}Da vidis preostalo vreme, kucaj {lime}!timeleft",
+  "timeleft.get.command.disabled": "{lightpurple}[MapInfo] {yellow}Ova komanda trenutno nije dostupna",
 
   "admin.change.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{PLAYER_NAME} {yellow}je promenio mapu na {lime}{MAP_NAME}",
-  "map.not.found": "{lightpurple}[MapInfo] {yellow}Mapa ne postoji",
+  "map.not.found": "{lightpurple}[MapInfo] {yellow}Mapa nije pronadjena",
   "command.no.perm": "[MapInfo] Nemas permisiju da koristis ovu komandu",
 
-  "vote.started": "{lightpurple}[MapInfo] {yellow}Glasanje za sledecu mapu je pocelo",
-  "vote.finished": "{lightpurple}[MapInfo] {yellow}Glasanje za sledecu mapu je zavrseno. Sledeca mapa je {lime}{MAP_NAME}",
+  "vote.started": "{lightpurple}[MapInfo] {yellow}Glasanje za sledecu mapu je zapoceto",
+  "vote.finished": "{lightpurple}[MapInfo] {yellow}Glasanje zavrseno. Sledeca mapa: {lime}{MAP_NAME}",
+  "vote.finished.extend.map.round": "{lightpurple}[MapInfo] {yellow}Glasanje zavrseno. Trenutna mapa je produzena za {lime}{EXTENDED_TIME} {yellow}rundi",
+  "vote.finished.extend.map.timeleft": "{lightpurple}[MapInfo] {yellow}Glasanje zavrseno. Trenutna mapa je produzena za {lime}{EXTENDED_TIME} {yellow}minuta",
   "vote.player": "{lightpurple}[MapInfo] {yellow}Igrac {lime}{PLAYER_NAME} {yellow}je glasao za {lime}{MAP_NAME}",
+
+  //"screen.title.vote": "【 Vote for the next map 】",
+  //"screen.title.vote.rgb": "255,165,0",
+  //"screen.item.ignore.vote": "Ignore Vote",
+  //"screen.item.extend.map.round": "Extend For {EXTEND_TIME} Rounds",
+  //"screen.item.extend.map.timeleft": "Extend For {EXTEND_TIME} Minutes",
+  //"screen.item.vote": "{MAP_NAME} • {MAP_PERCENT}%",
+  //"screen.item.map": "{MAP_NAME}",
+  //"screen.item.rgb": "255,255,224",
 
   "menu.title.vote": "<b color='orange'>【</b> <span color='lime'>Glasaj za sledecu mapu</span> <b color='orange'>】</b> <br />",
   "menu.title.maps": "<b color='orange'>【</b> <span color='lime'>Izaberi mapu da promenis</span> <b color='orange'>】</b> <br />",
+  "menu.item.ignore.vote": "Ignorisi Glasanje",
+  "menu.item.extend.map.round": "Produzi Za {EXTEND_TIME} Rundi",
+  "menu.item.extend.map.timeleft": "Produzi Za {EXTEND_TIME} Minuta",
   "menu.item.vote": "<span color='yellow'>{MAP_NAME}</span> <b color='orange'>•</b> <b color='lime'>{MAP_PERCENT}%</b>",
-  "menu.item.map": "<span color='yellow'>{MAP_NAME}</span></b>",
+  "menu.item.map": "<span color='yellow'>{MAP_NAME}</span>",
   "menu.item.right": "<b color='orange'>►</b>",
   "menu.item.left": "<b color='orange'>◄</b>",
   "menu.more.items": "<img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''> <img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''> <img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''>",
-  "menu.bottom.vote": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigacija</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Odabir</span><b color='orange'>]</b> <br />",
-  "menu.bottom.maps": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigacija</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Odabir</span><b color='orange'>] <br /> [</b><span color='lime'>R</span> <b color='orange'>-</b> <span color='yellow'>Izadji</span><b color='orange'>]</b> <br />"
+  "menu.bottom.vote": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigacija</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Izaberi</span><b color='orange'>]</b> <br />",
+  "menu.bottom.maps": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Navigacija</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Izaberi</span><b color='orange'>] <br /> [</b><span color='lime'>R</span> <b color='orange'>-</b> <span color='yellow'>Izadji</span><b color='orange'>]</b> <br />"
 }

@@ -102,9 +102,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
             }
 
             // VoteTriggerTimeBeforeMapEnd
-            if (Instance?.Config?.VoteTriggerTimeBeforeMapEnd < 0)
+            if (Instance?.Config?.VoteTriggerTimeBeforeMapEnd < 2)
             {
-                Instance?.Logger.LogError("vote_trigger_time_before_map_end has bad value. Value must be greater than 0");
+                Instance?.Logger.LogError("vote_trigger_time_before_map_end has bad value. Value must be greater than 2");
                 throw new ArgumentException(nameof(Instance.Config));
             }
         }
