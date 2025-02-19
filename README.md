@@ -253,7 +253,7 @@ Below is a step-by-step guide explaining the available configuration options for
 
 ### Installation
 
-1. Download the **[MapCycleAndChooser v1.0](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/releases/download/1.1/MapCycleAndChooser-COFYYE-v1.1.zip)** plugin as a `.zip` file.  
+1. Download the **[MapCycleAndChooser v1.1](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/releases/download/1.1/MapCycleAndChooser-COFYYE-v1.1.zip)** plugin as a `.zip` file.  
 2. Upload the contents of the `.zip` file into the following directory on your server:  
    > game/csgo/addons/counterstrikesharp/plugins  
 3. After uploading, change the map or restart your server to activate the plugin.  
