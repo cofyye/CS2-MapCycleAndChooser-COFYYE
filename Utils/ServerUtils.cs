@@ -3,6 +3,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
 using MapCycleAndChooser_COFYYE.Variables;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace MapCycleAndChooser_COFYYE.Utils
 {
@@ -107,7 +108,37 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 Instance?.Logger.LogError("vote_trigger_time_before_map_end has bad value. Value must be greater than 2");
                 throw new ArgumentException(nameof(Instance.Config));
             }
+
+            // Maps
+            foreach (var map in Instance?.Config?.Maps)
+            {
+                // CycleStartTime and CycleEndTime
+                if (map.CycleStartTime == map.CycleEndTime)
+                {
+                    Instance?.Logger.LogInformation("'map_cycle_start_time' and 'map_cycle_end_time' are same. map: {MapName}", map.MapValue);
+                    throw new ArgumentException(nameof(Instance.Config));
+                }
+                if (!string.IsNullOrWhiteSpace(map.CycleStartTime) && string.IsNullOrWhiteSpace(map.CycleEndTime))
+                {
+                    Instance?.Logger.LogInformation("'map_cycle_start_time' is empty. map: {MapName}", map.MapValue);
+                    throw new ArgumentException(nameof(Instance.Config));
+                }
+                if (string.IsNullOrWhiteSpace(map.CycleStartTime) && !string.IsNullOrWhiteSpace(map.CycleEndTime))
+                {
+                    Instance?.Logger.LogInformation("'map_cycle_end_time' is empty. map: {MapName}", map.MapValue);
+                    throw new ArgumentException(nameof(Instance.Config));
+                }
+                if (!DateTime.TryParseExact(map.CycleStartTime, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var _))
+                {
+                    Instance?.Logger.LogInformation("'map_cycle_start_time' has bad value. Value format must be 'HH:mm'. map: {MapName}", map.MapValue);
+                    throw new ArgumentException(nameof(Instance.Config));
+                }
+                if (!DateTime.TryParseExact(map.CycleEndTime, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var _))
+                {
+                    Instance?.Logger.LogInformation("'map_cycle_end_time' has bad value. Value format must be 'HH:mm'. map: {MapName}", map.MapValue);
+                    throw new ArgumentException(nameof(Instance.Config));
+                }
+            }
         }
     }
 }
-

@@ -414,32 +414,16 @@ namespace MapCycleAndChooser_COFYYE.Utils
             {
                 return true;
             }
-            if (string.IsNullOrWhiteSpace(start) || string.IsNullOrWhiteSpace(end))
-            {
-                Instance?.Logger.LogInformation("Either 'cycle_start_time' or 'cycle_end_time' is empty. map: {MapName}", map.MapValue);
-                return false;
-            }
 
             var now = DateTime.Now;
-            if (!DateTime.TryParseExact(start, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStart))
-            {
-                Instance?.Logger.LogInformation("The 'cycle_start_time' string is not valid. Format should be 'HH:mm'.");
-                Instance?.Logger.LogInformation("Invalid 'cycle_start_time' config string. map: {MapName}", map.MapValue);
-                return false;
-            }
-            if (!DateTime.TryParseExact(end, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedEnd))
-            {
-                Instance?.Logger.LogInformation("The 'cycle_end_time' string is not valid. Format should be 'HH:mm'.");
-                Instance?.Logger.LogInformation("Invalid 'cycle_end_time' config string. map: {MapName}", map.MapValue);
-                return false;
-            }
-
+            var parsedStart = DateTime.ParseExact(start, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
+            var parsedEnd = DateTime.ParseExact(start, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
             var startTime = now.Date.Add(parsedStart.TimeOfDay);
             var endTime = now.Date.Add(parsedEnd.TimeOfDay);
 
             // if 'start' - 'end' into the next day
             // example: 23:00 - 05:00
-            if (startTime >= endTime)
+            if (startTime > endTime)
             {
                 endTime.AddDays(1);
             }
