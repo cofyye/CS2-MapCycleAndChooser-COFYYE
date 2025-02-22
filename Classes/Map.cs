@@ -2,7 +2,7 @@
 
 namespace MapCycleAndChooser_COFYYE.Classes
 {
-    public class Map(string mapValue, string mapDisplay, bool mapIsWorkshop, string mapWorkshopId, bool mapCycleEnabled, bool mapCanVote, int mapMinPlayers, int mapMaxPlayers)
+    public class Map(string mapValue, string mapDisplay, bool mapIsWorkshop, string mapWorkshopId, bool mapCycleEnabled, bool mapCanVote, int mapMinPlayers, int mapMaxPlayers, string mapCycleStartTime, string mapCycleEndTime)
     {
         [JsonPropertyName("map_value")]
         public string MapValue { get; init; } = mapValue;
@@ -27,5 +27,11 @@ namespace MapCycleAndChooser_COFYYE.Classes
 
         [JsonPropertyName("map_max_players")]
         public int MapMaxPlayers { get; init; } = mapMaxPlayers;
+
+        [JsonPropertyName("map_cycle_start_time")]
+        public string CycleStartTime { get; init; } = mapCycleStartTime;
+
+        [JsonPropertyName("map_cycle_end_time")]
+        public string CycleEndTime { get; init; } = mapCycleEndTime;
     }
 }

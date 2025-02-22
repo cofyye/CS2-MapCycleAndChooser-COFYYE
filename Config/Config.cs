@@ -121,15 +121,15 @@ namespace MapCycleAndChooser_COFYYE.Config
         [JsonPropertyName("maps")]
         public List<Map> Maps { get; init; } =
         [
-            new Map("de_dust2", "De Dust2", false, "", true, true, 0, 64),
-            new Map("de_mirage", "De Mirage", false, "", true, true, 0, 64),
-            new Map("de_vertigo", "De Vertigo", false, "", true, true, 0, 64),
-            new Map("de_overpass", "De Overpass", false, "", true, true, 0, 64),
-            new Map("de_train", "De Train", false, "", true, true, 0, 64),
-            new Map("de_nuke", "De Nuke", false, "", true, true, 0, 64),
-            new Map("de_anubis", "De Anubis", false, "", true, true, 0, 64),
-            new Map("de_ancient", "De Ancient", false, "", true, true, 0, 64),
-            new Map("de_inferno", "De Inferno", false, "", true, true, 0, 64)
+            new Map("de_dust2", "De Dust2", false, "", true, true, 0, 64, "", ""),
+            new Map("de_mirage", "De Mirage", false, "", true, true, 0, 64, "", ""),
+            new Map("de_vertigo", "De Vertigo", false, "", true, true, 0, 64, "", ""),
+            new Map("de_overpass", "De Overpass", false, "", true, true, 0, 64, "", ""),
+            new Map("de_train", "De Train", false, "", true, true, 0, 64, "", ""),
+            new Map("de_nuke", "De Nuke", false, "", true, true, 0, 64, "", ""),
+            new Map("de_anubis", "De Anubis", false, "", true, true, 0, 64, "", ""),
+            new Map("de_ancient", "De Ancient", false, "", true, true, 0, 64, "", ""),
+            new Map("de_inferno", "De Inferno", false, "", true, true, 0, 64, "", "")
         ];
     }
 }
