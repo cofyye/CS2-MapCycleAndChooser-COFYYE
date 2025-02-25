@@ -1,5 +1,15 @@
 # MapCycleAndChooser
 
+## 📊 Plugin Statistics  
+
+<p align="center">
+  <img src="https://img.shields.io/github/downloads/cofyye/CS2-MapCycleAndChooser-COFYYE/total" alt="Total Downloads">
+  <img src="https://img.shields.io/github/stars/cofyye/CS2-MapCycleAndChooser-COFYYE" alt="GitHub Stars">
+  <img src="https://img.shields.io/github/last-commit/cofyye/CS2-MapCycleAndChooser-COFYYE" alt="Last Update">
+  <img src="https://img.shields.io/github/issues/cofyye/CS2-MapCycleAndChooser-COFYYE" alt="Open Issues">
+</p>
+
+## 📌 Overview  
 MapCycleAndChooser is a CS2 plugin designed to give server admins complete control over map rotations and player interactions. With this plugin, you can manage map cycles, enable map voting, and customize various settings to optimize gameplay for all players.
 
 ## See it in action
