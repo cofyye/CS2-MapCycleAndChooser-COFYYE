@@ -14,6 +14,7 @@ Join and experience this plugin, along with all the other custom plugins I creat
 - **Real-time Voting Percentages**: View the percentage of votes for each map in real time.  
 - **Admin Map List**: Admins can access a list of available maps and instantly change the current map.  
 - **Dynamic Map Cycle**: Set which maps are part of the cycle and which ones can be changed from the map list.  
+- **Dynamic Map Cycle Time**: Set whether each map is selected as a cycle based on time.  
 - **Dynamic Map Selection**: Maps are selected based on the current number of players, with options for max and min player thresholds.  
 - **Custom Map Display**: Show custom names instead of map values (e.g., showing "Dust II" instead of "de_dust2").  
 - **Round/Timelimit-Based Map Changes**: Change maps based on the number of rounds or time limits.  
@@ -250,6 +251,8 @@ Below is a step-by-step guide explaining the available configuration options for
      - **`map_can_vote`**: `true` if the map should appear in the voting system; `false` if it should not.  
      - **`map_min_players`**: Minimum number of players required for the map to be included in voting.  
      - **`map_max_players`**: Maximum number of players allowed for the map to be included in voting.
+     - **`map_cycle_start_time`**: Start time ("HH:mm" format, other is invalid.) for map cycle. Ignored if start and end fields are empty.
+     - **`map_cycle_end_time`**: End time ("HH:mm" format, other is invalid.) for map cycle. Ignored if start and end fields are empty.
 
 ### Installation
 

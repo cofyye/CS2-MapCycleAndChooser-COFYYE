@@ -7,6 +7,7 @@ using CounterStrikeSharp.API.Modules.Timers;
 using MapCycleAndChooser_COFYYE.Classes;
 using MapCycleAndChooser_COFYYE.Variables;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace MapCycleAndChooser_COFYYE.Utils
 {
@@ -24,7 +25,8 @@ namespace MapCycleAndChooser_COFYYE.Utils
                     map.MapValue != Server.MapName &&
                     map.MapCanVote &&
                     map.MapMinPlayers <= currentPlayers &&
-                    map.MapMaxPlayers >= currentPlayers
+                    map.MapMaxPlayers >= currentPlayers &&
+                    CheckMapInCycleTime(map)
                 )
                 .ToList();
 
@@ -84,7 +86,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 var ignoreVotePercentage = mapPercentages.GetValueOrDefault("{menu.item.ignore.vote}", 0);
                 if (ignoreVotePercentage == maxPercentage)
                 {
-                    topMaps.Add(new Map("{menu.item.ignore.vote}", "Ignore Vote", false, "", true, true, 0, 64));
+                    topMaps.Add(new Map("{menu.item.ignore.vote}", "Ignore Vote", false, "", true, true, 0, 64, "", ""));
                 }
             }
 
@@ -93,7 +95,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 var extendMapPercentage = mapPercentages.GetValueOrDefault("{menu.item.extend.map}", 0);
                 if (extendMapPercentage == maxPercentage)
                 {
-                    topMaps.Add(new Map("{menu.item.extend.map}", "Extend Map", false, "", true, true, 0, 64));
+                    topMaps.Add(new Map("{menu.item.extend.map}", "Extend Map", false, "", true, true, 0, 64, "", ""));
                 }
             }
 
@@ -146,7 +148,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
             }
             else
             {
-                GlobalVariables.NextMap = new Map(Server.MapName, Server.MapName, false, "", false, false, 0, 64);
+                GlobalVariables.NextMap = new Map(Server.MapName, Server.MapName, false, "", false, false, 0, 64, "", "");
             }
         }
 
@@ -400,6 +402,33 @@ namespace MapCycleAndChooser_COFYYE.Utils
             }
 
             return HookResult.Continue;
+        }
+
+        public static bool CheckMapInCycleTime(Map map)
+        {
+            var start = map.CycleStartTime;
+            var end = map.CycleEndTime;
+
+            // if both are empty, lets ignore the setting
+            if (string.IsNullOrWhiteSpace(start) && string.IsNullOrWhiteSpace(end))
+            {
+                return true;
+            }
+
+            var now = DateTime.Now;
+            var parsedStart = DateTime.ParseExact(start, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
+            var parsedEnd = DateTime.ParseExact(start, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
+            var startTime = now.Date.Add(parsedStart.TimeOfDay);
+            var endTime = now.Date.Add(parsedEnd.TimeOfDay);
+
+            // if 'start' - 'end' into the next day
+            // example: 23:00 - 05:00
+            if (startTime > endTime)
+            {
+                endTime.AddDays(1);
+            }
+
+            return now >= startTime && now <= endTime;
         }
     }
 }
