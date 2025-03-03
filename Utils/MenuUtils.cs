@@ -5,6 +5,9 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Timers;
 using MapCycleAndChooser_COFYYE.Classes;
 using MapCycleAndChooser_COFYYE.Variables;
+using Microsoft.Extensions.Logging;
+using Menu;
+using Menu.Enums;
 
 namespace MapCycleAndChooser_COFYYE.Utils
 {
@@ -129,6 +132,129 @@ namespace MapCycleAndChooser_COFYYE.Utils
         //        MenuAPI.CloseActiveMenu(player);
         //    }
         //}
+
+        public static void ShowKitsuneMenuVoteMaps(CCSPlayerController player)
+        {
+            if (GlobalVariables.KitsuneMenu == null)
+            {
+                Instance?.Logger.LogError("Menu object is null. Cannot show fortnite menu to {PlayerName}.", player?.PlayerName);
+                return;
+            }
+
+            string playerSteamId = player.SteamID.ToString();
+            if (!PlayersMenu.TryGetValue(playerSteamId, out PlayerMenu? pm)) return;
+
+            List<MenuItem> items = [];
+            var mapsDict = new Dictionary<int, object>();
+            int i = 0;
+
+            string mapTitle = Instance?.Localizer?.ForPlayer(player, "menu.item.map") ?? "";
+            foreach (Map map in GlobalVariables.MapForVotes)
+            {
+                string mapText = map != null
+                    ? (Instance?.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay)
+                    : "Unknown Map";
+
+                items.Add(new MenuItem(MenuItemType.Button, [new MenuValue(mapTitle.Replace("{MAP_NAME}", mapText))]));
+                mapsDict[i++] = mapText;
+            }
+
+            GlobalVariables.KitsuneMenu?.ShowScrollableMenu(player, Instance?.Localizer.ForPlayer(player, "menu.title.vote") ?? "", items, (buttons, menu, selected) =>
+            {
+                if (selected == null) return;
+
+                if (buttons == MenuButtons.Select && mapsDict.TryGetValue(menu.Option, out var mapSelected) && !pm.Selected)
+                {
+                    var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+
+                    if (Instance?.Config?.EnablePlayerVotingInChat == true)
+                    {
+                        foreach (var p in players)
+                        {
+                            p.PrintToChat(Instance.Localizer.ForPlayer(p, "vote.player").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", (string)mapSelected));
+                        }
+                    }
+
+                    MapUtils.AddPlayerToVotes((string)mapSelected, playerSteamId);
+
+                    PlayersMenu[playerSteamId].Selected = true;
+                    player.ExecuteClientCommand("play sounds/ui/item_sticker_select.vsnd_c");
+                }
+            }, false, freezePlayer: Instance?.Config?.EnablePlayerFreezeInMenu ?? false, defaultValues: mapsDict, disableDeveloper: true);
+        }
+
+        public static void ShowKitsuneMenuMaps(CCSPlayerController player)
+        {
+            if (GlobalVariables.KitsuneMenu == null)
+            {
+                Instance?.Logger.LogError("Menu object is null. Cannot show fortnite menu to {PlayerName}.", player?.PlayerName);
+                return;
+            }
+
+            string playerSteamId = player.SteamID.ToString();
+            if (!PlayersMenu.TryGetValue(playerSteamId, out PlayerMenu? pm)) return;
+
+            List<MenuItem> items = [];
+            var mapsDict = new Dictionary<int, object>();
+            int i = 0;
+
+            string mapTitle = Instance?.Localizer?.ForPlayer(player, "menu.item.map") ?? "";
+            foreach (Map map in GlobalVariables.Maps)
+            {
+                string mapText = map != null
+                    ? (Instance?.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay)
+                    : "Unknown Map";
+
+                items.Add(new MenuItem(MenuItemType.Button, [new MenuValue(mapTitle.Replace("{MAP_NAME}", mapText))]));
+                mapsDict[i++] = mapText;
+            }
+
+            GlobalVariables.KitsuneMenu?.ShowScrollableMenu(player, Instance?.Localizer.ForPlayer(player, "menu.title.maps") ?? "", items, (buttons, menu, selected) =>
+            {
+                if (selected == null) return;
+
+                if(buttons == MenuButtons.Select && mapsDict.TryGetValue(menu.Option, out var mapSelected))
+                {
+                    Map? map = GlobalVariables.Maps.Find(map => map.MapValue == (string)mapSelected || map.MapDisplay == (string)mapSelected);
+
+                    if (map != null)
+                    {
+                        var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+
+                        foreach (var p in players)
+                        {
+                            p.PrintToChat(Instance?.Localizer.ForPlayer(p, "admin.change.map").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", (string)mapSelected) ?? "");
+                        }
+
+                        player.ExecuteClientCommand("play sounds/ui/item_sticker_select.vsnd_c");
+
+                        Instance?.AddTimer(2.0f, () =>
+                        {
+                            GlobalVariables.LastMap = Server.MapName;
+                            if (map.MapIsWorkshop)
+                            {
+                                if (string.IsNullOrEmpty(map.MapWorkshopId))
+                                {
+                                    Server.ExecuteCommand($"ds_workshop_changelevel {map.MapValue}");
+                                }
+                                else
+                                {
+                                    Server.ExecuteCommand($"host_workshop_map {map.MapWorkshopId}");
+                                }
+                            }
+                            else
+                            {
+                                Server.ExecuteCommand($"changelevel {map.MapValue}");
+                            }
+                        }, TimerFlags.STOP_ON_MAPCHANGE);
+                    }
+                    else
+                    {
+                        player.PrintToChat(Instance?.Localizer.ForPlayer(player, "map.not.found") ?? "");
+                    }
+                }
+            }, false, freezePlayer: Instance?.Config?.EnablePlayerFreezeInMenu ?? false, defaultValues: mapsDict, disableDeveloper: true);
+        }
 
         public static void CreateAndOpenHtmlVoteMenu(CCSPlayerController player)
         {
@@ -335,158 +461,6 @@ namespace MapCycleAndChooser_COFYYE.Utils
             if (startIndex + visibleOptions < menuValues.ToArray().Length)
             {
                 string moreItemsIndicator = Instance?.Localizer.ForPlayer(player, "menu.more.items") ?? "";
-                builder.AppendLine(moreItemsIndicator);
-            }
-
-            builder.AppendLine(bottomMenu);
-            builder.AppendLine("</div>");
-
-            string centerhtml = builder.ToString();
-
-            if (string.IsNullOrEmpty(PlayersMenu[playerSteamId].Html)) PlayersMenu[playerSteamId].Html = centerhtml;
-
-            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70)
-            {
-                PlayersMenu[playerSteamId].Html = centerhtml;
-                GlobalVariables.Timers.Restart();
-            }
-
-            player?.PrintToCenterHtml(PlayersMenu[playerSteamId].Html);
-        }
-
-        public static void CreateAndOpenHtmlMapsMenu(CCSPlayerController player)
-        {
-            string playerSteamId = player.SteamID.ToString();
-            if (!PlayersMenu.TryGetValue(playerSteamId, out PlayerMenu? pm)) return;
-
-            List<string> menuValues = [];
-
-            foreach (Map map in GlobalVariables.Maps)
-            {
-                menuValues.Add(Instance.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay);
-            }
-
-            int currentIndex = PlayersMenu[playerSteamId].CurrentIndex;
-            currentIndex = Math.Max(0, Math.Min(menuValues.ToArray().Length - 1, currentIndex));
-
-            string bottomMenu = Instance.Localizer.ForPlayer(player, "menu.bottom.maps");
-            string imageleft = Instance.Localizer.ForPlayer(player, "menu.item.left");
-            string imageRight = Instance.Localizer.ForPlayer(player, "menu.item.right");
-
-            int visibleOptions = 4;
-            int startIndex = Math.Max(0, currentIndex - (visibleOptions - 1));
-
-            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70 && !pm.Selected)
-            {
-                switch (player.Buttons)
-                {
-                    case 0:
-                        {
-                            pm.ButtonPressed = false;
-                            break;
-                        }
-                    case PlayerButtons.Back:
-                        {
-                            currentIndex = Math.Min(menuValues.ToArray().Length - 1, currentIndex + 1);
-                            pm.CurrentIndex = currentIndex;
-                            player.ExecuteClientCommand("play sounds/ui/csgo_ui_contract_type4.vsnd_c");
-                            pm.ButtonPressed = true;
-                            break;
-                        }
-                    case PlayerButtons.Forward:
-                        {
-                            currentIndex = Math.Max(0, currentIndex - 1);
-                            pm.CurrentIndex = currentIndex;
-                            player.ExecuteClientCommand("play sounds/ui/csgo_ui_contract_type4.vsnd_c");
-                            pm.ButtonPressed = true;
-                            break;
-                        }
-                    case PlayerButtons.Reload:
-                        {
-                            PlayersMenu[playerSteamId].MenuOpened = false;
-                            pm.ButtonPressed = true;
-                            break;
-                        }
-                    case PlayerButtons.Use:
-                        {
-                            string currentMenuOption = menuValues.ToArray()[currentIndex];
-
-                            player.ExecuteClientCommand("play sounds/ui/item_sticker_select.vsnd_c");
-
-                            pm.ButtonPressed = true;
-                            pm.Selected = true;
-
-                            Map? map = GlobalVariables.Maps.Find(map => map.MapValue == currentMenuOption || map.MapDisplay == currentMenuOption);
-
-                            if(map != null)
-                            {
-                                var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
-
-                                foreach (var p in players)
-                                {
-                                    p.PrintToChat(Instance.Localizer.ForPlayer(p, "admin.change.map").Replace("{PLAYER_NAME}", p.PlayerName).Replace("{MAP_NAME}", currentMenuOption));
-                                }
-
-                                Instance.AddTimer(2.0f, () =>
-                                {
-                                    GlobalVariables.LastMap = Server.MapName;
-                                    if (map.MapIsWorkshop)
-                                    {
-                                        if (string.IsNullOrEmpty(map.MapWorkshopId))
-                                        {
-                                            Server.ExecuteCommand($"ds_workshop_changelevel {map.MapValue}");
-                                        }
-                                        else
-                                        {
-                                            Server.ExecuteCommand($"host_workshop_map {map.MapWorkshopId}");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Server.ExecuteCommand($"changelevel {map.MapValue}");
-                                    }
-                                }, TimerFlags.STOP_ON_MAPCHANGE);
-                            }
-                            else
-                            {
-                                player.PrintToChat(Instance.Localizer.ForPlayer(player, "map.not.found"));
-                            }
-
-                            PlayersMenu[playerSteamId].MenuOpened = false;
-
-                            break;
-                        }
-                    default:
-                        {
-                            break;
-                        }
-                }
-            }
-
-            StringBuilder builder = new();
-
-            string menuTitle = Instance.Localizer.ForPlayer(player, "menu.title.maps");
-            builder.AppendLine(menuTitle);
-
-            for (int i = startIndex; i < startIndex + visibleOptions && i < menuValues.ToArray().Length; i++)
-            {
-                string currentMenuOption = menuValues.ToArray()[i];
-
-                if (i == currentIndex)
-                {
-                    string lineHtml = $"{imageRight} {Instance.Localizer.ForPlayer(player, "menu.item.map").Replace("{MAP_NAME}", currentMenuOption)} {imageleft} <br />";
-                    builder.AppendLine(lineHtml);
-                }
-                else
-                {
-                    string lineHtml = $"{Instance.Localizer.ForPlayer(player, "menu.item.map").Replace("{MAP_NAME}", currentMenuOption)} <br />";
-                    builder.AppendLine(lineHtml);
-                }
-            }
-
-            if (startIndex + visibleOptions < menuValues.ToArray().Length)
-            {
-                string moreItemsIndicator = Instance.Localizer.ForPlayer(player, "menu.more.items");
                 builder.AppendLine(moreItemsIndicator);
             }
 

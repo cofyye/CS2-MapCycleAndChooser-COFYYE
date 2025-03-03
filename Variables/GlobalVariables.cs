@@ -1,4 +1,5 @@
 ﻿using MapCycleAndChooser_COFYYE.Classes;
+using Menu;
 using System.Diagnostics;
 
 namespace MapCycleAndChooser_COFYYE.Variables
@@ -23,6 +24,7 @@ namespace MapCycleAndChooser_COFYYE.Variables
         private static readonly Stopwatch _timers = new();
         private static CounterStrikeSharp.API.Modules.Timers.Timer? _timeleftTimer = null;
         private static CounterStrikeSharp.API.Modules.Timers.Timer? _votingTimer = null;
+        private static KitsuneMenu _kitsuneMenu { get; set; } = null!;
 
         public static List<Map> CycleMaps { get { return _cycleMaps; } set { _cycleMaps = value; } }
         public static List<Map> Maps { get { return _maps; } set { _maps = value; } }
@@ -42,5 +44,6 @@ namespace MapCycleAndChooser_COFYYE.Variables
         public static Stopwatch Timers { get { return _timers; } }
         public static CounterStrikeSharp.API.Modules.Timers.Timer? TimeLeftTimer { get { return _timeleftTimer; } set { _timeleftTimer = value; } }
         public static CounterStrikeSharp.API.Modules.Timers.Timer? VotingTimer { get { return _votingTimer; } set { _votingTimer = value; } }
+        public static KitsuneMenu KitsuneMenu { get { return _kitsuneMenu; } set { _kitsuneMenu = value; } }
     }
 }

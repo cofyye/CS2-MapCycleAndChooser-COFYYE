@@ -10,12 +10,13 @@ using MapCycleAndChooser_COFYYE.Utils;
 using MapCycleAndChooser_COFYYE.Classes;
 using CounterStrikeSharp.API.Modules.Memory;
 using MapCycleAndChooser_COFYYE.Variables;
+using Menu;
 namespace MapCycleAndChooser_COFYYE;
 
 public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 {
     public override string ModuleName => "Map Cycle and Chooser";
-    public override string ModuleVersion => "1.1";
+    public override string ModuleVersion => "1.2";
     public override string ModuleAuthor => "cofyye";
     public override string ModuleDescription => "https://github.com/cofyye";
 
@@ -36,6 +37,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         Server.ExecuteCommand($"mp_match_restart_delay {Config?.DelayToChangeMapInTheEnd ?? 10}");
         Logger.LogInformation("mp_match_restart_delay are set to {RestartDelay}.", Config?.DelayToChangeMapInTheEnd ?? 10);
 
+        Logger.LogInformation("Initialized {MapCount} maps.", GlobalVariables.Maps.Count);
         Logger.LogInformation("Initialized {MapCount} cycle maps.", GlobalVariables.CycleMaps.Count);
     }
 
@@ -65,7 +67,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         //if(Config?.EnableScreenMenu == false)
         //{
-            RegisterListener<Listeners.OnTick>(OnTick);
+            //RegisterListener<Listeners.OnTick>(OnTick);
         //}
 
         if(!GlobalVariables.Timers.IsRunning) GlobalVariables.Timers.Start();
@@ -120,6 +122,13 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         }
     }
 
+    public override void OnAllPluginsLoaded(bool hotReload)
+    {
+        base.OnAllPluginsLoaded(hotReload);
+
+        GlobalVariables.KitsuneMenu = new KitsuneMenu(this);
+    }
+
     public override void Unload(bool hotReload)
     {
         base.Load(hotReload);
@@ -141,7 +150,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
 
         //if(Config?.EnableScreenMenu == false)
         //{
-            RemoveListener<Listeners.OnTick>(OnTick);
+            //RemoveListener<Listeners.OnTick>(OnTick);
         //}
 
         if(GlobalVariables.Timers.IsRunning) GlobalVariables.Timers.Stop();
@@ -188,16 +197,7 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
             return;
         }
 
-        if (!MenuUtils.PlayersMenu.ContainsKey(caller?.SteamID.ToString() ?? "")) return;
-
-        var playerSteamId = caller?.SteamID.ToString() ?? "";
-
-        if(!string.IsNullOrEmpty(playerSteamId))
-        {
-            MenuUtils.PlayersMenu[playerSteamId].MenuOpened = true;
-        }
-
-        return;
+        MenuUtils.ShowKitsuneMenuMaps(caller!);
     }
 
     public HookResult PlayerConnectFullHandler(EventPlayerConnectFull @event, GameEventInfo info)
@@ -472,64 +472,64 @@ public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
         GlobalVariables.VotingTimer = null;
     }
 
-    public void OnTick()
-    {
-        if (GlobalVariables.VoteStarted && Config?.VoteMapEnable == true)
-        {
-            var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+    //public void OnTick()
+    //{
+    //    if (GlobalVariables.VoteStarted && Config?.VoteMapEnable == true)
+    //    {
+    //        var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
 
-            foreach (var player in players)
-            {
-                if (!MenuUtils.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
-                MenuUtils.PlayersMenu[player.SteamID.ToString()].MenuOpened = true;
+    //        foreach (var player in players)
+    //        {
+    //            if (!MenuUtils.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
+    //            MenuUtils.PlayersMenu[player.SteamID.ToString()].MenuOpened = true;
 
-                if (Config?.EnablePlayerFreezeInMenu == true)
-                {
-                    if (player.PlayerPawn.Value != null && player.PlayerPawn.Value.IsValid)
-                    {
-                        player.PlayerPawn.Value!.MoveType = MoveType_t.MOVETYPE_NONE;
-                        Schema.SetSchemaValue(player.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 0);
-                        Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
-                    }
-                }
+    //            if (Config?.EnablePlayerFreezeInMenu == true)
+    //            {
+    //                if (player.PlayerPawn.Value != null && player.PlayerPawn.Value.IsValid)
+    //                {
+    //                    player.PlayerPawn.Value!.MoveType = MoveType_t.MOVETYPE_NONE;
+    //                    Schema.SetSchemaValue(player.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 0);
+    //                    Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
+    //                }
+    //            }
 
-                MenuUtils.CreateAndOpenHtmlVoteMenu(player);
-            }
-        }
-        else if(!GlobalVariables.VoteStarted || Config?.VoteMapEnable == false)
-        {
-            var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+    //            MenuUtils.CreateAndOpenHtmlVoteMenu(player);
+    //        }
+    //    }
+    //    else if(!GlobalVariables.VoteStarted || Config?.VoteMapEnable == false)
+    //    {
+    //        var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
 
-            foreach (var player in players)
-            {
-                if (!MenuUtils.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
-                if (MenuUtils.PlayersMenu[player.SteamID.ToString()].MenuOpened)
-                {
-                    if (Config?.EnablePlayerFreezeInMenu == true)
-                    {
-                        if (player.PlayerPawn.Value != null && player.PlayerPawn.Value.IsValid)
-                        {
-                            player.PlayerPawn.Value!.MoveType = MoveType_t.MOVETYPE_NONE;
-                            Schema.SetSchemaValue(player.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 0);
-                            Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
-                        }
-                    }
+    //        foreach (var player in players)
+    //        {
+    //            if (!MenuUtils.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
+    //            if (MenuUtils.PlayersMenu[player.SteamID.ToString()].MenuOpened)
+    //            {
+    //                if (Config?.EnablePlayerFreezeInMenu == true)
+    //                {
+    //                    if (player.PlayerPawn.Value != null && player.PlayerPawn.Value.IsValid)
+    //                    {
+    //                        player.PlayerPawn.Value!.MoveType = MoveType_t.MOVETYPE_NONE;
+    //                        Schema.SetSchemaValue(player.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 0);
+    //                        Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
+    //                    }
+    //                }
 
-                    MenuUtils.CreateAndOpenHtmlMapsMenu(player);
-                }
-                else
-                {
-                    if(Config?.EnablePlayerFreezeInMenu == true)
-                    {
-                        if (player.PlayerPawn.Value != null && player.PlayerPawn.Value.IsValid)
-                        {
-                            player.PlayerPawn.Value!.MoveType = MoveType_t.MOVETYPE_WALK;
-                            Schema.SetSchemaValue(player.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 2);
-                            Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //                MenuUtils.CreateAndOpenHtmlMapsMenu(player);
+    //            }
+    //            else
+    //            {
+    //                if(Config?.EnablePlayerFreezeInMenu == true)
+    //                {
+    //                    if (player.PlayerPawn.Value != null && player.PlayerPawn.Value.IsValid)
+    //                    {
+    //                        player.PlayerPawn.Value!.MoveType = MoveType_t.MOVETYPE_WALK;
+    //                        Schema.SetSchemaValue(player.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 2);
+    //                        Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 }

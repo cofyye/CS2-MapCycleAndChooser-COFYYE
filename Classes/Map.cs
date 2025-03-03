@@ -29,9 +29,9 @@ namespace MapCycleAndChooser_COFYYE.Classes
         public int MapMaxPlayers { get; init; } = mapMaxPlayers;
 
         [JsonPropertyName("map_cycle_start_time")]
-        public string CycleStartTime { get; init; } = mapCycleStartTime;
+        public string MapCycleStartTime { get; init; } = mapCycleStartTime;
 
         [JsonPropertyName("map_cycle_end_time")]
-        public string CycleEndTime { get; init; } = mapCycleEndTime;
+        public string MapCycleEndTime { get; init; } = mapCycleEndTime;
     }
 }
