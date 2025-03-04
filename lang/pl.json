@@ -1,0 +1,45 @@
+{
+  "nextmap.get.command": "{lightpurple}[MapInfo] {yellow}Następna mapa {orange}➤➤ {lime}{MAP_NAME}",
+  "nextmap.get.command.info": "{lightpurple}[MapInfo] {yellow}Jeśli chcesz zobaczyć, jaka będzie następna mapa, wpisz {lime}!nextmap",
+  "nextmap.get.command.disabled": "{lightpurple}[MapInfo] {yellow}Komenda następnej mapy jest obecnie {lightred}wyłączona",
+  "nextmap.set.command.expected.value": "{lightpurple}[MapInfo] {yellow}Oczekiwana wartość: {orange}css_nextmap {lime}[mapa]",
+  "nextmap.set.command.new.map": "{lightpurple}[MapInfo] {yellow}Administrator {lime}{ADMIN_NAME} {yellow}zmienił następną mapę na {lime}{MAP_NAME}",
+
+  "lastmap.get.command": "{lightpurple}[MapInfo] {yellow}Ostatnia mapa {orange}➤➤ {lime}{MAP_NAME}",
+  "lastmap.get.command.info": "{lightpurple}[MapInfo] {yellow}Jeśli chcesz zobaczyć ostatnią mapę, wpisz {lime}!lastmap",
+  "lastmap.get.command.disabled": "{lightpurple}[MapInfo] {yellow}Komenda ostatniej mapy jest obecnie {lightred}wyłączona",
+  "lastmap.get.command.null": "{lightpurple}[MapInfo] {yellow}Ostatnia mapa jest obecnie niedostępna",
+
+  "currentmap.get.command": "{lightpurple}[MapInfo] {yellow}Obecna mapa {orange}➤➤ {lime}{MAP_NAME}",
+  "currentmap.get.command.info": "{lightpurple}[MapInfo] {yellow}Jeśli chcesz zobaczyć obecną mapę, wpisz {lime}!currentmap",
+  "currentmap.get.command.disabled": "{lightpurple}[MapInfo] {yellow}Komenda obecnej mapy jest obecnie {lightred}wyłączona",
+
+  "timeleft.get.command.round": "{lightpurple}[MapInfo] {yellow}Pozostały czas {orange}➤➤ {lime}{TIME_LEFT} {yellow}rundy do końca",
+  "timeleft.get.command.timeleft": "{lightpurple}[MapInfo] {yellow}Pozostały czas {orange}➤➤ {lime}{TIME_LEFT} {yellow}minut do końca",
+  "timeleft.get.command.expired": "{lightpurple}[MapInfo] {yellow}Pozostały czas {orange}➤➤ {yellow}Czas dobiegł końca",
+  "timeleft.get.command.info": "{lightpurple}[MapInfo] {yellow}Jeśli chcesz zobaczyć pozostały czas, wpisz {lime}!timeleft",
+  "timeleft.get.command.disabled": "{lightpurple}[MapInfo] {yellow}Komenda pozostałego czasu jest obecnie {lightred}wyłączona",
+
+  "admin.change.map": "{lightpurple}[MapInfo] {yellow}Administrator {lime}{PLAYER_NAME} {yellow}zmienił mapę na {lime}{MAP_NAME}",
+  "map.not.found": "{lightpurple}[MapInfo] {yellow}Nie znaleziono mapy",
+  "command.no.perm": "[MapInfo] Nie masz uprawnień do tej komendy",
+
+  "vote.started": "{lightpurple}[MapInfo] {yellow}Rozpoczęto głosowanie na następną mapę",
+  "vote.finished": "{lightpurple}[MapInfo] {yellow}Głosowanie zakończone. Następna mapa: {lime}{MAP_NAME}",
+  "vote.finished.extend.map.round": "{lightpurple}[MapInfo] {yellow}Głosowanie zakończone. Obecna mapa przedłużona o {lime}{EXTENDED_TIME} rund",
+  "vote.finished.extend.map.timeleft": "{lightpurple}[MapInfo] {yellow}Głosowanie zakończone. Obecna mapa przedłużona o {lime}{EXTENDED_TIME} minut",
+  "vote.player": "{lightpurple}[MapInfo] {yellow}Gracz {lime}{PLAYER_NAME} {yellow}zagłosował na {lime}{MAP_NAME}",
+
+  "menu.title.vote": "<b color='orange'>【</b> <span color='lime'>Głosuj na następną mapę</span> <b color='orange'>】</b> <br />",
+  "menu.title.maps": "<b color='orange'>【</b> <span color='lime'>Wybierz mapę do zmiany</span> <b color='orange'>】</b> <br />",
+  "menu.item.ignore.vote": "Ignoruj głosowanie",
+  "menu.item.extend.map.round": "Przedłuż o {EXTEND_TIME} rund",
+  "menu.item.extend.map.timeleft": "Przedłuż o {EXTEND_TIME} minut",
+  "menu.item.vote": "<span color='yellow'>{MAP_NAME}</span> <b color='orange'>•</b> <b color='lime'>{MAP_PERCENT}%</b>",
+  "menu.item.map": "<span color='yellow'>{MAP_NAME}</span>",
+  "menu.item.right": "<b color='orange'>►</b>",
+  "menu.item.left": "<b color='orange'>◄</b>",
+  "menu.more.items": "<img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''> <img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''> <img src='https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/arrow.gif?raw=true' class=''>",
+  "menu.bottom.vote": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Nawigacja</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Wybierz</span><b color='orange'>]</b> <br />",
+  "menu.bottom.maps": "<br /><b color='orange'>[</b><span color='lime'>WS</span> <b color='orange'>-</b> <span color='yellow'>Nawigacja</span><b color='orange'>] • [</b><span color='lime'>E</span> <b color='orange'>-</b> <span color='yellow'>Wybierz</span><b color='orange'>] <br /> [</b><span color='lime'>R</span> <b color='orange'>-</b> <span color='yellow'>Wyjście</span><b color='orange'>]</b> <br />"
+}
