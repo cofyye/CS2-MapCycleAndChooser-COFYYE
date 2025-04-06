@@ -10,6 +10,7 @@ using MapCycleAndChooser_COFYYE.Utils;
 using MapCycleAndChooser_COFYYE.Classes;
 using CounterStrikeSharp.API.Modules.Memory;
 using MapCycleAndChooser_COFYYE.Variables;
+using CounterStrikeSharp.API.Modules.Events;
 namespace MapCycleAndChooser_COFYYE;
 
 public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
