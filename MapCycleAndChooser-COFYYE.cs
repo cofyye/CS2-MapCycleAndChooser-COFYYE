@@ -11,6 +11,7 @@ using MapCycleAndChooser_COFYYE.Classes;
 using CounterStrikeSharp.API.Modules.Memory;
 using MapCycleAndChooser_COFYYE.Variables;
 using Menu;
+using CounterStrikeSharp.API.Modules.Events;
 namespace MapCycleAndChooser_COFYYE;
 
 public class MapCycleAndChooser : BasePlugin, IPluginConfig<Config.Config>
