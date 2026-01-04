@@ -1,0 +1,32 @@
+name: .NET Build and Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Restore local tools
+      run: dotnet tool restore
+
+    - name: Check code formatting with CSharpier
+      run: dotnet csharpier check .
+
+    - name: Build project
+      run: dotnet build --no-restore --configuration Release

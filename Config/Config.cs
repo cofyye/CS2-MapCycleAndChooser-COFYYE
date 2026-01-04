@@ -1,8 +1,8 @@
-﻿using CounterStrikeSharp.API.Core;
-using MapCycleAndChooser_COFYYE.Classes;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using CounterStrikeSharp.API.Core;
+using MapManager_COFYYE.Classes;
 
-namespace MapCycleAndChooser_COFYYE.Config
+namespace MapManager_COFYYE.Config
 {
     public class Config : BasePluginConfig
     {
@@ -17,9 +17,6 @@ namespace MapCycleAndChooser_COFYYE.Config
 
         [JsonPropertyName("depends_on_the_round")]
         public bool DependsOnTheRound { get; init; } = true;
-
-        //[JsonPropertyName("enable_screen_menu")]
-        //public bool EnableScreenMenu { get; init; } = true;
 
         [JsonPropertyName("enable_random_nextmap")]
         public bool EnableRandomNextMap { get; init; } = false;
@@ -70,53 +67,26 @@ namespace MapCycleAndChooser_COFYYE.Config
         public bool DisplayMapByValue { get; init; } = true;
 
         [JsonPropertyName("commands_css_nextmap")]
-        public List<string> CommandsCSSNextmap { get; init; } =
-        [
-            "css_nextmap",
-            "css_sledecamapa"
-        ];
+        public List<string> CommandsCSSNextmap { get; init; } = ["css_nextmap", "css_sledecamapa"];
 
         [JsonPropertyName("commands_css_maps")]
-        public List<string> CommandsCSSMaps { get; init; } =
-        [
-            "css_maps",
-            "css_mape"
-        ];
+        public List<string> CommandsCSSMaps { get; init; } = ["css_maps", "css_mape"];
 
         [JsonPropertyName("commands_nextmap")]
-        public List<string> CommandsNextMap { get; init; } =
-        [
-            "!nextmap",
-            "!sledecamapa"
-        ];
+        public List<string> CommandsNextMap { get; init; } = ["!nextmap", "!sledecamapa"];
 
         [JsonPropertyName("commands_lastmap")]
-        public List<string> CommandsLastMap { get; init; } =
-        [
-            "!lastmap",
-            "!proslamapa"
-        ];
+        public List<string> CommandsLastMap { get; init; } = ["!lastmap", "!proslamapa"];
 
         [JsonPropertyName("commands_currentmap")]
-        public List<string> CommandsCurrentMap { get; init; } =
-        [
-            "!currentmap",
-            "!trenutnamapa"
-        ];
+        public List<string> CommandsCurrentMap { get; init; } = ["!currentmap", "!trenutnamapa"];
 
         [JsonPropertyName("commands_timeleft")]
-        public List<string> CommandsTimeLeft { get; init; } =
-        [
-            "!timeleft",
-            "!preostalovreme"
-        ];
+        public List<string> CommandsTimeLeft { get; init; } = ["!timeleft", "!preostalovreme"];
 
         [JsonPropertyName("sounds")]
-        public List<string> Sounds { get; init; } = 
-        [
-            "sounds/voice/gman_choose1.vsnd_c",
-            "sounds/voice/gman_choose2.vsnd_c"
-        ];
+        public List<string> Sounds { get; init; } =
+        ["sounds/voice/gman_choose1.vsnd_c", "sounds/voice/gman_choose2.vsnd_c"];
 
         [JsonPropertyName("maps")]
         public List<Map> Maps { get; init; } =
@@ -129,7 +99,7 @@ namespace MapCycleAndChooser_COFYYE.Config
             new Map("de_nuke", "De Nuke", false, "", true, true, 0, 64),
             new Map("de_anubis", "De Anubis", false, "", true, true, 0, 64),
             new Map("de_ancient", "De Ancient", false, "", true, true, 0, 64),
-            new Map("de_inferno", "De Inferno", false, "", true, true, 0, 64)
+            new Map("de_inferno", "De Inferno", false, "", true, true, 0, 64),
         ];
     }
 }

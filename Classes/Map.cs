@@ -1,8 +1,17 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MapCycleAndChooser_COFYYE.Classes
+namespace MapManager_COFYYE.Classes
 {
-    public class Map(string mapValue, string mapDisplay, bool mapIsWorkshop, string mapWorkshopId, bool mapCycleEnabled, bool mapCanVote, int mapMinPlayers, int mapMaxPlayers)
+    public class Map(
+        string mapValue,
+        string mapDisplay,
+        bool mapIsWorkshop,
+        string mapWorkshopId,
+        bool mapCycleEnabled,
+        bool mapCanVote,
+        int mapMinPlayers,
+        int mapMaxPlayers
+    )
     {
         [JsonPropertyName("map_value")]
         public string MapValue { get; init; } = mapValue;

@@ -4,27 +4,28 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
-using MapCycleAndChooser_COFYYE.Classes;
-using MapCycleAndChooser_COFYYE.Variables;
+using MapManager_COFYYE.Classes;
+using MapManager_COFYYE.Variables;
 using Microsoft.Extensions.Logging;
 
-namespace MapCycleAndChooser_COFYYE.Utils
+namespace MapManager_COFYYE.Utils
 {
     public static class MapUtils
     {
-        public static MapCycleAndChooser Instance => MapCycleAndChooser.Instance;
+        public static MapManager Instance => MapManager.Instance;
+
         public static void PopulateMapsForVotes()
         {
             var random = new Random();
 
-            int currentPlayers = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p)).Count();
+            int currentPlayers = Utilities.GetPlayers().Count(p => PlayerUtils.IsValidPlayer(p));
 
-            var eligibleMaps = GlobalVariables.CycleMaps
-                .Where(map =>
-                    map.MapValue != Server.MapName &&
-                    map.MapCanVote &&
-                    map.MapMinPlayers <= currentPlayers &&
-                    map.MapMaxPlayers >= currentPlayers
+            var eligibleMaps = GlobalVariables
+                .CycleMaps.Where(map =>
+                    map.MapValue != Server.MapName
+                    && map.MapCanVote
+                    && map.MapMinPlayers <= currentPlayers
+                    && map.MapMaxPlayers >= currentPlayers
                 )
                 .ToList();
 
@@ -68,48 +69,89 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             double maxPercentage = mapPercentages.Values.Max();
 
-            var topMaps = GlobalVariables.MapForVotes
-                .Where(map =>
+            var topMaps = GlobalVariables
+                .MapForVotes.Where(map =>
                 {
-                    var mapValuePercentageExists = mapPercentages.TryGetValue(map.MapValue, out var mapValuePercentage);
-                    var mapDisplayPercentageExists = mapPercentages.TryGetValue(map.MapDisplay, out var mapDisplayPercentage);
+                    var mapValuePercentageExists = mapPercentages.TryGetValue(
+                        map.MapValue,
+                        out var mapValuePercentage
+                    );
+                    var mapDisplayPercentageExists = mapPercentages.TryGetValue(
+                        map.MapDisplay,
+                        out var mapDisplayPercentage
+                    );
 
-                    return (mapValuePercentageExists && mapValuePercentage == maxPercentage) ||
-                           (mapDisplayPercentageExists && mapDisplayPercentage == maxPercentage);
+                    return (mapValuePercentageExists && mapValuePercentage == maxPercentage)
+                        || (mapDisplayPercentageExists && mapDisplayPercentage == maxPercentage);
                 })
                 .ToList();
 
             if (GlobalVariables.Votes.ContainsKey("{menu.item.ignore.vote}"))
             {
-                var ignoreVotePercentage = mapPercentages.GetValueOrDefault("{menu.item.ignore.vote}", 0);
+                var ignoreVotePercentage = mapPercentages.GetValueOrDefault(
+                    "{menu.item.ignore.vote}",
+                    0
+                );
                 if (ignoreVotePercentage == maxPercentage)
                 {
-                    topMaps.Add(new Map("{menu.item.ignore.vote}", "Ignore Vote", false, "", true, true, 0, 64));
+                    topMaps.Add(
+                        new Map(
+                            "{menu.item.ignore.vote}",
+                            "Ignore Vote",
+                            false,
+                            "",
+                            true,
+                            true,
+                            0,
+                            64
+                        )
+                    );
                 }
             }
 
             if (GlobalVariables.Votes.ContainsKey("{menu.item.extend.map}"))
             {
-                var extendMapPercentage = mapPercentages.GetValueOrDefault("{menu.item.extend.map}", 0);
+                var extendMapPercentage = mapPercentages.GetValueOrDefault(
+                    "{menu.item.extend.map}",
+                    0
+                );
                 if (extendMapPercentage == maxPercentage)
                 {
-                    topMaps.Add(new Map("{menu.item.extend.map}", "Extend Map", false, "", true, true, 0, 64));
+                    topMaps.Add(
+                        new Map(
+                            "{menu.item.extend.map}",
+                            "Extend Map",
+                            false,
+                            "",
+                            true,
+                            true,
+                            0,
+                            64
+                        )
+                    );
                 }
             }
 
-            var ignoreVoteOption = topMaps.FirstOrDefault(map => map.MapValue.Equals("{menu.item.ignore.vote}", StringComparison.OrdinalIgnoreCase));
+            var ignoreVoteOption = topMaps.FirstOrDefault(map =>
+                map.MapValue.Equals("{menu.item.ignore.vote}", StringComparison.OrdinalIgnoreCase)
+            );
             if (ignoreVoteOption != null)
             {
                 if (GlobalVariables.MapForVotes.Count != 0)
                 {
                     var random = new Random();
-                    return (GlobalVariables.MapForVotes[random.Next(GlobalVariables.MapForVotes.Count)], "ignorevote");
+                    return (
+                        GlobalVariables.MapForVotes[random.Next(GlobalVariables.MapForVotes.Count)],
+                        "ignorevote"
+                    );
                 }
 
                 return (null, "ignorevote");
             }
 
-            var extendMapOption = topMaps.FirstOrDefault(map => map.MapValue.Equals("{menu.item.extend.map}", StringComparison.OrdinalIgnoreCase));
+            var extendMapOption = topMaps.FirstOrDefault(map =>
+                map.MapValue.Equals("{menu.item.extend.map}", StringComparison.OrdinalIgnoreCase)
+            );
             if (extendMapOption != null)
             {
                 return (null, "extendmap");
@@ -130,7 +172,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
             {
                 if (Instance?.Config?.EnableRandomNextMap == true)
                 {
-                    GlobalVariables.NextMap = GlobalVariables.CycleMaps[new Random().Next(GlobalVariables.CycleMaps.Count)];
+                    GlobalVariables.NextMap = GlobalVariables.CycleMaps[
+                        new Random().Next(GlobalVariables.CycleMaps.Count)
+                    ];
                 }
                 else
                 {
@@ -139,14 +183,25 @@ namespace MapCycleAndChooser_COFYYE.Utils
                         GlobalVariables.NextMapIndex = 0;
                     }
 
-                    GlobalVariables.NextMap = GlobalVariables.CycleMaps[GlobalVariables.NextMapIndex];
+                    GlobalVariables.NextMap = GlobalVariables.CycleMaps[
+                        GlobalVariables.NextMapIndex
+                    ];
 
                     GlobalVariables.NextMapIndex += 1;
                 }
             }
             else
             {
-                GlobalVariables.NextMap = new Map(Server.MapName, Server.MapName, false, "", false, false, 0, 64);
+                GlobalVariables.NextMap = new Map(
+                    Server.MapName,
+                    Server.MapName,
+                    false,
+                    "",
+                    false,
+                    false,
+                    0,
+                    64
+                );
             }
         }
 
@@ -201,7 +256,12 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 minValue = (Instance?.Config?.VoteTriggerTimeBeforeMapEnd ?? 3) * 60; // from minutes to seconds
             }
 
-            if (maxLimit > 0 && !GlobalVariables.VoteStarted && !GlobalVariables.VotedForCurrentMap && ServerUtils.GetGameRules()?.WarmupPeriod == false)
+            if (
+                maxLimit > 0
+                && !GlobalVariables.VoteStarted
+                && !GlobalVariables.VotedForCurrentMap
+                && ServerUtils.GetGameRules()?.WarmupPeriod == false
+            )
             {
                 if (Instance?.Config?.DependsOnTheRound == true)
                 {
@@ -214,12 +274,14 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
                 if (timeLeft <= minValue)
                 {
-                    MapUtils.PopulateMapsForVotes();
+                    PopulateMapsForVotes();
 
                     if (GlobalVariables.MapForVotes.Count < 1)
                     {
                         GlobalVariables.VotedForCurrentMap = true;
-                        Instance?.Logger.LogInformation("The list of voting maps is empty. I'm suspending the vote.");
+                        Instance?.Logger.LogInformation(
+                            "The list of voting maps is empty. I'm suspending the vote."
+                        );
 
                         return HookResult.Continue;
                     }
@@ -232,14 +294,19 @@ namespace MapCycleAndChooser_COFYYE.Utils
                         }
                     }
 
-                    if (Instance?.Config?.DependsOnTheRound == true && Instance?.Config?.VoteMapOnFreezeTime == true)
+                    if (
+                        Instance?.Config?.DependsOnTheRound == true
+                        && Instance?.Config?.VoteMapOnFreezeTime == true
+                    )
                     {
-                        Server.ExecuteCommand($"mp_freezetime {(Instance?.Config?.VoteMapDuration ?? GlobalVariables.FreezeTime) + 2}");
+                        Server.ExecuteCommand(
+                            $"mp_freezetime {(Instance?.Config?.VoteMapDuration ?? GlobalVariables.FreezeTime) + 2}"
+                        );
                     }
                 }
                 else
                 {
-                    if(Instance?.Config?.DependsOnTheRound == true)
+                    if (Instance?.Config?.DependsOnTheRound == true)
                     {
                         Server.ExecuteCommand($"mp_freezetime {GlobalVariables.FreezeTime}");
                     }
@@ -264,7 +331,7 @@ namespace MapCycleAndChooser_COFYYE.Utils
 
             if (Instance?.Config?.DependsOnTheRound == true)
             {
-                maxLimit = (float)(ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0);
+                maxLimit = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0;
                 minValue = Instance?.Config?.VoteTriggerTimeBeforeMapEnd ?? 3; // rounds
             }
             else
@@ -273,9 +340,14 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 minValue = (Instance?.Config?.VoteTriggerTimeBeforeMapEnd ?? 3) * 60; // from minutes to seconds
             }
 
-            if (maxLimit > 0 && !GlobalVariables.VoteStarted && !GlobalVariables.VotedForCurrentMap && ServerUtils.GetGameRules()?.WarmupPeriod == false)
+            if (
+                maxLimit > 0
+                && !GlobalVariables.VoteStarted
+                && !GlobalVariables.VotedForCurrentMap
+                && ServerUtils.GetGameRules()?.WarmupPeriod == false
+            )
             {
-                if(Instance?.Config?.DependsOnTheRound == true)
+                if (Instance?.Config?.DependsOnTheRound == true)
                 {
                     timeLeft = maxLimit - ServerUtils.GetGameRules()?.TotalRoundsPlayed ?? 0;
                 }
@@ -288,7 +360,9 @@ namespace MapCycleAndChooser_COFYYE.Utils
                 {
                     if (GlobalVariables.MapForVotes.Count < 1)
                     {
-                        Instance?.Logger.LogInformation("The list of voting maps is empty. I'm suspending the vote.");
+                        Instance?.Logger.LogInformation(
+                            "The list of voting maps is empty. I'm suspending the vote."
+                        );
 
                         return HookResult.Continue;
                     }
@@ -301,101 +375,143 @@ namespace MapCycleAndChooser_COFYYE.Utils
                     string? soundToPlay = "";
                     if (Instance?.Config?.Sounds.Count > 0)
                     {
-                        soundToPlay = Instance?.Config.Sounds[new Random().Next(Instance?.Config?.Sounds.Count ?? 1)];
+                        soundToPlay = Instance
+                            ?.Config
+                            .Sounds[new Random().Next(Instance?.Config?.Sounds.Count ?? 1)];
                     }
 
                     foreach (var player in players)
                     {
-                        player.PrintToChat(Instance?.Localizer.ForPlayer(player, "vote.started") ?? "");
+                        player.PrintToChat(
+                            Instance?.Localizer.ForPlayer(player, "vote.started") ?? ""
+                        );
 
                         if (!string.IsNullOrEmpty(soundToPlay))
                         {
                             player.ExecuteClientCommand($"play {soundToPlay}");
                         }
-
-                        //if(Instance?.Config.EnableScreenMenu == true)
-                        //{
-                        //    MenuUtils.CreateAndOpenScreenVoteMenu(player);
-                        //}
                     }
 
-                    float duration = (float)(Instance?.Config?.VoteMapDuration ?? 15);
+                    float duration = Instance?.Config?.VoteMapDuration ?? 15;
 
-                    Instance?.AddTimer(duration, () => {
-                        var (winningMap, type) = MapUtils.GetWinningMap();
+                    Instance?.AddTimer(
+                        duration,
+                        () =>
+                        {
+                            var (winningMap, type) = GetWinningMap();
 
-                        if (winningMap != null)
-                        {
-                            GlobalVariables.NextMap = winningMap;
-                        }
-                        else if (winningMap == null && type == "extendmap")
-                        {
-                            if(Instance?.Config?.DependsOnTheRound == true)
+                            if (winningMap != null)
                             {
-                                Server.ExecuteCommand($"mp_maxrounds {(int)timeLeft + Instance?.Config?.ExtendMapTime ?? 5}");
+                                GlobalVariables.NextMap = winningMap;
                             }
-                            else
+                            else if (winningMap == null && type == "extendmap")
                             {
-                                Server.ExecuteCommand($"mp_timelimit {Math.Ceiling((float)timeLeft / 60) + Instance?.Config?.ExtendMapTime ?? 5}");
-                            }
-                            GlobalVariables.VotedForExtendMap = true;
-                            GlobalVariables.VotedForCurrentMap = false;
-                        }
-                        else if (winningMap == null && type == "ignorevote")
-                        {
-                            GlobalVariables.NextMap = GlobalVariables.CycleMaps.FirstOrDefault();
-                        }
-                        else
-                        {
-                            Instance?.Logger.LogInformation("Winning map is null.");
-                        }
-
-                        GlobalVariables.Votes.Clear();
-                        GlobalVariables.MapForVotes.Clear();
-
-                        var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
-
-                        foreach (var player in players)
-                        {
-                            if (type == "extendmap")
-                            {
-                                player.PrintToChat(Instance?.Localizer.ForPlayer(player, "vote.finished.extend.map.round").Replace("{EXTENDED_TIME}", Instance?.Config?.ExtendMapTime.ToString()) ?? "");
-                            }
-                            else
-                            {
-                                player.PrintToChat(Instance?.Localizer.ForPlayer(player, "vote.finished").Replace("{MAP_NAME}", GlobalVariables.NextMap?.MapValue) ?? "");
-                            }
-
-                            if (!MenuUtils.PlayersMenu.ContainsKey(player.SteamID.ToString())) continue;
-                            MenuUtils.PlayersMenu[player.SteamID.ToString()].MenuOpened = false;
-                            MenuUtils.PlayersMenu[player.SteamID.ToString()].Selected = false;
-                            MenuUtils.PlayersMenu[player.SteamID.ToString()].Html = "";
-
-                            if (Instance?.Config?.EnablePlayerFreezeInMenu == true)
-                            {
-                                if (player.PlayerPawn.Value != null && player.PlayerPawn.Value.IsValid)
+                                if (Instance?.Config?.DependsOnTheRound == true)
                                 {
-                                    player.PlayerPawn.Value!.MoveType = MoveType_t.MOVETYPE_WALK;
-                                    Schema.SetSchemaValue(player.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 2);
-                                    Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
+                                    Server.ExecuteCommand(
+                                        $"mp_maxrounds {(int)timeLeft + Instance?.Config?.ExtendMapTime ?? 5}"
+                                    );
+                                }
+                                else
+                                {
+                                    Server.ExecuteCommand(
+                                        $"mp_timelimit {Math.Ceiling((float)timeLeft / 60) + Instance?.Config?.ExtendMapTime ?? 5}"
+                                    );
+                                }
+                                GlobalVariables.VotedForExtendMap = true;
+                                GlobalVariables.VotedForCurrentMap = false;
+                            }
+                            else if (winningMap == null && type == "ignorevote")
+                            {
+                                GlobalVariables.NextMap =
+                                    GlobalVariables.CycleMaps.FirstOrDefault();
+                            }
+                            else
+                            {
+                                Instance?.Logger.LogInformation("Winning map is null.");
+                            }
+
+                            GlobalVariables.Votes.Clear();
+                            GlobalVariables.MapForVotes.Clear();
+
+                            var players = Utilities
+                                .GetPlayers()
+                                .Where(p => PlayerUtils.IsValidPlayer(p));
+
+                            foreach (var player in players)
+                            {
+                                if (type == "extendmap")
+                                {
+                                    player.PrintToChat(
+                                        Instance
+                                            ?.Localizer.ForPlayer(
+                                                player,
+                                                "vote.finished.extend.map.round"
+                                            )
+                                            .Replace(
+                                                "{EXTENDED_TIME}",
+                                                Instance?.Config?.ExtendMapTime.ToString()
+                                            )
+                                            ?? ""
+                                    );
+                                }
+                                else
+                                {
+                                    player.PrintToChat(
+                                        Instance
+                                            ?.Localizer.ForPlayer(player, "vote.finished")
+                                            .Replace(
+                                                "{MAP_NAME}",
+                                                GlobalVariables.NextMap?.MapValue
+                                            )
+                                            ?? ""
+                                    );
+                                }
+
+                                if (!MenuUtils.PlayersMenu.ContainsKey(player.SteamID.ToString()))
+                                    continue;
+                                MenuUtils.PlayersMenu[player.SteamID.ToString()].MenuOpened = false;
+                                MenuUtils.PlayersMenu[player.SteamID.ToString()].Selected = false;
+                                MenuUtils.PlayersMenu[player.SteamID.ToString()].Html = "";
+
+                                if (Instance?.Config?.EnablePlayerFreezeInMenu == true)
+                                {
+                                    if (
+                                        player.PlayerPawn.Value != null
+                                        && player.PlayerPawn.Value.IsValid
+                                    )
+                                    {
+                                        player.PlayerPawn.Value!.MoveType =
+                                            MoveType_t.MOVETYPE_WALK;
+                                        Schema.SetSchemaValue(
+                                            player.PlayerPawn.Value.Handle,
+                                            "CBaseEntity",
+                                            "m_nActualMoveType",
+                                            2
+                                        );
+                                        Utilities.SetStateChanged(
+                                            player.PlayerPawn.Value,
+                                            "CBaseEntity",
+                                            "m_MoveType"
+                                        );
+                                    }
                                 }
                             }
-                        }
 
-                        GlobalVariables.VoteStarted = false;
+                            GlobalVariables.VoteStarted = false;
 
-                        Instance?.AddTimer(1.0f, () => GlobalVariables.IsVotingInProgress = false);
+                            Instance?.AddTimer(
+                                1.0f,
+                                () => GlobalVariables.IsVotingInProgress = false
+                            );
 
-                        if(type != "extendmap")
-                        {
-                            GlobalVariables.VotedForCurrentMap = true;
-                        }
-
-                        //if (Instance?.Config?.EnableScreenMenu == true)
-                        //{
-                        //    MenuUtils.CloseScreenMenu();
-                        //}
-                    }, TimerFlags.STOP_ON_MAPCHANGE);
+                            if (type != "extendmap")
+                            {
+                                GlobalVariables.VotedForCurrentMap = true;
+                            }
+                        },
+                        TimerFlags.STOP_ON_MAPCHANGE
+                    );
                 }
             }
 
