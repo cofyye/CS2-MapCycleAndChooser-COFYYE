@@ -36,11 +36,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         GlobalVariables.CycleMaps =
             Config?.Maps?.Where(map => map.MapCycleEnabled == true).ToList() ?? [];
 
-        Server.ExecuteCommand($"mp_match_restart_delay {Config?.DelayToChangeMapInTheEnd ?? 10}");
-        Logger.LogInformation(
-            "mp_match_restart_delay are set to {RestartDelay}.",
-            Config?.DelayToChangeMapInTheEnd ?? 10
-        );
+        ServerUtils.RunCvars();
 
         Logger.LogInformation(
             "Initialized {MapCount} cycle maps.",
@@ -356,6 +352,8 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 
     public HookResult RoundStartHandler(EventRoundStart @event, GameEventInfo info)
     {
+        ServerUtils.RunCvars();
+
         if (@event == null)
             return HookResult.Continue;
 
@@ -369,6 +367,8 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 
     public HookResult RoundEndHandler(EventRoundEnd @event, GameEventInfo info)
     {
+        ServerUtils.RunCvars();
+
         if (@event == null)
             return HookResult.Continue;
 

@@ -1,7 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
-using MapManager_COFYYE;
 using MapManager_COFYYE.Variables;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +9,29 @@ namespace MapManager_COFYYE.Utils
     public static class ServerUtils
     {
         public static MapManager Instance => MapManager.Instance;
+
+        public static void RunCvars()
+        {
+            Server.ExecuteCommand(
+                $"mp_match_restart_delay {Instance?.Config?.DelayToChangeMapInTheEnd ?? 10}"
+            );
+            Instance?.Logger.LogInformation(
+                "mp_match_restart_delay are set to {RestartDelay}.",
+                Instance?.Config?.DelayToChangeMapInTheEnd ?? 10
+            );
+
+            Server.ExecuteCommand("mp_match_can_clinch 0");
+            Instance?.Logger.LogInformation("mp_match_can_clinch are set to 0.");
+
+            Server.ExecuteCommand("mp_endmatch_votenextmap 0");
+            Instance?.Logger.LogInformation("mp_endmatch_votenextmap are set to 0.");
+
+            Server.ExecuteCommand("mp_endmatch_votenextleveltime 0");
+            Instance?.Logger.LogInformation("mp_endmatch_votenextleveltime are set to 0.");
+
+            Server.ExecuteCommand("mp_halftime 0");
+            Instance?.Logger.LogInformation("mp_halftime are set to 0.");
+        }
 
         public static void InitializeCvars()
         {
