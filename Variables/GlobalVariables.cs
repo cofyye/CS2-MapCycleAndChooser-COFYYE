@@ -1,7 +1,7 @@
-﻿using MapCycleAndChooser_COFYYE.Classes;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using MapManager_COFYYE.Classes;
 
-namespace MapCycleAndChooser_COFYYE.Variables
+namespace MapManager_COFYYE.Variables
 {
     public static class GlobalVariables
     {
@@ -24,23 +24,92 @@ namespace MapCycleAndChooser_COFYYE.Variables
         private static CounterStrikeSharp.API.Modules.Timers.Timer? _timeleftTimer = null;
         private static CounterStrikeSharp.API.Modules.Timers.Timer? _votingTimer = null;
 
-        public static List<Map> CycleMaps { get { return _cycleMaps; } set { _cycleMaps = value; } }
-        public static List<Map> Maps { get { return _maps; } set { _maps = value; } }
-        public static List<Map> MapForVotes { get { return _mapForVotes; } }
-        public static bool VoteStarted { get { return _voteStarted; } set { _voteStarted = value; } }
-        public static bool VotedForCurrentMap { get { return _votedForCurrentMap; } set { _votedForCurrentMap = value; } }
-        public static bool VotedForExtendMap { get { return _votedForExtendMap; } set { _votedForExtendMap = value; } }
-        public static bool IsVotingInProgress { get { return _isVotingInProgress; } set { _isVotingInProgress = value; } }
-        public static Map? NextMap { get { return _nextmap; } set { _nextmap = value; } }
-        public static string LastMap { get { return _lastmap; } set { _lastmap = value; } }
-        public static float TimeLeft { get { return _timeleft; } set { _timeleft = value; } }
-        public static float CurrentTime { get { return _currentTime; } set { _currentTime = value; } }
-        public static int MessageIndex { get { return _messageIndex; } set { _messageIndex = value; } }
-        public static int NextMapIndex { get { return _nextmapIndex; } set { _nextmapIndex = value; } }
-        public static Dictionary<string, List<string>> Votes { get { return _votes; } }
-        public static int FreezeTime { get { return _freezeTime; } set { _freezeTime = value; } }
-        public static Stopwatch Timers { get { return _timers; } }
-        public static CounterStrikeSharp.API.Modules.Timers.Timer? TimeLeftTimer { get { return _timeleftTimer; } set { _timeleftTimer = value; } }
-        public static CounterStrikeSharp.API.Modules.Timers.Timer? VotingTimer { get { return _votingTimer; } set { _votingTimer = value; } }
+        public static List<Map> CycleMaps
+        {
+            get { return _cycleMaps; }
+            set { _cycleMaps = value; }
+        }
+        public static List<Map> Maps
+        {
+            get { return _maps; }
+            set { _maps = value; }
+        }
+        public static List<Map> MapForVotes
+        {
+            get { return _mapForVotes; }
+        }
+        public static bool VoteStarted
+        {
+            get { return _voteStarted; }
+            set { _voteStarted = value; }
+        }
+        public static bool VotedForCurrentMap
+        {
+            get { return _votedForCurrentMap; }
+            set { _votedForCurrentMap = value; }
+        }
+        public static bool VotedForExtendMap
+        {
+            get { return _votedForExtendMap; }
+            set { _votedForExtendMap = value; }
+        }
+        public static bool IsVotingInProgress
+        {
+            get { return _isVotingInProgress; }
+            set { _isVotingInProgress = value; }
+        }
+        public static Map? NextMap
+        {
+            get { return _nextmap; }
+            set { _nextmap = value; }
+        }
+        public static string LastMap
+        {
+            get { return _lastmap; }
+            set { _lastmap = value; }
+        }
+        public static float TimeLeft
+        {
+            get { return _timeleft; }
+            set { _timeleft = value; }
+        }
+        public static float CurrentTime
+        {
+            get { return _currentTime; }
+            set { _currentTime = value; }
+        }
+        public static int MessageIndex
+        {
+            get { return _messageIndex; }
+            set { _messageIndex = value; }
+        }
+        public static int NextMapIndex
+        {
+            get { return _nextmapIndex; }
+            set { _nextmapIndex = value; }
+        }
+        public static Dictionary<string, List<string>> Votes
+        {
+            get { return _votes; }
+        }
+        public static int FreezeTime
+        {
+            get { return _freezeTime; }
+            set { _freezeTime = value; }
+        }
+        public static Stopwatch Timers
+        {
+            get { return _timers; }
+        }
+        public static CounterStrikeSharp.API.Modules.Timers.Timer? TimeLeftTimer
+        {
+            get { return _timeleftTimer; }
+            set { _timeleftTimer = value; }
+        }
+        public static CounterStrikeSharp.API.Modules.Timers.Timer? VotingTimer
+        {
+            get { return _votingTimer; }
+            set { _votingTimer = value; }
+        }
     }
 }
