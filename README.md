@@ -1,4 +1,4 @@
-# MapCycleAndChooser
+# MapManager
 
 ## 📊 Plugin Statistics
 
