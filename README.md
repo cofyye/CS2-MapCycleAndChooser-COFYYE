@@ -3,10 +3,10 @@
 ## 📊 Plugin Statistics
 
 <p align="center">
-  <img src="https://img.shields.io/github/downloads/cofyye/CS2-MapCycleAndChooser-COFYYE/total" alt="Total Downloads">
-  <img src="https://img.shields.io/github/stars/cofyye/CS2-MapCycleAndChooser-COFYYE" alt="GitHub Stars">
-  <img src="https://img.shields.io/github/last-commit/cofyye/CS2-MapCycleAndChooser-COFYYE" alt="Last Update">
-  <img src="https://img.shields.io/github/issues/cofyye/CS2-MapCycleAndChooser-COFYYE" alt="Open Issues">
+  <img src="https://img.shields.io/github/downloads/cofyye/CS2-MapManager-COFYYE/total" alt="Total Downloads">
+  <img src="https://img.shields.io/github/stars/cofyye/CS2-MapManager-COFYYE" alt="GitHub Stars">
+  <img src="https://img.shields.io/github/last-commit/cofyye/CS2-MapManager-COFYYE" alt="Last Update">
+  <img src="https://img.shields.io/github/issues/cofyye/CS2-MapManager-COFYYE" alt="Open Issues">
 </p>
 
 ## 📌 Overview
@@ -47,27 +47,27 @@ Join our **Discord server** to get support, share feedback, and stay updated wit
 
 1. **`!nextmap` Command in Chat**: Displays the next map when the `!nextmap` command is typed in chat.
 
-   ![Nextmap Command](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/nextmap.png?raw=true)
+   ![Nextmap Command](https://github.com/cofyye/CS2-MapManager-COFYYE/blob/resources/nextmap.png?raw=true)
 
 2. **Start of Map Voting**: Displays when a map vote begins.
 
-   ![Map Voting Start](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/votemap1.png?raw=true)
+   ![Map Voting Start](https://github.com/cofyye/CS2-MapManager-COFYYE/blob/resources/votemap1.png?raw=true)
 
 3. **Voting Percentage After Map Selection**: Shows the percentage of votes for each map.
 
-   ![Voting Percentage](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/votemap2.png?raw=true)
+   ![Voting Percentage](https://github.com/cofyye/CS2-MapManager-COFYYE/blob/resources/votemap2.png?raw=true)
 
 4. **Player Voting Logs**: Shows logs of which players voted for which maps and the next map.
 
-   ![Player Voting Logs](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/votemap3.png?raw=true)
+   ![Player Voting Logs](https://github.com/cofyye/CS2-MapManager-COFYYE/blob/resources/votemap3.png?raw=true)
 
 5. **Admin Map List**: Displays the map list that the admin can access and modify.
 
-   ![Admin Map List](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/maps_menu.png?raw=true)
+   ![Admin Map List](https://github.com/cofyye/CS2-MapManager-COFYYE/blob/resources/maps_menu.png?raw=true)
 
 6. **Support for Local Language Change**: Demonstrates the plugin’s support for language customization.
 
-   ![Language Support](https://github.com/cofyye/CS2-MapCycleAndChooser-COFYYE/blob/resources/changed_language.png?raw=true)
+   ![Language Support](https://github.com/cofyye/CS2-MapManager-COFYYE/blob/resources/changed_language.png?raw=true)
 
 ## Dependencies
 
@@ -174,7 +174,7 @@ To run this plugin, you need the following dependencies:
 
 ## Configuration Tutorial
 
-Below is a step-by-step guide explaining the available configuration options for **MapCycleAndChooser**. These options allow you to customize how the plugin behaves and interacts with players.
+Below is a step-by-step guide explaining the available configuration options for **MapManager**. These options allow you to customize how the plugin behaves and interacts with players.
 
 ### General Settings
 
@@ -321,7 +321,7 @@ Below is a step-by-step guide explaining the available configuration options for
   - Add as many sounds as you'd like, and the plugin will play one randomly.
   - Leave this field empty (`[]`) to disable sounds.
 
-28. **`maps`**
+26. **`maps`**
 
 - **Description**: A list of maps with customizable settings for each map. Each map entry contains the following:
   - **`map_value`**: The technical name of the map (e.g., `de_dust2`).
@@ -365,7 +365,7 @@ These parameters will conflict with the plugin's map management system and must 
 
 ### Installation
 
-1. Download the **[MapManager v1.2](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/1.2/MapManager-COFYYE-v1.2.zip)** plugin as a `.zip` file.
+1. Download the **[MapManager v1.3](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/1.3/MapManager-COFYYE-v1.3.zip)** plugin as a `.zip` file.
 2. Upload the contents of the `.zip` file into the following directory on your server:
    > game/csgo/addons/counterstrikesharp/plugins
 3. After uploading, change the map or restart your server to activate the plugin.
