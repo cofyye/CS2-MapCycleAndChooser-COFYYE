@@ -80,7 +80,55 @@ To run this plugin, you need the following dependencies:
    **REQUIRED**: You must use CounterStrikeSharp version **1.0.355** or higher. Using an older version will cause your server to crash!  
    Download from: [CounterStrikeSharp GitHub Releases](https://github.com/roflmuffin/CounterStrikeSharp/releases)
 
-3. **MultiAddonManager** _(optional)_  
+3. **CS2MenuManager**  
+   **REQUIRED**: This plugin uses CS2MenuManager for menu functionality. You must install it on your server.  
+   Download from: [CS2MenuManager GitHub Releases](https://github.com/schwarper/CS2MenuManager/releases)
+
+   **CS2MenuManager Configuration:**
+
+   This plugin uses the WASD Menu from CS2MenuManager. You can configure menu behavior, colors, and controls by editing the `config.toml` file located at:  
+   `csgo/addons/counterstrikesharp/plugins/CS2MenuManager/config.toml`
+
+   **Sound Settings** - Configure menu sounds:
+
+   ```toml
+   [Sound]
+   Select = "sounds/ui/item_sticker_select.vsnd_c"
+   Exit = ""
+   ScrollUp = "sounds/ui/csgo_ui_contract_type4.vsnd_c"
+   ScrollDown = "sounds/ui/csgo_ui_contract_type4.vsnd_c"
+   ```
+
+   **Button Mapping** - Change which keys control the menu:
+
+   ```toml
+   [Buttons]
+   ScrollUp = "W"
+   ScrollDown = "S"
+   Select = "E"
+   Prev = "Shift"
+   Exit = "Tab"
+   ```
+
+   **WASD Menu Appearance** - Customize menu colors and appearance:
+
+   ```toml
+   [WasdMenu]
+   TitleColor = "Green"
+   ScrollUpDownKeyColor = "Cyan"
+   SelectKeyColor = "Green"
+   PrevKeyColor = "Orange"
+   ExitKeyColor = "Red"
+   SelectedOptionColor = "Orange"
+   OptionColor = "White"
+   DisabledOptionColor = "Grey"
+   ArrowColor = "Purple"
+   FreezePlayer = false
+   ```
+
+   > **Note**: The `enable_player_freeze_in_menu` option has been removed from MapManager config. Player freezing is now controlled by the `FreezePlayer` setting in CS2MenuManager's `config.toml` file.
+
+4. **MultiAddonManager** _(optional)_  
    Download from: [MultiAddonManager GitHub Releases](https://github.com/Source2ZE/MultiAddonManager/releases)
 
    - If you want to play a sound when map voting begins, this dependency is required. You can use your own custom sounds, though no tutorial is provided. Search online for guidance.

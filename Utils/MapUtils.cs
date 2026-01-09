@@ -392,6 +392,9 @@ namespace MapManager_COFYYE.Utils
                         }
                     }
 
+                    // Open vote menu for all players
+                    MenuUtils.OpenVoteMenuForAll();
+
                     float duration = Instance?.Config?.VoteMapDuration ?? 15;
 
                     Instance?.AddTimer(
@@ -442,18 +445,36 @@ namespace MapManager_COFYYE.Utils
                             {
                                 if (type == "extendmap")
                                 {
-                                    player.PrintToChat(
-                                        Instance
-                                            ?.Localizer.ForPlayer(
-                                                player,
-                                                "vote.finished.extend.map.round"
-                                            )
-                                            .Replace(
-                                                "{EXTENDED_TIME}",
-                                                Instance?.Config?.ExtendMapTime.ToString()
-                                            )
-                                            ?? ""
-                                    );
+                                    if (Instance?.Config?.DependsOnTheRound == true)
+                                    {
+                                        player.PrintToChat(
+                                            Instance
+                                                ?.Localizer.ForPlayer(
+                                                    player,
+                                                    "vote.finished.extend.map.round"
+                                                )
+                                                .Replace(
+                                                    "{EXTENDED_TIME}",
+                                                    Instance?.Config?.ExtendMapTime.ToString()
+                                                )
+                                                ?? ""
+                                        );
+                                    }
+                                    else
+                                    {
+                                        player.PrintToChat(
+                                            Instance
+                                                ?.Localizer.ForPlayer(
+                                                    player,
+                                                    "vote.finished.extend.map.timeleft"
+                                                )
+                                                .Replace(
+                                                    "{EXTENDED_TIME}",
+                                                    Instance?.Config?.ExtendMapTime.ToString()
+                                                )
+                                                ?? ""
+                                        );
+                                    }
                                 }
                                 else
                                 {
@@ -467,36 +488,10 @@ namespace MapManager_COFYYE.Utils
                                             ?? ""
                                     );
                                 }
-
-                                if (!MenuUtils.PlayersMenu.ContainsKey(player.SteamID.ToString()))
-                                    continue;
-                                MenuUtils.PlayersMenu[player.SteamID.ToString()].MenuOpened = false;
-                                MenuUtils.PlayersMenu[player.SteamID.ToString()].Selected = false;
-                                MenuUtils.PlayersMenu[player.SteamID.ToString()].Html = "";
-
-                                if (Instance?.Config?.EnablePlayerFreezeInMenu == true)
-                                {
-                                    if (
-                                        player.PlayerPawn.Value != null
-                                        && player.PlayerPawn.Value.IsValid
-                                    )
-                                    {
-                                        player.PlayerPawn.Value!.MoveType =
-                                            MoveType_t.MOVETYPE_WALK;
-                                        Schema.SetSchemaValue(
-                                            player.PlayerPawn.Value.Handle,
-                                            "CBaseEntity",
-                                            "m_nActualMoveType",
-                                            2
-                                        );
-                                        Utilities.SetStateChanged(
-                                            player.PlayerPawn.Value,
-                                            "CBaseEntity",
-                                            "m_MoveType"
-                                        );
-                                    }
-                                }
                             }
+
+                            // Close all menus
+                            MenuUtils.CloseMenuForAll();
 
                             GlobalVariables.VoteStarted = false;
 

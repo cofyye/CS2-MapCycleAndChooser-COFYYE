@@ -21,9 +21,6 @@ namespace MapManager_COFYYE.Config
         [JsonPropertyName("enable_random_nextmap")]
         public bool EnableRandomNextMap { get; init; } = false;
 
-        [JsonPropertyName("enable_player_freeze_in_menu")]
-        public bool EnablePlayerFreezeInMenu { get; init; } = true;
-
         [JsonPropertyName("enable_player_voting_in_chat")]
         public bool EnablePlayerVotingInChat { get; init; } = true;
 

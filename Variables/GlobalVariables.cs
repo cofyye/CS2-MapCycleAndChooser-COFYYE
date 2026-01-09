@@ -23,6 +23,7 @@ namespace MapManager_COFYYE.Variables
         private static readonly Stopwatch _timers = new();
         private static CounterStrikeSharp.API.Modules.Timers.Timer? _timeleftTimer = null;
         private static CounterStrikeSharp.API.Modules.Timers.Timer? _votingTimer = null;
+        private static CounterStrikeSharp.API.Modules.Timers.Timer? _menuRefreshTimer = null;
 
         public static List<Map> CycleMaps
         {
@@ -110,6 +111,11 @@ namespace MapManager_COFYYE.Variables
         {
             get { return _votingTimer; }
             set { _votingTimer = value; }
+        }
+        public static CounterStrikeSharp.API.Modules.Timers.Timer? MenuRefreshTimer
+        {
+            get { return _menuRefreshTimer; }
+            set { _menuRefreshTimer = value; }
         }
     }
 }
