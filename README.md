@@ -365,7 +365,7 @@ These parameters will conflict with the plugin's map management system and must 
 
 ### Installation
 
-1. Download the **[MapManager v1.2](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/1.2/MapManager-COFYYE-v1.2.zip)** plugin as a `.zip` file.
+1. Download the **[MapManager v1.3](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/1.3/MapManager-COFYYE-v1.3.zip)** plugin as a `.zip` file.
 2. Upload the contents of the `.zip` file into the following directory on your server:
    > game/csgo/addons/counterstrikesharp/plugins
 3. After uploading, change the map or restart your server to activate the plugin.
