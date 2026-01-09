@@ -12,17 +12,11 @@ namespace MapManager_COFYYE.Config
         [JsonPropertyName("vote_map_duration")]
         public int VoteMapDuration { get; init; } = 15;
 
-        [JsonPropertyName("vote_map_on_freezetime")]
-        public bool VoteMapOnFreezeTime { get; init; } = true;
-
         [JsonPropertyName("depends_on_the_round")]
         public bool DependsOnTheRound { get; init; } = true;
 
         [JsonPropertyName("enable_random_nextmap")]
         public bool EnableRandomNextMap { get; init; } = false;
-
-        [JsonPropertyName("enable_player_freeze_in_menu")]
-        public bool EnablePlayerFreezeInMenu { get; init; } = true;
 
         [JsonPropertyName("enable_player_voting_in_chat")]
         public bool EnablePlayerVotingInChat { get; init; } = true;

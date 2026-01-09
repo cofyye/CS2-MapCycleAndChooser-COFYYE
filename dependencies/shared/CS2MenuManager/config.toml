@@ -1,0 +1,251 @@
+[DefaultMenuType]
+# Default Menu Type
+# Specifies the default menu style to use.
+# Options: ConsoleMenu, ChatMenu, WasdMenu, CenterHtmlMenu
+# Default: WasdMenu
+DefaultMenuType = "WasdMenu"
+
+[ForceConfigSettings]
+# Force Configuration Settings
+# Enforces the configuration settings defined in this file.
+# When true, plugin attempts to override settings will be ignored.
+# Default: true
+ForceConfigSettings = true
+
+[Buttons]
+ScrollUp = "W"
+ScrollDown = "S"
+Select = "E"
+Prev = "Shift"
+Exit = "Tab"
+
+[Sound]
+Select = ""
+Exit = ""
+ScrollUp = ""
+ScrollDown = ""
+
+[MySQL]
+Host = ""
+Name = ""
+User = ""
+Pass = ""
+Port = 3306
+
+[ChatMenu]
+TitleColor = "Yellow"
+EnabledColor = "Green"
+DisabledColor = "Grey"
+PrevPageColor = "Yellow"
+NextPageColor = "Yellow"
+ExitColor = "Red"
+
+[CenterHtmlMenu]
+TitleColor = "Yellow"
+EnabledColor = "Green"
+DisabledColor = "Grey"
+PrevPageColor = "Yellow"
+NextPageColor = "Yellow"
+ExitColor = "Red"
+InlinePageOptions = true
+MaxTitleLength = 0
+MaxOptionLength = 0
+
+[WasdMenu]
+TitleColor = "Green"
+ScrollUpDownKeyColor = "Cyan"
+SelectKeyColor = "Green"
+PrevKeyColor = "Orange"
+ExitKeyColor = "Red"
+SelectedOptionColor = "Orange"
+OptionColor = "White"
+DisabledOptionColor = "Grey"
+ArrowColor = "Purple"
+FreezePlayer = false
+
+[Resolutions.1920x1080]
+PositionX = -9.0
+PositionY = 0.0
+
+[Resolutions.1680x1050]
+PositionX = -8.2
+PositionY = 0.0
+
+[Resolutions.1600x900]
+PositionX = -9.0
+PositionY = 0.0
+
+[Resolutions.1440x1080]
+PositionX = -6.8
+PositionY = 0.0
+
+[Resolutions.1280x1080]
+PositionX = -6.0
+PositionY = 0.0
+
+[Resolutions.1280x720]
+PositionX = -9.0
+PositionY = 0.0
+
+[Resolutions.1280x1024]
+PositionX = -6.3
+PositionY = 0.0
+
+[Resolutions.1024x768]
+PositionX = -6.8
+PositionY = 0.0
+
+[Resolutions.800x600]
+PositionX = -6.8
+PositionY = 0.0
+
+[Lang]
+[Lang.en]
+Prev = "Prev"
+Next = "Next"
+Exit = "Exit"
+Disabled = "Disabled"
+ScrollKey = "{0}/{1} - Scroll"
+SelectKey = "{0} - Select"
+PrevKey = "{0} - Prev"
+ExitKey = "{0} - Exit"
+SelectResolution = "Select Resolution"
+WarnDisabledItem = "{Grey}You {Red}can't {Grey}enter this option."
+OptionListEmpty = "{Grey}No available options in this menu"
+CancelledVote = "{darkred}{0} {Grey}cancelled vote."
+Console = "Console"
+
+[Lang.es]
+Prev = "Atras"
+Next = "Siguiente"
+Exit = "Salir"
+Disabled = "Deshabilitado"
+ScrollKey = "{0}/{1} - Scroll"
+SelectKey = "{0} - Seleccionar"
+PrevKey = "{0} - Previo"
+ExitKey = "{0} - Salir"
+SelectResolution = "Seleccionar Resolucion"
+WarnDisabledItem = "{Grey}No puedes {Red}usar {Grey}esta opción."
+OptionListEmpty = "{Grey}No hay opciones disponibles en este menú"
+CancelledVote = "{darkred}{0} {Grey}detuvo la votación."
+Console = "Consola"
+
+[Lang.fr]
+Prev = "Précédent"
+Next = "Suivant"
+Exit = "Quitter"
+Disabled = "Désactivé"
+ScrollKey = "{0}/{1} - Défilement"
+SelectKey = "{0} - Sélectionner"
+PrevKey = "{0} - Précédent"
+ExitKey = "{0} - Quitter"
+SelectResolution = "Sélectionner une résolution"
+WarnDisabledItem = "{Grey}Vous {Red}ne pouvez pas {Grey}saisir cette option."
+OptionListEmpty = "{Grey}Aucune option disponible dans ce menu"
+CancelledVote = "{darkred}{0} {Grey}vote annulé."
+Console = "Console"
+
+[Lang.pt-BR]
+Prev = "Voltar"
+Next = "Próximo"
+Exit = "Sair"
+Disabled = "Desabilitado"
+ScrollKey = "{0}/{1} - Scroll"
+SelectKey = "{0} - Selecionar"
+PrevKey = "{0} - Voltar"
+ExitKey = "{0} - Sair"
+SelectResolution = "Selecionar Resolução"
+WarnDisabledItem = "{Grey}Você {Red}não pode {Grey}inserir esta opção."
+OptionListEmpty = "{Grey}Não há opções disponíveis neste menu"
+CancelledVote = "{darkred}{0} {Grey}parou a votação."
+Console = "Console"
+
+[Lang.tr]
+Prev = "Geri"
+Next = "İleri"
+Exit = "Çıkış"
+Disabled = "Devre dışı"
+ScrollKey = "{0}/{1} - Kaydır"
+SelectKey = "{0} - Seç"
+PrevKey = "{0} - Geri"
+ExitKey = "{0} - Çık"
+SelectResolution = "Çözünürlük seç"
+WarnDisabledItem = "{Grey}Bu seçeneği {Red}kullanamazsın {Grey}."
+OptionListEmpty = "{Grey}Bu menüde görüntülenecek bir seçenek yok"
+CancelledVote = "{darkred}{0} {Grey}oylamayı durdurdu."
+Console = "Konsol"
+
+[Lang.hu]
+Prev = "Előző"
+Next = "Következő"
+Exit = "Kilépés"
+Disabled = "Letiltva"
+ScrollKey = "{0}/{1} - Görgetés"
+SelectKey = "{0} - Választ"
+PrevKey = "{0} - Előző"
+ExitKey = "{0} - Kilépés"
+SelectResolution = "Felbontás kiválasztása"
+WarnDisabledItem = "{Red}Nem tudod {Grey}ezt az opciót választani."
+OptionListEmpty = "{Grey}Nincs elérhető opció ebben a menüben"
+CancelledVote = "{darkred}{0} {Grey}megállította a szavazást."
+Console = "Konzol"
+
+[Lang.zh-Hans]
+Prev = "上一页"
+Next = "下一页"
+Exit = "退出"
+Disabled = "禁用"
+ScrollKey = "[{0}/{1}] 滚动"
+SelectKey = "[{0}] 选择"
+PrevKey = "{0} - 上一页"
+ExitKey = "{0} - 退出"
+SelectResolution = "选择分辨率"
+WarnDisabledItem = "{Grey}你 {Red}无法 {Grey}进入此选项."
+OptionListEmpty = "{Grey}此菜单中没有可用选项"
+CancelledVote = "{darkred}{0} {Grey}已停止投票。"
+Console = "控制台"
+
+[Lang.zh-Hant]
+Prev = "上一頁"
+Next = "下一頁"
+Exit = "退出"
+Disabled = "禁用"
+ScrollKey = "[{0}/{1}] 滾動"
+SelectKey = "[{0}] 選擇"
+PrevKey = "{0} - 上一頁"
+ExitKey = "{0} - 退出"
+SelectResolution = "選擇解析度"
+WarnDisabledItem = "{Grey}你 {Red}無法 {Grey}進入此選項."
+OptionListEmpty = "{Grey}此選單中沒有可用的選項"
+CancelledVote = "{darkred}{0} {Grey}已停止投票。"
+Console = "控制台"
+
+[Lang.pl]
+Prev = "Poprzednia"
+Next = "Następna"
+Exit = "Wyjdź"
+Disabled = "Wyłączone"
+ScrollKey = "{0}/{1} - Przewiń"
+SelectKey = "{0} - Wybierz"
+PrevKey = "{0} - Wstecz"
+ExitKey = "{0} - Wyjście"
+SelectResolution = "Wybierz Rozdzielczość"
+WarnDisabledItem = "{Grey}Nie {Red}możesz {Grey}wybrać tej opcji."
+OptionListEmpty = "{Grey}Brak dostępnych opcji w tym menu"
+CancelledVote = "{darkred}{0} {Grey}anulował głosowanie."
+Console = "Konsola"
+
+[Lang.ru]
+Prev = "Назад"
+Next = "Далее"
+Exit = "Выход"
+Disabled = "Отключено"
+ScrollKey = "{0}/{1} - Перемещение"
+SelectKey = "{0} - Выбор"
+PrevKey = "{0} - Назад"
+ExitKey = "{0} - Выход"
+SelectResolution = "Выберите разрешение"
+WarnDisabledItem = "{Grey}Вы {Red}не можете {Grey}выбрать данную опцию."
+OptionListEmpty = "{Grey}В этом меню нет доступных опций"
+CancelledVote = "{darkred}{0} {Grey}отменил голосование."
+Console = "Консоль"

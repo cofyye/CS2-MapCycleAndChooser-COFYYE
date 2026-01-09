@@ -1,8 +1,10 @@
-﻿using System.Text;
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Timers;
+using CS2MenuManager.API.Class;
+using CS2MenuManager.API.Enum;
+using CS2MenuManager.API.Menu;
 using MapManager_COFYYE.Classes;
 using MapManager_COFYYE.Variables;
 
@@ -11,507 +13,373 @@ namespace MapManager_COFYYE.Utils
     public static class MenuUtils
     {
         public static MapManager Instance => MapManager.Instance;
-        public static Dictionary<string, PlayerMenu> PlayersMenu { get; } = [];
 
-        public static void CreateAndOpenHtmlVoteMenu(CCSPlayerController player)
+        // Constants for special menu options
+        private const string IgnoreVoteKey = "{menu.item.ignore.vote}";
+        private const string ExtendMapKey = "{menu.item.extend.map}";
+
+        // Store vote key mappings for each option
+        private static readonly Dictionary<string, string> OptionToVoteKey = [];
+
+        public static void OpenVoteMenu(CCSPlayerController player)
         {
-            string playerSteamId = player.SteamID.ToString();
-            if (!PlayersMenu.TryGetValue(playerSteamId, out PlayerMenu? pm))
+            if (!PlayerUtils.IsValidPlayer(player))
                 return;
 
-            List<string> menuValues = [];
+            var menu = new WasdMenu(
+                Instance.Localizer.ForPlayer(player, "menu.title.vote"),
+                Instance
+            )
+            {
+                ExitButton = false,
+                MenuTime = 0,
+            };
 
+            OptionToVoteKey.Clear();
+            List<string> menuOptions = [];
+
+            // Add ignore vote at top if enabled
             if (
                 Instance?.Config?.EnableIgnoreVote == true
                 && Instance.Config?.IgnoreVotePosition == "top"
             )
             {
-                menuValues.Add(
-                    "{menu.item.ignore.vote}{splitignorevote}"
-                        + Instance?.Localizer.ForPlayer(player, "menu.item.ignore.vote")
-                        ?? "-"
-                );
+                menuOptions.Add(IgnoreVoteKey);
             }
 
+            // Add extend map at top if enabled
             if (
                 Instance?.Config?.EnableExtendMap == true
                 && Instance.Config?.ExtendMapPosition == "top"
                 && GlobalVariables.VotedForExtendMap == false
             )
             {
-                if (Instance?.Config?.DependsOnTheRound == true)
-                {
-                    menuValues.Add(
-                        "{menu.item.extend.map}{splitextendmap}"
-                            + Instance
-                                ?.Localizer.ForPlayer(player, "menu.item.extend.map.round")
-                                .Replace(
-                                    "{EXTEND_TIME}",
-                                    Instance?.Config?.ExtendMapTime.ToString()
-                                )
-                            ?? "-"
-                    );
-                }
-                else
-                {
-                    menuValues.Add(
-                        "{menu.item.extend.map}{splitextendmap}"
-                            + Instance
-                                ?.Localizer.ForPlayer(player, "menu.item.extend.map.timeleft")
-                                .Replace(
-                                    "{EXTEND_TIME}",
-                                    Instance?.Config?.ExtendMapTime.ToString()
-                                )
-                            ?? "-"
-                    );
-                }
+                menuOptions.Add(ExtendMapKey);
             }
 
+            // Add maps for voting
             foreach (Map map in GlobalVariables.MapForVotes)
             {
-                menuValues.Add(
-                    Instance?.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay
-                );
+                string displayValue =
+                    Instance?.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay;
+                menuOptions.Add(displayValue);
             }
 
+            // Add ignore vote at bottom if enabled
             if (
                 Instance?.Config?.EnableIgnoreVote == true
                 && Instance.Config?.IgnoreVotePosition == "bottom"
             )
             {
-                menuValues.Add(
-                    "{menu.item.ignore.vote}{splitignorevote}"
-                        + Instance?.Localizer.ForPlayer(player, "menu.item.ignore.vote")
-                        ?? "-"
-                );
+                menuOptions.Add(IgnoreVoteKey);
             }
 
+            // Add extend map at bottom if enabled
             if (
                 Instance?.Config?.EnableExtendMap == true
                 && Instance?.Config?.ExtendMapPosition == "bottom"
                 && GlobalVariables.VotedForExtendMap == false
             )
             {
-                if (Instance.Config?.DependsOnTheRound == true)
-                {
-                    menuValues.Add(
-                        "{menu.item.extend.map}{splitextendmap}"
-                            + Instance
-                                ?.Localizer.ForPlayer(player, "menu.item.extend.map.round")
-                                .Replace(
-                                    "{EXTEND_TIME}",
-                                    Instance?.Config?.ExtendMapTime.ToString()
-                                )
-                            ?? "-"
-                    );
-                }
-                else
-                {
-                    menuValues.Add(
-                        "{menu.item.extend.map}{splitextendmap}"
-                            + Instance
-                                ?.Localizer.ForPlayer(player, "menu.item.extend.map.timeleft")
-                                .Replace(
-                                    "{EXTEND_TIME}",
-                                    Instance?.Config?.ExtendMapTime.ToString()
-                                )
-                            ?? "-"
-                    );
-                }
+                menuOptions.Add(ExtendMapKey);
             }
-
-            int currentIndex = PlayersMenu[playerSteamId].CurrentIndex;
-            currentIndex = Math.Max(0, Math.Min(menuValues.ToArray().Length - 1, currentIndex));
-
-            string bottomMenu = Instance?.Localizer.ForPlayer(player, "menu.bottom.vote") ?? "";
-            string imageleft = Instance?.Localizer.ForPlayer(player, "menu.item.left") ?? "";
-            string imageRight = Instance?.Localizer.ForPlayer(player, "menu.item.right") ?? "";
-
-            int visibleOptions = 5;
-            int startIndex = Math.Max(0, currentIndex - (visibleOptions - 1));
-
-            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70 && !pm.Selected)
-            {
-                switch (player.Buttons)
-                {
-                    case 0:
-                    {
-                        pm.ButtonPressed = false;
-                        break;
-                    }
-                    case PlayerButtons.Back:
-                    {
-                        currentIndex = Math.Min(menuValues.ToArray().Length - 1, currentIndex + 1);
-                        pm.CurrentIndex = currentIndex;
-                        player.ExecuteClientCommand("play sounds/ui/csgo_ui_contract_type4.vsnd_c");
-                        pm.ButtonPressed = true;
-                        break;
-                    }
-                    case PlayerButtons.Forward:
-                    {
-                        currentIndex = Math.Max(0, currentIndex - 1);
-                        pm.CurrentIndex = currentIndex;
-                        player.ExecuteClientCommand("play sounds/ui/csgo_ui_contract_type4.vsnd_c");
-                        pm.ButtonPressed = true;
-                        break;
-                    }
-                    case PlayerButtons.Use:
-                    {
-                        string currentMenuOption = menuValues.ToArray()[currentIndex];
-
-                        var players = Utilities
-                            .GetPlayers()
-                            .Where(p => PlayerUtils.IsValidPlayer(p));
-
-                        var isIgnoreVoteOption = currentMenuOption.Split("{splitignorevote}");
-                        var isExtendMapOption = currentMenuOption.Split("{splitextendmap}");
-
-                        if (Instance?.Config?.EnablePlayerVotingInChat == true)
-                        {
-                            foreach (var p in players)
-                            {
-                                if (isIgnoreVoteOption.Length > 1)
-                                {
-                                    p.PrintToChat(
-                                        Instance
-                                            .Localizer.ForPlayer(p, "vote.player")
-                                            .Replace("{PLAYER_NAME}", p.PlayerName)
-                                            .Replace("{MAP_NAME}", isIgnoreVoteOption[1])
-                                    );
-                                }
-                                else if (isExtendMapOption.Length > 1)
-                                {
-                                    p.PrintToChat(
-                                        Instance
-                                            .Localizer.ForPlayer(p, "vote.player")
-                                            .Replace("{PLAYER_NAME}", p.PlayerName)
-                                            .Replace("{MAP_NAME}", isExtendMapOption[1])
-                                    );
-                                }
-                                else
-                                {
-                                    p.PrintToChat(
-                                        Instance
-                                            .Localizer.ForPlayer(p, "vote.player")
-                                            .Replace("{PLAYER_NAME}", p.PlayerName)
-                                            .Replace("{MAP_NAME}", currentMenuOption)
-                                    );
-                                }
-                            }
-                        }
-
-                        if (isIgnoreVoteOption.Length > 1)
-                        {
-                            MapUtils.AddPlayerToVotes(isIgnoreVoteOption[0], playerSteamId);
-                        }
-                        else if (isExtendMapOption.Length > 1)
-                        {
-                            MapUtils.AddPlayerToVotes(isExtendMapOption[0], playerSteamId);
-                        }
-                        else
-                        {
-                            MapUtils.AddPlayerToVotes(currentMenuOption, playerSteamId);
-                        }
-
-                        player.ExecuteClientCommand("play sounds/ui/item_sticker_select.vsnd_c");
-                        pm.ButtonPressed = true;
-                        pm.Selected = true;
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                }
-            }
-
-            StringBuilder builder = new();
-
-            string menuTitle = Instance?.Localizer.ForPlayer(player, "menu.title.vote") ?? "";
-            builder.AppendLine(menuTitle);
 
             var percentages = MapUtils.CalculateMapsVotePercentages();
 
-            for (
-                int i = startIndex;
-                i < startIndex + visibleOptions && i < menuValues.ToArray().Length;
-                i++
-            )
+            foreach (var option in menuOptions)
             {
-                string currentMenuOption = menuValues.ToArray()[i];
+                string displayText;
+                string voteKey;
 
-                int percentage = 0;
-                var isIgnoreVoteOption = currentMenuOption.Split("{splitignorevote}");
-                var isExtendMapOption = currentMenuOption.Split("{splitextendmap}");
-
-                if (isIgnoreVoteOption.Length > 1)
+                if (option == IgnoreVoteKey)
                 {
-                    percentage = percentages.TryGetValue(isIgnoreVoteOption[0], out int mapPercent)
-                        ? mapPercent
-                        : 0;
+                    displayText =
+                        Instance?.Localizer.ForPlayer(player, "menu.item.ignore.vote")
+                        ?? "Ignore Vote";
+                    voteKey = IgnoreVoteKey;
                 }
-                else if (isExtendMapOption.Length > 1)
+                else if (option == ExtendMapKey)
                 {
-                    percentage = percentages.TryGetValue(isExtendMapOption[0], out int mapPercent)
-                        ? mapPercent
-                        : 0;
-                }
-                else
-                {
-                    percentage = percentages.TryGetValue(currentMenuOption, out int mapPercent)
-                        ? mapPercent
-                        : 0;
-                }
-
-                if (i == currentIndex)
-                {
-                    string lineHtml = "";
-
-                    if (isIgnoreVoteOption.Length > 1)
+                    if (Instance?.Config?.DependsOnTheRound == true)
                     {
-                        lineHtml =
-                            $"{imageRight} <span color='yellow'>{isIgnoreVoteOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> {imageleft} <br />";
-                    }
-                    else if (isExtendMapOption.Length > 1)
-                    {
-                        lineHtml =
-                            $"{imageRight} <span color='yellow'>{isExtendMapOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> {imageleft} <br />";
+                        displayText = (
+                            Instance?.Localizer.ForPlayer(player, "menu.item.extend.map.round")
+                            ?? "Extend Map"
+                        ).Replace(
+                            "{EXTEND_TIME}",
+                            Instance?.Config?.ExtendMapTime.ToString() ?? ""
+                        );
                     }
                     else
                     {
-                        lineHtml =
-                            $"{imageRight} {Instance?.Localizer.ForPlayer(player, "menu.item.vote").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} {imageleft} <br />";
+                        displayText = (
+                            Instance?.Localizer.ForPlayer(player, "menu.item.extend.map.timeleft")
+                            ?? "Extend Map"
+                        ).Replace(
+                            "{EXTEND_TIME}",
+                            Instance?.Config?.ExtendMapTime.ToString() ?? ""
+                        );
                     }
-
-                    builder.AppendLine(lineHtml);
+                    voteKey = ExtendMapKey;
                 }
                 else
                 {
-                    string lineHtml = "";
-
-                    if (isIgnoreVoteOption.Length > 1)
-                    {
-                        lineHtml =
-                            $"<span color='yellow'>{isIgnoreVoteOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> <br />";
-                    }
-                    else if (isExtendMapOption.Length > 1)
-                    {
-                        lineHtml =
-                            $"<span color='yellow'>{isExtendMapOption[1]}</span> <b color='orange'>•</b> <b color='lime'>{percentage}%</b> <br />";
-                    }
-                    else
-                    {
-                        lineHtml =
-                            $"{Instance?.Localizer.ForPlayer(player, "menu.item.vote").Replace("{MAP_NAME}", currentMenuOption).Replace("{MAP_PERCENT}", percentage.ToString())} <br />";
-                    }
-
-                    builder.AppendLine(lineHtml);
+                    displayText = option;
+                    voteKey = option;
                 }
+
+                int percentage = percentages.TryGetValue(voteKey, out int mapPercent)
+                    ? mapPercent
+                    : 0;
+                string menuItemText = $"{displayText} • {percentage}%";
+
+                var item = menu.AddItem(
+                    menuItemText,
+                    (selectedPlayer, selectedOption) =>
+                    {
+                        // Extract original text before " • " to get the display text
+                        string originalText = selectedOption.Text.Split(" • ")[0];
+
+                        if (OptionToVoteKey.TryGetValue(originalText, out string? mappedVoteKey))
+                        {
+                            HandleVoteSelection(selectedPlayer, mappedVoteKey);
+                        }
+                    }
+                );
+
+                item.PostSelectAction = PostSelectAction.Nothing;
+
+                // Store mapping from display text to vote key
+                OptionToVoteKey[displayText] = voteKey;
             }
 
-            if (startIndex + visibleOptions < menuValues.ToArray().Length)
-            {
-                string moreItemsIndicator =
-                    Instance?.Localizer.ForPlayer(player, "menu.more.items") ?? "";
-                builder.AppendLine(moreItemsIndicator);
-            }
-
-            builder.AppendLine(bottomMenu);
-            builder.AppendLine("</div>");
-
-            string centerhtml = builder.ToString();
-
-            if (string.IsNullOrEmpty(PlayersMenu[playerSteamId].Html))
-                PlayersMenu[playerSteamId].Html = centerhtml;
-
-            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70)
-            {
-                PlayersMenu[playerSteamId].Html = centerhtml;
-                GlobalVariables.Timers.Restart();
-            }
-
-            player?.PrintToCenterHtml(PlayersMenu[playerSteamId].Html);
+            menu.Display(player, 0);
         }
 
-        public static void CreateAndOpenHtmlMapsMenu(CCSPlayerController player)
+        private static void HandleVoteSelection(CCSPlayerController player, string voteKey)
         {
-            string playerSteamId = player.SteamID.ToString();
-            if (!PlayersMenu.TryGetValue(playerSteamId, out PlayerMenu? pm))
+            if (!PlayerUtils.IsValidPlayer(player))
                 return;
 
-            List<string> menuValues = [];
+            string playerSteamId = player.SteamID.ToString();
+
+            // Check if player has already voted - if yes, block further voting
+            bool hasVoted = GlobalVariables.Votes.Values.Any(voteList =>
+                voteList.Contains(playerSteamId)
+            );
+
+            if (hasVoted)
+            {
+                // Player has already voted, cannot vote again
+                return;
+            }
+
+            if (Instance?.Config?.EnablePlayerVotingInChat == true)
+            {
+                var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+
+                string displayName;
+                if (voteKey == IgnoreVoteKey)
+                {
+                    displayName =
+                        Instance?.Localizer.ForPlayer(player, "menu.item.ignore.vote")
+                        ?? "Ignore Vote";
+                }
+                else if (voteKey == ExtendMapKey)
+                {
+                    if (Instance?.Config?.DependsOnTheRound == true)
+                    {
+                        displayName = (
+                            Instance?.Localizer.ForPlayer(player, "menu.item.extend.map.round")
+                            ?? "Extend Map"
+                        ).Replace(
+                            "{EXTEND_TIME}",
+                            Instance?.Config?.ExtendMapTime.ToString() ?? ""
+                        );
+                    }
+                    else
+                    {
+                        displayName = (
+                            Instance?.Localizer.ForPlayer(player, "menu.item.extend.map.timeleft")
+                            ?? "Extend Map"
+                        ).Replace(
+                            "{EXTEND_TIME}",
+                            Instance?.Config?.ExtendMapTime.ToString() ?? ""
+                        );
+                    }
+                }
+                else
+                {
+                    displayName = voteKey;
+                }
+
+                foreach (var p in players)
+                {
+                    p.PrintToChat(
+                        Instance
+                            ?.Localizer.ForPlayer(p, "vote.player")
+                            .Replace("{PLAYER_NAME}", player.PlayerName)
+                            .Replace("{MAP_NAME}", displayName)
+                            ?? ""
+                    );
+                }
+            }
+
+            MapUtils.AddPlayerToVotes(voteKey, playerSteamId);
+
+            // Update menu percentages for all players
+            RefreshVoteMenuPercentages();
+        }
+
+        public static void RefreshVoteMenuPercentages()
+        {
+            var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+            var percentages = MapUtils.CalculateMapsVotePercentages();
+
+            foreach (var player in players)
+            {
+                var activeMenu = MenuManager.GetActiveMenu(player);
+                if (activeMenu?.Menu is WasdMenu wasdMenu)
+                {
+                    // Update text for each option with new percentages
+                    foreach (var option in wasdMenu.ItemOptions)
+                    {
+                        // Extract original display text (before " • ")
+                        string originalText = option.Text.Split(" • ")[0];
+
+                        // Find corresponding vote key
+                        if (OptionToVoteKey.TryGetValue(originalText, out string? voteKey))
+                        {
+                            int percentage = percentages.TryGetValue(voteKey, out int mapPercent)
+                                ? mapPercent
+                                : 0;
+
+                            option.Text = $"{originalText} • {percentage}%";
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void OpenMapsMenu(CCSPlayerController player)
+        {
+            if (!PlayerUtils.IsValidPlayer(player))
+                return;
+
+            var menu = new WasdMenu(
+                Instance.Localizer.ForPlayer(player, "menu.title.maps"),
+                Instance
+            )
+            {
+                ExitButton = true,
+                MenuTime = 0,
+            };
 
             foreach (Map map in GlobalVariables.Maps)
             {
-                menuValues.Add(
-                    Instance.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay
+                string displayValue =
+                    Instance?.Config?.DisplayMapByValue == true ? map.MapValue : map.MapDisplay;
+
+                var item = menu.AddItem(
+                    displayValue,
+                    (selectedPlayer, selectedOption) =>
+                    {
+                        HandleMapSelection(selectedPlayer, map);
+                    }
+                );
+
+                item.PostSelectAction = PostSelectAction.Close;
+            }
+
+            menu.Display(player, 0);
+        }
+
+        private static void HandleMapSelection(CCSPlayerController player, Map selectedMap)
+        {
+            if (!PlayerUtils.IsValidPlayer(player))
+                return;
+
+            var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+
+            string mapDisplayName =
+                Instance?.Config?.DisplayMapByValue == true
+                    ? selectedMap.MapValue
+                    : selectedMap.MapDisplay;
+
+            foreach (var p in players)
+            {
+                p.PrintToChat(
+                    Instance
+                        ?.Localizer.ForPlayer(p, "admin.change.map")
+                        .Replace("{PLAYER_NAME}", player.PlayerName)
+                        .Replace("{MAP_NAME}", mapDisplayName)
+                        ?? ""
                 );
             }
 
-            int currentIndex = PlayersMenu[playerSteamId].CurrentIndex;
-            currentIndex = Math.Max(0, Math.Min(menuValues.ToArray().Length - 1, currentIndex));
-
-            string bottomMenu = Instance.Localizer.ForPlayer(player, "menu.bottom.maps");
-            string imageleft = Instance.Localizer.ForPlayer(player, "menu.item.left");
-            string imageRight = Instance.Localizer.ForPlayer(player, "menu.item.right");
-
-            int visibleOptions = 4;
-            int startIndex = Math.Max(0, currentIndex - (visibleOptions - 1));
-
-            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70 && !pm.Selected)
-            {
-                switch (player.Buttons)
+            Instance?.AddTimer(
+                2.0f,
+                () =>
                 {
-                    case 0:
+                    GlobalVariables.LastMap = Server.MapName;
+                    if (selectedMap.MapIsWorkshop)
                     {
-                        pm.ButtonPressed = false;
-                        break;
-                    }
-                    case PlayerButtons.Back:
-                    {
-                        currentIndex = Math.Min(menuValues.ToArray().Length - 1, currentIndex + 1);
-                        pm.CurrentIndex = currentIndex;
-                        player.ExecuteClientCommand("play sounds/ui/csgo_ui_contract_type4.vsnd_c");
-                        pm.ButtonPressed = true;
-                        break;
-                    }
-                    case PlayerButtons.Forward:
-                    {
-                        currentIndex = Math.Max(0, currentIndex - 1);
-                        pm.CurrentIndex = currentIndex;
-                        player.ExecuteClientCommand("play sounds/ui/csgo_ui_contract_type4.vsnd_c");
-                        pm.ButtonPressed = true;
-                        break;
-                    }
-                    case PlayerButtons.Reload:
-                    {
-                        PlayersMenu[playerSteamId].MenuOpened = false;
-                        pm.ButtonPressed = true;
-                        break;
-                    }
-                    case PlayerButtons.Use:
-                    {
-                        string currentMenuOption = menuValues.ToArray()[currentIndex];
-
-                        player.ExecuteClientCommand("play sounds/ui/item_sticker_select.vsnd_c");
-
-                        pm.ButtonPressed = true;
-                        pm.Selected = true;
-
-                        Map? map = GlobalVariables.Maps.Find(map =>
-                            map.MapValue == currentMenuOption || map.MapDisplay == currentMenuOption
-                        );
-
-                        if (map != null)
+                        if (string.IsNullOrEmpty(selectedMap.MapWorkshopId))
                         {
-                            var players = Utilities
-                                .GetPlayers()
-                                .Where(p => PlayerUtils.IsValidPlayer(p));
-
-                            foreach (var p in players)
-                            {
-                                p.PrintToChat(
-                                    Instance
-                                        .Localizer.ForPlayer(p, "admin.change.map")
-                                        .Replace("{PLAYER_NAME}", p.PlayerName)
-                                        .Replace("{MAP_NAME}", currentMenuOption)
-                                );
-                            }
-
-                            Instance.AddTimer(
-                                2.0f,
-                                () =>
-                                {
-                                    GlobalVariables.LastMap = Server.MapName;
-                                    if (map.MapIsWorkshop)
-                                    {
-                                        if (string.IsNullOrEmpty(map.MapWorkshopId))
-                                        {
-                                            Server.ExecuteCommand(
-                                                $"ds_workshop_changelevel {map.MapValue}"
-                                            );
-                                        }
-                                        else
-                                        {
-                                            Server.ExecuteCommand(
-                                                $"host_workshop_map {map.MapWorkshopId}"
-                                            );
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Server.ExecuteCommand($"changelevel {map.MapValue}");
-                                    }
-                                },
-                                TimerFlags.STOP_ON_MAPCHANGE
+                            Server.ExecuteCommand(
+                                $"ds_workshop_changelevel {selectedMap.MapValue}"
                             );
                         }
                         else
                         {
-                            player.PrintToChat(
-                                Instance.Localizer.ForPlayer(player, "map.not.found")
-                            );
+                            Server.ExecuteCommand($"host_workshop_map {selectedMap.MapWorkshopId}");
                         }
-
-                        PlayersMenu[playerSteamId].MenuOpened = false;
-
-                        break;
                     }
-                    default:
+                    else
                     {
-                        break;
+                        Server.ExecuteCommand($"changelevel {selectedMap.MapValue}");
                     }
-                }
+                },
+                TimerFlags.STOP_ON_MAPCHANGE
+            );
+        }
+
+        public static void OpenVoteMenuForAll()
+        {
+            var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+
+            foreach (var player in players)
+            {
+                OpenVoteMenu(player);
             }
 
-            StringBuilder builder = new();
-
-            string menuTitle = Instance.Localizer.ForPlayer(player, "menu.title.maps");
-            builder.AppendLine(menuTitle);
-
-            for (
-                int i = startIndex;
-                i < startIndex + visibleOptions && i < menuValues.ToArray().Length;
-                i++
-            )
-            {
-                string currentMenuOption = menuValues.ToArray()[i];
-
-                if (i == currentIndex)
+            // Start timer to refresh vote percentages every 1 second
+            GlobalVariables.MenuRefreshTimer?.Kill();
+            GlobalVariables.MenuRefreshTimer = Instance.AddTimer(
+                1.0f,
+                () =>
                 {
-                    string lineHtml =
-                        $"{imageRight} {Instance.Localizer.ForPlayer(player, "menu.item.map").Replace("{MAP_NAME}", currentMenuOption)} {imageleft} <br />";
-                    builder.AppendLine(lineHtml);
-                }
-                else
-                {
-                    string lineHtml =
-                        $"{Instance.Localizer.ForPlayer(player, "menu.item.map").Replace("{MAP_NAME}", currentMenuOption)} <br />";
-                    builder.AppendLine(lineHtml);
-                }
-            }
+                    if (GlobalVariables.IsVotingInProgress)
+                    {
+                        RefreshVoteMenuPercentages();
+                    }
+                },
+                TimerFlags.REPEAT
+            );
+        }
 
-            if (startIndex + visibleOptions < menuValues.ToArray().Length)
+        public static void CloseMenuForAll()
+        {
+            var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+
+            foreach (var player in players)
             {
-                string moreItemsIndicator = Instance.Localizer.ForPlayer(player, "menu.more.items");
-                builder.AppendLine(moreItemsIndicator);
+                MenuManager.CloseActiveMenu(player);
             }
 
-            builder.AppendLine(bottomMenu);
-            builder.AppendLine("</div>");
-
-            string centerhtml = builder.ToString();
-
-            if (string.IsNullOrEmpty(PlayersMenu[playerSteamId].Html))
-                PlayersMenu[playerSteamId].Html = centerhtml;
-
-            if (GlobalVariables.Timers.ElapsedMilliseconds >= 70)
-            {
-                PlayersMenu[playerSteamId].Html = centerhtml;
-                GlobalVariables.Timers.Restart();
-            }
-
-            player?.PrintToCenterHtml(PlayersMenu[playerSteamId].Html);
+            // Stop menu refresh timer
+            GlobalVariables.MenuRefreshTimer?.Kill();
+            GlobalVariables.MenuRefreshTimer = null;
         }
     }
 }
