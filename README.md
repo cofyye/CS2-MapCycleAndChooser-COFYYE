@@ -406,7 +406,8 @@ Feel free to submit any suggestions for improvements or new features you'd like 
 
 ## Credits
 
-- **Code Snippets for Menu**: The menu code snippets were sourced from [oqyh's GitHub](https://github.com/oqyh). I would like to thank him for providing valuable resources that helped in building parts of this plugin.
+- **Code Snippets for Menu (v1.0 - v1.2)**: The menu code snippets used in versions 1.0 through 1.2 were sourced from [oqyh's GitHub](https://github.com/oqyh). I would like to thank him for providing valuable resources that helped in building the initial menu system of this plugin.
+- **CS2MenuManager (v1.3+)**: Starting from version 1.3, this plugin uses [CS2MenuManager](https://github.com/schwarper/CS2MenuManager) for menu functionality.
 - **Other Contributors**: A big thank you to all other authors and contributors of similar plugins that inspired the creation of this MapManager plugin. Their work was a key part of shaping the final version of this plugin.
 
 This plugin is my version of the MapManager functionality, combining various elements from the community to provide a better and more customizable experience for server admins and players alike.

@@ -1,4 +1,4 @@
-name: .NET Build and Lint
+name: .NET Build and Release
 
 on:
   push:
@@ -7,12 +7,14 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-lint:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -30,3 +32,76 @@ jobs:
 
     - name: Build project
       run: dotnet build --no-restore --configuration Release
+
+    - name: Extract version from MapManager-COFYYE.cs
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      id: extract_version
+      run: |
+        VERSION=$(grep 'public override string ModuleVersion' MapManager-COFYYE.cs | sed -E 's/.*"([0-9.]+)".*/\1/')
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "Detected version: $VERSION"
+
+    - name: Check if tag exists
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      id: check_tag
+      run: |
+        if git rev-parse "v${{ steps.extract_version.outputs.VERSION }}" >/dev/null 2>&1; then
+          echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+        else
+          echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create release structure
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.check_tag.outputs.TAG_EXISTS == 'false'
+      run: |
+        mkdir -p release/addons/counterstrikesharp/plugins
+        mkdir -p release/addons/counterstrikesharp/shared
+
+        # Copy plugin files from build folder
+        cp -r build/MapManager-COFYYE release/addons/counterstrikesharp/plugins/
+
+        # Copy all dependencies
+        if [ -d "dependencies/*" ]; then
+          cp -r dependencies/* release/addons/counterstrikesharp/
+        fi
+
+    - name: Create ZIP archive
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.check_tag.outputs.TAG_EXISTS == 'false'
+      run: |
+        cd release
+        zip -r ../MapManager-COFYYE-v${{ steps.extract_version.outputs.VERSION }}.zip addons/
+
+    - name: Generate release notes
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.check_tag.outputs.TAG_EXISTS == 'false'
+      id: release_notes
+      run: |
+        # Get the previous tag
+        PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+        if [ -z "$PREV_TAG" ]; then
+          # First release - get all commits
+          COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
+        else
+          # Get commits since last tag
+          COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges)
+        fi
+
+        # Create release notes
+        echo "## What's Changed" > release_notes.md
+        echo "" >> release_notes.md
+        echo "$COMMITS" >> release_notes.md
+        echo "" >> release_notes.md
+        echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...v${{ steps.extract_version.outputs.VERSION }}" >> release_notes.md
+
+    - name: Create Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.check_tag.outputs.TAG_EXISTS == 'false'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.extract_version.outputs.VERSION }}
+        name: MapManager-COFYYE v${{ steps.extract_version.outputs.VERSION }}
+        body_path: release_notes.md
+        files: MapManager-COFYYE-v${{ steps.extract_version.outputs.VERSION }}.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
