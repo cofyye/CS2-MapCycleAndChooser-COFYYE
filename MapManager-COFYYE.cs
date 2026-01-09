@@ -493,7 +493,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 
         MapUtils.AutoSetNextMap();
 
-        if (Config?.VoteMapOnFreezeTime == true)
+        if (Config?.DependsOnTheRound == true)
         {
             GlobalVariables.FreezeTime =
                 ConVar.Find("mp_freezetime")?.GetPrimitiveValue<int>() ?? 5;

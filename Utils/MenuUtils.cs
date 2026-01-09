@@ -375,7 +375,6 @@ namespace MapManager_COFYYE.Utils
             foreach (var player in players)
             {
                 MenuManager.CloseActiveMenu(player);
-                player.PrintToCenterHtml("");
             }
 
             // Stop menu refresh timer

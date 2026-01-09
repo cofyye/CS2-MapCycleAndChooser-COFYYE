@@ -192,144 +192,129 @@ Below is a step-by-step guide explaining the available configuration options for
    - **Possible Values**: Integer values between `1` and `45` (e.g., `15`, `30`, etc.)
    - **Description**: Specifies the duration (in seconds) for the map voting period. Must be greater than `0` and less than `45`, otherwise an error will occur.
 
-3. **`vote_map_on_freezetime`**
-
-   - **Possible Values**: `true`, `false`
-   - **Description**: Controls whether voting starts during freeze time.
-     - `true`: Increases the freeze time in the next round and starts voting during it.
-     - `false`: Voting starts at the beginning of the next round but does not extend freeze time. Players can vote while the round progresses.
-
-4. **`depends_on_the_round`**
+3. **`depends_on_the_round`**
 
    - **Possible Values**: `true`, `false`
    - **Description**: Determines whether map voting is based on rounds or time.
-     - `true`: The plugin uses `mp_maxrounds` to trigger voting.
-     - `false`: The plugin uses `mp_timelimit` to trigger voting.
+     - `true`: The plugin uses `mp_maxrounds` to trigger voting. Voting will automatically start during freeze time of the next round with extended freeze time.
+     - `false`: The plugin uses `mp_timelimit` to trigger voting. Voting will start immediately without freeze time extension.
 
-5. **`enable_player_freeze_in_menu`**
-
-   - **Possible Values**: `true`, `false`
-   - **Description**: Freezes players when the map list menu or voting menu is active.
-     - `true`: Players cannot move until the menu closes.
-     - `false`: Players can move even while voting.
-     - _Note_: For the best experience, set both `vote_map_on_freezetime` and this option to `true`. Otherwise, players may remain frozen after the round starts if only this option is enabled.
-
-6. **`enable_player_voting_in_chat`**
+4. **`enable_player_voting_in_chat`**
 
    - **Possible Values**: `true`, `false`
    - **Description**: Logs in the chat which player voted for which map.
      - `true`: Displays voting logs in the chat.
      - `false`: Disables voting logs.
 
-7. **`display_map_by_value`**
+5. **`display_map_by_value`**
 
    - **Possible Values**: `true`, `false`
    - **Description**: Defines how maps are displayed.
      - `true`: Displays the map by its technical name (e.g., `de_dust2`).
      - `false`: Displays the map by its custom tag (e.g., `Dust II`).
 
-8. **`enable_random_nextmap`**
+6. **`enable_random_nextmap`**
 
    - **Possible Values**: `true`, `false`
    - **Description**: Determines if the next map is selected randomly or cyclically.
      - `true`: The next map will be chosen randomly.
      - `false`: The next map will follow a cyclic order.
 
-9. **`enable_nextmap_command`**
+7. **`enable_nextmap_command`**
 
    - **Possible Values**: `true`, `false`
    - **Description**: Enables or disables the `!nextmap` command.
 
-10. **`enable_lastmap_command`**
+8. **`enable_lastmap_command`**
 
-    - **Possible Values**: `true`, `false`
-    - **Description**: Enables or disables the `!lastmap` command.
+   - **Possible Values**: `true`, `false`
+   - **Description**: Enables or disables the `!lastmap` command.
 
-11. **`enable_currentmap_command`**
+9. **`enable_currentmap_command`**
 
-    - **Possible Values**: `true`, `false`
-    - **Description**: Enables or disables the `!currentmap` command.
+   - **Possible Values**: `true`, `false`
+   - **Description**: Enables or disables the `!currentmap` command.
 
-12. **`enable_timeleft_command`**
+10. **`enable_timeleft_command`**
 
     - **Possible Values**: `true`, `false`
     - **Description**: Enables or disables the `!timeleft` command.
 
-13. **`enable_command_ads_in_chat`**
+11. **`enable_command_ads_in_chat`**
 
     - **Possible Values**: `true`, `false`
     - **Description**: Displays command advertisements in chat every 5 minutes if enabled.
 
-14. **`enable_ignore_vote`**
+12. **`enable_ignore_vote`**
 
     - **Possible Values**: `true`, `false`
     - **Description**: Adds an "Ignore Vote" option to the map voting menu.
 
-15. **`ignore_vote_position`**
+13. **`ignore_vote_position`**
 
     - **Possible Values**: `"top"`, `"bottom"`
     - **Description**: Defines whether the "Ignore Vote" option appears at the top or bottom of the voting menu.
 
-16. **`enable_extend_map`**
+14. **`enable_extend_map`**
 
     - **Possible Values**: `true`, `false`
     - **Description**: Adds an "Extend Map" option to the map voting menu.
 
-17. **`extend_map_time`**
+15. **`extend_map_time`**
 
     - **Possible Values**: Integer values greater than `0`
     - **Description**: Defines how much time the map will be extended.
       - If `depends_on_round` is `true`, the value represents rounds.
       - If `depends_on_round` is `false`, the value represents minutes.
 
-18. **`extend_map_position`**
+16. **`extend_map_position`**
 
     - **Possible Values**: `"top"`, `"bottom"`
     - **Description**: Defines whether the "Extend Map" option appears at the top or bottom of the voting menu.
 
-19. **`delay_to_change_map_in_the_end`**
+17. **`delay_to_change_map_in_the_end`**
 
     - **Possible Values**: Integer values greater than `5`
     - **Description**: Defines the delay (in seconds) between the end of the current map and the actual map change.
 
-20. **`vote_trigger_time_before_map_end`**
+18. **`vote_trigger_time_before_map_end`**
 
     - **Possible Values**: Integer values greater than `2`
     - **Description**: Defines how long before the end of the current map the vote is triggered.
       - If `depends_on_round` is `true`, the value is in rounds.
       - If `depends_on_round` is `false`, the value is in minutes.
 
-21. **`commands_css_nextmap`**
+19. **`commands_css_nextmap`**
 
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `css_nextmap`.
 
-22. **`commands_css_maps`**
+20. **`commands_css_maps`**
 
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `css_maps`.
 
-23. **`commands_nextmap`**
+21. **`commands_nextmap`**
 
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!nextmap`.
 
-24. **`commands_lastmap`**
+22. **`commands_lastmap`**
 
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!lastmap`.
 
-25. **`commands_currentmap`**
+23. **`commands_currentmap`**
 
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!currentmap`.
 
-26. **`commands_timeleft`**
+24. **`commands_timeleft`**
 
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!timeleft`.
 
-27. **`sounds`**
+25. **`sounds`**
 
 - **Possible Values**: An array of string paths to sound files.
 - **Description**: Specifies the sounds that play when map voting begins.

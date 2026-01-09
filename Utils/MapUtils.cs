@@ -294,10 +294,7 @@ namespace MapManager_COFYYE.Utils
                         }
                     }
 
-                    if (
-                        Instance?.Config?.DependsOnTheRound == true
-                        && Instance?.Config?.VoteMapOnFreezeTime == true
-                    )
+                    if (Instance?.Config?.DependsOnTheRound == true)
                     {
                         Server.ExecuteCommand(
                             $"mp_freezetime {(Instance?.Config?.VoteMapDuration ?? GlobalVariables.FreezeTime) + 2}"
