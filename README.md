@@ -87,7 +87,7 @@ To run this plugin, you need the following dependencies:
    **CS2MenuManager Configuration:**
 
    This plugin uses the WASD Menu from CS2MenuManager. You can configure menu behavior, colors, and controls by editing the `config.toml` file located at:  
-   `csgo/addons/counterstrikesharp/plugins/CS2MenuManager/config.toml`
+   `csgo/addons/counterstrikesharp/shared/CS2MenuManager/config.toml`
 
    **Sound Settings** - Configure menu sounds:
 
