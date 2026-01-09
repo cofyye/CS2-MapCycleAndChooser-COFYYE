@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   build-and-release:
@@ -43,6 +44,23 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         echo "Detected version: $VERSION"
 
+    - name: Update README.md with current version
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: |
+        VERSION="${{ steps.extract_version.outputs.VERSION }}"
+        sed -i "s|MapManager v[0-9.]\+](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/[0-9.]\+/MapManager-COFYYE-v[0-9.]\+.zip)|MapManager v${VERSION}](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/v${VERSION}/MapManager-COFYYE-v${VERSION}.zip)|g" README.md
+
+        # Check if README was changed
+        if git diff --quiet README.md; then
+          echo "README.md already up to date"
+        else
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md
+          git commit -m "docs: update README.md to version ${VERSION} [skip ci]"
+          git push
+        fi
+
     - name: Check if tag exists
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       id: check_tag
@@ -62,9 +80,13 @@ jobs:
         # Copy plugin files from build folder
         cp -r build/MapManager-COFYYE release/addons/counterstrikesharp/plugins/
 
-        # Copy all dependencies
-        if [ -d "dependencies/*" ]; then
-          cp -r dependencies/* release/addons/counterstrikesharp/
+        # Copy all dependencies (shared and plugins folders)
+        if [ -d "dependencies/shared" ]; then
+          cp -r dependencies/shared/* release/addons/counterstrikesharp/shared/ 2>/dev/null || true
+        fi
+
+        if [ -d "dependencies/plugins" ]; then
+          cp -r dependencies/plugins/* release/addons/counterstrikesharp/plugins/ 2>/dev/null || true
         fi
 
     - name: Create ZIP archive
