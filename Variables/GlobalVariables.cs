@@ -24,6 +24,9 @@ namespace MapManager_COFYYE.Variables
         private static CounterStrikeSharp.API.Modules.Timers.Timer? _timeleftTimer = null;
         private static CounterStrikeSharp.API.Modules.Timers.Timer? _votingTimer = null;
         private static CounterStrikeSharp.API.Modules.Timers.Timer? _menuRefreshTimer = null;
+        private static readonly HashSet<string> _rtvVotes = [];
+        private static bool _rtvTriggered = false;
+        private static float _mapStartTime = 0; // in seconds
 
         public static List<Map> CycleMaps
         {
@@ -116,6 +119,20 @@ namespace MapManager_COFYYE.Variables
         {
             get { return _menuRefreshTimer; }
             set { _menuRefreshTimer = value; }
+        }
+        public static HashSet<string> RtvVotes
+        {
+            get { return _rtvVotes; }
+        }
+        public static bool RtvTriggered
+        {
+            get { return _rtvTriggered; }
+            set { _rtvTriggered = value; }
+        }
+        public static float MapStartTime
+        {
+            get { return _mapStartTime; }
+            set { _mapStartTime = value; }
         }
     }
 }

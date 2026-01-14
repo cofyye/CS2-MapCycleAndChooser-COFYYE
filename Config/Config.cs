@@ -78,6 +78,21 @@ namespace MapManager_COFYYE.Config
         [JsonPropertyName("commands_timeleft")]
         public List<string> CommandsTimeLeft { get; init; } = ["!timeleft", "!preostalovreme"];
 
+        [JsonPropertyName("rtv_enable")]
+        public bool RtvEnable { get; init; } = true;
+
+        [JsonPropertyName("rtv_min_players")]
+        public int RtvMinPlayers { get; init; } = 0;
+
+        [JsonPropertyName("rtv_time_after_map_start")]
+        public int RtvTimeAfterMapStart { get; init; } = 5; // in minutes
+
+        [JsonPropertyName("rtv_minimum_votes_percent")]
+        public int RtvMinimumVotesPercent { get; init; } = 60; // percentage (1-100)
+
+        [JsonPropertyName("commands_rtv")]
+        public List<string> CommandsRtv { get; init; } = ["!rtv", "!rockthevote"];
+
         [JsonPropertyName("sounds")]
         public List<string> Sounds { get; init; } =
         ["sounds/voice/gman_choose1.vsnd_c", "sounds/voice/gman_choose2.vsnd_c"];

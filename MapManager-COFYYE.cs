@@ -114,6 +114,14 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
                                 );
                                 break;
                             }
+                            case 4:
+                            {
+                                if (Config?.RtvEnable == true)
+                                {
+                                    player.PrintToChat(Localizer.ForPlayer(player, "rtv.info"));
+                                }
+                                break;
+                            }
                             default:
                             {
                                 GlobalVariables.MessageIndex = 0;
@@ -122,7 +130,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
                         }
                     }
 
-                    if (GlobalVariables.MessageIndex + 1 >= 3)
+                    if (GlobalVariables.MessageIndex + 1 >= 4)
                     {
                         GlobalVariables.MessageIndex = 0;
                     }
@@ -230,6 +238,12 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
     {
         if (@event == null)
             return HookResult.Continue;
+
+        var player = @event.Userid;
+        if (PlayerUtils.IsValidPlayer(player))
+        {
+            RtvUtils.HandlePlayerDisconnect(player!.SteamID.ToString());
+        }
 
         return HookResult.Continue;
     }
@@ -450,6 +464,16 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
             }
         }
 
+        if (Config?.CommandsRtv?.Contains(@event.Text.Trim()) == true)
+        {
+            // EventPlayerChat.Userid is int, not CCSPlayerController - need to find player by userid
+            var player = Utilities.GetPlayers().FirstOrDefault(p => p.UserId == @event.Userid);
+            if (player != null)
+            {
+                RtvUtils.HandleRtvCommand(player);
+            }
+        }
+
         if (Config?.CommandsLastMap?.Contains(@event.Text.Trim()) == true)
         {
             var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p)).ToList();
@@ -492,6 +516,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         }
 
         MapUtils.AutoSetNextMap();
+        RtvUtils.ResetRtv();
 
         if (Config?.DependsOnTheRound == true)
         {
