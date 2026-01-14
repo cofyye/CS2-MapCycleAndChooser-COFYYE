@@ -3,7 +3,7 @@
 ## 📊 Plugin Statistics
 
 <p align="center">
-  <img src="https://img.shields.io/github/downloads/cofyye/CS2-MapManager-COFYYE/total" alt="Total Downloads">
+  <img src="https://img.shields.io/github/downloads/cofyye/CS2-MapCycleAndChooser-COFYYE/total" alt="Total Downloads">
   <img src="https://img.shields.io/github/stars/cofyye/CS2-MapManager-COFYYE" alt="GitHub Stars">
   <img src="https://img.shields.io/github/last-commit/cofyye/CS2-MapManager-COFYYE" alt="Last Update">
   <img src="https://img.shields.io/github/issues/cofyye/CS2-MapManager-COFYYE" alt="Open Issues">
@@ -365,7 +365,7 @@ These parameters will conflict with the plugin's map management system and must 
 
 ### Installation
 
-1. Download the **[MapManager v1.2](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/1.2/MapManager-COFYYE-v1.2.zip)** plugin as a `.zip` file.
+1. Download the **[MapManager v1.3](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/1.3/MapManager-COFYYE-v1.3.zip)** plugin as a `.zip` file.
 2. Upload the contents of the `.zip` file into the following directory on your server:
    > game/csgo/addons/counterstrikesharp/plugins
 3. After uploading, change the map or restart your server to activate the plugin.
