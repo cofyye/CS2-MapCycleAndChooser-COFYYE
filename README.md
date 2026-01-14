@@ -3,7 +3,7 @@
 ## 📊 Plugin Statistics
 
 <p align="center">
-  <img src="https://img.shields.io/github/downloads/cofyye/CS2-MapCycleAndChooser-COFYYE/total" alt="Total Downloads">
+  <img src="https://img.shields.io/github/downloads/cofyye/CS2-MapManager-COFYYE/total" alt="Total Downloads">
   <img src="https://img.shields.io/github/stars/cofyye/CS2-MapManager-COFYYE" alt="GitHub Stars">
   <img src="https://img.shields.io/github/last-commit/cofyye/CS2-MapManager-COFYYE" alt="Last Update">
   <img src="https://img.shields.io/github/issues/cofyye/CS2-MapManager-COFYYE" alt="Open Issues">
