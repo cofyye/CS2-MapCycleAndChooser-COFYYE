@@ -170,7 +170,7 @@ namespace MapManager_COFYYE.Utils
                 GlobalVariables.VotedForCurrentMap = false;
                 GlobalVariables.VotedForExtendMap = false;
                 GlobalVariables.VoteStarted = false;
-                MapUtils.CheckAndPickMapsForVoting();
+                MapUtils.PickMapsForVoting();
 
                 // Extend freezetime for next round to accommodate voting
                 var freezeTimeDuration =
@@ -198,7 +198,7 @@ namespace MapManager_COFYYE.Utils
                 }
 
                 // Start vote instantly
-                MapUtils.CheckAndPickMapsForVoting();
+                MapUtils.PickMapsForVoting();
                 MapUtils.StartMapVoting();
             }
         }

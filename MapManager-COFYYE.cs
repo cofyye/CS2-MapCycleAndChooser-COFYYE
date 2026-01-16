@@ -318,7 +318,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
                 return HookResult.Continue;
             }
 
-            // Only check for natural vote if vote hasn't happened yet
+            // Only check for natural vote if RTV hasn't been triggered
             if (!GlobalVariables.RtvTriggered)
             {
                 return MapUtils.CheckAndStartMapVoting();
@@ -504,6 +504,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         }
 
         MapUtils.AutoSetNextMap();
+        MapUtils.PickMapsForVoting();
         RtvUtils.ResetRtv();
 
         if (Config?.DependsOnTheRound == true)
