@@ -1,6 +1,8 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Timers;
+using MapManager_COFYYE.Classes;
 using MapManager_COFYYE.Variables;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +11,46 @@ namespace MapManager_COFYYE.Utils
     public static class ServerUtils
     {
         public static MapManager Instance => MapManager.Instance;
+
+        public static void ChangeMap(Map map, float delay = 0.0f)
+        {
+            if (map == null)
+                return;
+
+            GlobalVariables.LastMap = Server.MapName;
+
+            if (delay > 0)
+            {
+                Instance?.AddTimer(
+                    delay,
+                    () => ExecuteMapChange(map),
+                    TimerFlags.STOP_ON_MAPCHANGE
+                );
+            }
+            else
+            {
+                ExecuteMapChange(map);
+            }
+        }
+
+        private static void ExecuteMapChange(Map map)
+        {
+            if (map.MapIsWorkshop)
+            {
+                if (string.IsNullOrEmpty(map.MapWorkshopId))
+                {
+                    Server.ExecuteCommand($"ds_workshop_changelevel {map.MapValue}");
+                }
+                else
+                {
+                    Server.ExecuteCommand($"host_workshop_map {map.MapWorkshopId}");
+                }
+            }
+            else
+            {
+                Server.ExecuteCommand($"changelevel {map.MapValue}");
+            }
+        }
 
         public static void RunCvars()
         {

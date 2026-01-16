@@ -24,7 +24,7 @@
   "rtv.disabled": "{lightpurple}[MapInfo] {yellow}The {lime}!rtv {yellow}command is currently {lightred}disabled",
   "rtv.not.enough.players": "{lightpurple}[MapInfo] {yellow}Cannot use {lime}!rtv {yellow}command. Need at least {lime}{MIN_PLAYERS} {yellow}players on the server",
   "rtv.too.early": "{lightpurple}[MapInfo] {yellow}Cannot use {lime}!rtv {yellow}command. Wait {lime}{TIME_LEFT} {yellow}more minute(s) since map start",
-  "rtv.vote.already.done": "{lightpurple}[MapInfo] {yellow}Cannot use {lime}!rtv {yellow}command. Map vote already happened this round",
+  "rtv.vote.already.done": "{lightpurple}[MapInfo] {yellow}Cannot use {lime}!rtv {yellow}command. Map vote already happened",
   "rtv.already.voted": "{lightpurple}[MapInfo] {yellow}You already voted for {lime}RTV{yellow}. You can only vote once per map",
   "rtv.player.voted": "{lightpurple}[MapInfo] {yellow}Player {lime}{PLAYER_NAME} {yellow}voted for {lime}RTV {yellow}({lime}{CURRENT_VOTES}/{NEEDED_VOTES}{yellow})",
   "rtv.triggered": "{lightpurple}[MapInfo] {yellow}RTV vote threshold reached! Map voting will start soon",

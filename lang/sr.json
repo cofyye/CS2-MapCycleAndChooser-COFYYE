@@ -24,7 +24,7 @@
   "rtv.disabled": "{lightpurple}[MapInfo] {yellow}Komanda {lime}!rtv {yellow}je trenutno {lightred}iskljucena",
   "rtv.not.enough.players": "{lightpurple}[MapInfo] {yellow}Ne mozes koristiti {lime}!rtv {yellow}komandu. Potrebno je najmanje {lime}{MIN_PLAYERS} {yellow}igraca na serveru",
   "rtv.too.early": "{lightpurple}[MapInfo] {yellow}Ne mozes koristiti {lime}!rtv {yellow}komandu. Sacekaj jos {lime}{TIME_LEFT} {yellow}minut(a) od pocetka mape",
-  "rtv.vote.already.done": "{lightpurple}[MapInfo] {yellow}Ne mozes koristiti {lime}!rtv {yellow}komandu. Glasanje za mape je vec bilo ovu rundu",
+  "rtv.vote.already.done": "{lightpurple}[MapInfo] {yellow}Ne mozes koristiti {lime}!rtv {yellow}komandu. Glasanje za mape je vec bilo",
   "rtv.already.voted": "{lightpurple}[MapInfo] {yellow}Vec si glasao za {lime}RTV{yellow}. Mozes glasati samo jednom po mapi",
   "rtv.player.voted": "{lightpurple}[MapInfo] {yellow}Igrac {lime}{PLAYER_NAME} {yellow}je glasao za {lime}RTV {yellow}({lime}{CURRENT_VOTES}/{NEEDED_VOTES}{yellow})",
   "rtv.triggered": "{lightpurple}[MapInfo] {yellow}RTV prag glasova je dostignut! Glasanje za mapu ce uskoro poceti",

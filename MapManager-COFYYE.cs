@@ -291,36 +291,13 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         if (@event == null)
             return HookResult.Continue;
 
-        AddTimer(
-            (Config?.DelayToChangeMapInTheEnd ?? 10.0f) - 3.0f,
-            () =>
-            {
-                if (GlobalVariables.NextMap != null)
-                {
-                    GlobalVariables.LastMap = Server.MapName;
-                    if (GlobalVariables.NextMap.MapIsWorkshop)
-                    {
-                        if (string.IsNullOrEmpty(GlobalVariables.NextMap.MapWorkshopId))
-                        {
-                            Server.ExecuteCommand(
-                                $"ds_workshop_changelevel {GlobalVariables.NextMap.MapValue}"
-                            );
-                        }
-                        else
-                        {
-                            Server.ExecuteCommand(
-                                $"host_workshop_map {GlobalVariables.NextMap.MapWorkshopId}"
-                            );
-                        }
-                    }
-                    else
-                    {
-                        Server.ExecuteCommand($"changelevel {GlobalVariables.NextMap.MapValue}");
-                    }
-                }
-            },
-            TimerFlags.STOP_ON_MAPCHANGE
-        );
+        if (GlobalVariables.NextMap != null)
+        {
+            ServerUtils.ChangeMap(
+                GlobalVariables.NextMap,
+                (Config?.DelayToChangeMapInTheEnd ?? 10.0f) - 3.0f
+            );
+        }
 
         return HookResult.Continue;
     }
@@ -334,7 +311,18 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 
         if (Config?.DependsOnTheRound == true)
         {
-            return MapUtils.CheckAndStartMapVoting();
+            // Check if RTV was triggered - if so, start voting immediately
+            if (GlobalVariables.RtvTriggered)
+            {
+                MapUtils.StartMapVoting();
+                return HookResult.Continue;
+            }
+
+            // Only check for natural vote if vote hasn't happened yet
+            if (!GlobalVariables.RtvTriggered)
+            {
+                return MapUtils.CheckAndStartMapVoting();
+            }
         }
 
         return HookResult.Continue;

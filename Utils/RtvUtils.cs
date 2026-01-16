@@ -138,7 +138,7 @@ namespace MapManager_COFYYE.Utils
         private static int CalculateVotesNeeded(int playerCount)
         {
             int percentage = Instance?.Config?.RtvMinimumVotesPercent ?? 60;
-            return (int)Math.Ceiling((playerCount * percentage) / 100.0);
+            return (int)Math.Ceiling(playerCount * percentage / 100.0);
         }
 
         private static void TriggerRtvVote()
@@ -166,10 +166,16 @@ namespace MapManager_COFYYE.Utils
                     return;
                 }
 
-                // Force vote on next round
+                // Reset flags and pick maps for voting
                 GlobalVariables.VotedForCurrentMap = false;
                 GlobalVariables.VotedForExtendMap = false;
+                GlobalVariables.VoteStarted = false;
                 MapUtils.CheckAndPickMapsForVoting();
+
+                // Extend freezetime for next round to accommodate voting
+                var freezeTimeDuration =
+                    (Instance?.Config?.VoteMapDuration ?? GlobalVariables.FreezeTime) + 2;
+                Server.ExecuteCommand($"mp_freezetime {freezeTimeDuration}");
 
                 Server.PrintToChatAll(
                     Instance?.Localizer["rtv.vote.next.round"] ?? "Vote will start next round!"

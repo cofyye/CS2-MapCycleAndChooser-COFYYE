@@ -329,6 +329,13 @@ namespace MapManager_COFYYE.Utils
                 return;
             }
 
+            // Prevent duplicate vote start
+            if (GlobalVariables.IsVotingInProgress)
+            {
+                Instance?.Logger.LogInformation("Vote is already in progress. Skipping.");
+                return;
+            }
+
             GlobalVariables.VoteStarted = true;
             GlobalVariables.IsVotingInProgress = true;
 
@@ -467,6 +474,22 @@ namespace MapManager_COFYYE.Utils
                     if (type != "extendmap")
                     {
                         GlobalVariables.VotedForCurrentMap = true;
+                    }
+
+                    // Reset freezetime to original value if in round mode
+                    if (Instance?.Config?.DependsOnTheRound == true)
+                    {
+                        Server.ExecuteCommand($"mp_freezetime {GlobalVariables.FreezeTime}");
+                    }
+
+                    // If RTV was triggered, change map immediately after vote
+                    if (
+                        GlobalVariables.RtvTriggered
+                        && type != "extendmap"
+                        && GlobalVariables.NextMap != null
+                    )
+                    {
+                        ServerUtils.ChangeMap(GlobalVariables.NextMap, 3.0f);
                     }
                 },
                 TimerFlags.STOP_ON_MAPCHANGE
