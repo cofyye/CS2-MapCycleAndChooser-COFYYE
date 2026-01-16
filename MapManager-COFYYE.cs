@@ -16,7 +16,7 @@ namespace MapManager_COFYYE;
 public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 {
     public override string ModuleName => "MapManager";
-    public override string ModuleVersion => "1.3";
+    public override string ModuleVersion => "1.4";
     public override string ModuleAuthor => "cofyye";
     public override string ModuleDescription => "https://github.com/cofyye";
 
@@ -335,7 +335,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         if (@event == null)
             return HookResult.Continue;
 
-        if (Config?.DependsOnTheRound == true)
+        if (Config?.DependsOnTheRound == true && !GlobalVariables.RtvTriggered)
         {
             return MapUtils.CheckAndPickMapsForVoting();
         }
@@ -454,11 +454,15 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 
         if (Config?.CommandsRtv?.Contains(@event.Text.Trim()) == true)
         {
-            // EventPlayerChat.Userid is int, not CCSPlayerController - need to find player by userid
-            var player = Utilities.GetPlayers().FirstOrDefault(p => p.UserId == @event.Userid);
+            var player = (CCSPlayerController)
+                Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
             if (player != null)
             {
                 RtvUtils.HandleRtvCommand(player);
+            }
+            else
+            {
+                Server.PrintToChatAll("Player not found.");
             }
         }
 
@@ -504,8 +508,9 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         }
 
         MapUtils.AutoSetNextMap();
-        MapUtils.PickMapsForVoting();
         RtvUtils.ResetRtv();
+
+        GlobalVariables.MapsPicked = false;
 
         if (Config?.DependsOnTheRound == true)
         {
@@ -534,6 +539,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 
         GlobalVariables.Votes.Clear();
         GlobalVariables.MapForVotes.Clear();
+        GlobalVariables.MapsPicked = false;
         GlobalVariables.CurrentTime = 0.0f;
         GlobalVariables.NextMap = null;
         GlobalVariables.TimeLeftTimer?.Kill();

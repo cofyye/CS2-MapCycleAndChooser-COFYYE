@@ -27,6 +27,7 @@ namespace MapManager_COFYYE.Variables
         private static readonly HashSet<string> _rtvVotes = [];
         private static bool _rtvTriggered = false;
         private static float _mapStartTime = 0; // in seconds
+        private static bool _mapsPicked = false;
 
         public static List<Map> CycleMaps
         {
@@ -133,6 +134,11 @@ namespace MapManager_COFYYE.Variables
         {
             get { return _mapStartTime; }
             set { _mapStartTime = value; }
+        }
+        public static bool MapsPicked
+        {
+            get { return _mapsPicked; }
+            set { _mapsPicked = value; }
         }
     }
 }

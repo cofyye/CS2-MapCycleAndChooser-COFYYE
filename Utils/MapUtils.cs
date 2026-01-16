@@ -240,6 +240,12 @@ namespace MapManager_COFYYE.Utils
 
         public static void PickMapsForVoting()
         {
+            // Check if maps are already picked to prevent duplicate execution
+            if (GlobalVariables.MapsPicked)
+            {
+                return;
+            }
+
             PopulateMapsForVotes();
 
             if (GlobalVariables.MapForVotes.Count < 1)
@@ -256,6 +262,9 @@ namespace MapManager_COFYYE.Utils
                     GlobalVariables.Votes[map.MapValue] = [];
                 }
             }
+
+            // Set flag to prevent duplicate execution
+            GlobalVariables.MapsPicked = true;
         }
 
         public static HookResult CheckAndPickMapsForVoting()
@@ -333,6 +342,8 @@ namespace MapManager_COFYYE.Utils
 
         public static void StartMapVoting()
         {
+            PickMapsForVoting();
+
             if (GlobalVariables.MapForVotes.Count < 1)
             {
                 Instance?.Logger.LogInformation(

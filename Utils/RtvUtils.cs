@@ -13,7 +13,10 @@ namespace MapManager_COFYYE.Utils
         public static void HandleRtvCommand(CCSPlayerController player)
         {
             if (!PlayerUtils.IsValidPlayer(player))
+            {
+                Server.PrintToChatAll("Player is not valid to rtv.");
                 return;
+            }
 
             // Check if RTV is enabled
             if (Instance?.Config?.RtvEnable != true)
@@ -170,7 +173,6 @@ namespace MapManager_COFYYE.Utils
                 GlobalVariables.VotedForCurrentMap = false;
                 GlobalVariables.VotedForExtendMap = false;
                 GlobalVariables.VoteStarted = false;
-                MapUtils.PickMapsForVoting();
 
                 // Extend freezetime for next round to accommodate voting
                 var freezeTimeDuration =
@@ -198,7 +200,6 @@ namespace MapManager_COFYYE.Utils
                 }
 
                 // Start vote instantly
-                MapUtils.PickMapsForVoting();
                 MapUtils.StartMapVoting();
             }
         }
