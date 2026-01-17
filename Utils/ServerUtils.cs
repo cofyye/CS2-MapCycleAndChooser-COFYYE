@@ -1,6 +1,8 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Timers;
+using MapManager_COFYYE.Classes;
 using MapManager_COFYYE.Variables;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +11,46 @@ namespace MapManager_COFYYE.Utils
     public static class ServerUtils
     {
         public static MapManager Instance => MapManager.Instance;
+
+        public static void ChangeMap(Map map, float delay = 0.0f)
+        {
+            if (map == null)
+                return;
+
+            GlobalVariables.LastMap = Server.MapName;
+
+            if (delay > 0)
+            {
+                Instance?.AddTimer(
+                    delay,
+                    () => ExecuteMapChange(map),
+                    TimerFlags.STOP_ON_MAPCHANGE
+                );
+            }
+            else
+            {
+                ExecuteMapChange(map);
+            }
+        }
+
+        private static void ExecuteMapChange(Map map)
+        {
+            if (map.MapIsWorkshop)
+            {
+                if (string.IsNullOrEmpty(map.MapWorkshopId))
+                {
+                    Server.ExecuteCommand($"ds_workshop_changelevel {map.MapValue}");
+                }
+                else
+                {
+                    Server.ExecuteCommand($"host_workshop_map {map.MapWorkshopId}");
+                }
+            }
+            else
+            {
+                Server.ExecuteCommand($"changelevel {map.MapValue}");
+            }
+        }
 
         public static void RunCvars()
         {
@@ -152,6 +194,39 @@ namespace MapManager_COFYYE.Utils
             {
                 Instance?.Logger.LogError(
                     "vote_trigger_time_before_map_end has bad value. Value must be greater than 2"
+                );
+                throw new ArgumentException(nameof(Instance.Config));
+            }
+
+            // RtvMinPlayers
+            if (Instance?.Config?.RtvMinPlayers < 0 || Instance?.Config?.RtvMinPlayers > 64)
+            {
+                Instance?.Logger.LogError(
+                    "rtv_min_players has bad value. Value must be between 0 and 64"
+                );
+                throw new ArgumentException(nameof(Instance.Config));
+            }
+
+            // RtvTimeAfterMapStart
+            if (
+                Instance?.Config?.RtvTimeAfterMapStart < 0
+                || Instance?.Config?.RtvTimeAfterMapStart > 300
+            )
+            {
+                Instance?.Logger.LogError(
+                    "rtv_time_after_map_start has bad value. Value must be between 0 and 300"
+                );
+                throw new ArgumentException(nameof(Instance.Config));
+            }
+
+            // RtvMinimumVotesPercent
+            if (
+                Instance?.Config?.RtvMinimumVotesPercent < 0
+                || Instance?.Config?.RtvMinimumVotesPercent > 100
+            )
+            {
+                Instance?.Logger.LogError(
+                    "rtv_minimum_votes_percent has bad value. Value must be between 0 and 100"
                 );
                 throw new ArgumentException(nameof(Instance.Config));
             }

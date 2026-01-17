@@ -2,7 +2,6 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Cvars;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
 using MapManager_COFYYE.Classes;
 using MapManager_COFYYE.Variables;
@@ -239,6 +238,35 @@ namespace MapManager_COFYYE.Utils
             return percentages;
         }
 
+        public static void PickMapsForVoting()
+        {
+            // Check if maps are already picked to prevent duplicate execution
+            if (GlobalVariables.MapsPicked)
+            {
+                return;
+            }
+
+            PopulateMapsForVotes();
+
+            if (GlobalVariables.MapForVotes.Count < 1)
+            {
+                Instance?.Logger.LogInformation("The list of voting maps is empty.");
+                return;
+            }
+
+            // Initialize vote dictionary for each map
+            foreach (var map in GlobalVariables.MapForVotes)
+            {
+                if (!GlobalVariables.Votes.ContainsKey(map.MapValue))
+                {
+                    GlobalVariables.Votes[map.MapValue] = [];
+                }
+            }
+
+            // Set flag to prevent duplicate execution
+            GlobalVariables.MapsPicked = true;
+        }
+
         public static HookResult CheckAndPickMapsForVoting()
         {
             float maxLimit;
@@ -274,7 +302,7 @@ namespace MapManager_COFYYE.Utils
 
                 if (timeLeft <= minValue)
                 {
-                    PopulateMapsForVotes();
+                    PickMapsForVoting();
 
                     if (GlobalVariables.MapForVotes.Count < 1)
                     {
@@ -284,14 +312,6 @@ namespace MapManager_COFYYE.Utils
                         );
 
                         return HookResult.Continue;
-                    }
-
-                    foreach (var map in GlobalVariables.MapForVotes)
-                    {
-                        if (!GlobalVariables.Votes.ContainsKey(map.MapValue))
-                        {
-                            GlobalVariables.Votes[map.MapValue] = [];
-                        }
                     }
 
                     if (Instance?.Config?.DependsOnTheRound == true)
@@ -318,6 +338,185 @@ namespace MapManager_COFYYE.Utils
             }
 
             return HookResult.Continue;
+        }
+
+        public static void StartMapVoting()
+        {
+            PickMapsForVoting();
+
+            if (GlobalVariables.MapForVotes.Count < 1)
+            {
+                Instance?.Logger.LogInformation(
+                    "The list of voting maps is empty. Suspending the vote."
+                );
+                return;
+            }
+
+            // Prevent duplicate vote start
+            if (GlobalVariables.IsVotingInProgress)
+            {
+                Instance?.Logger.LogInformation("Vote is already in progress. Skipping.");
+                return;
+            }
+
+            GlobalVariables.VoteStarted = true;
+            GlobalVariables.IsVotingInProgress = true;
+
+            var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+
+            string? soundToPlay = "";
+            if (Instance?.Config?.Sounds.Count > 0)
+            {
+                soundToPlay = Instance
+                    ?.Config
+                    .Sounds[new Random().Next(Instance?.Config?.Sounds.Count ?? 1)];
+            }
+
+            foreach (var player in players)
+            {
+                player.PrintToChat(Instance?.Localizer.ForPlayer(player, "vote.started") ?? "");
+
+                if (!string.IsNullOrEmpty(soundToPlay))
+                {
+                    player.ExecuteClientCommand($"play {soundToPlay}");
+                }
+            }
+
+            // Open vote menu for all players
+            MenuUtils.OpenVoteMenuForAll();
+
+            float duration = Instance?.Config?.VoteMapDuration ?? 15;
+            float maxLimit;
+            float timeLeft;
+
+            if (Instance?.Config?.DependsOnTheRound == true)
+            {
+                maxLimit = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 0;
+                timeLeft = maxLimit - ServerUtils.GetGameRules()?.TotalRoundsPlayed ?? 0;
+            }
+            else
+            {
+                maxLimit = ConVar.Find("mp_timelimit")?.GetPrimitiveValue<float>() ?? 0.0f;
+                timeLeft = GlobalVariables.TimeLeft - GlobalVariables.CurrentTime;
+            }
+
+            Instance?.AddTimer(
+                duration,
+                () =>
+                {
+                    var (winningMap, type) = GetWinningMap();
+
+                    if (winningMap != null)
+                    {
+                        GlobalVariables.NextMap = winningMap;
+                    }
+                    else if (winningMap == null && type == "extendmap")
+                    {
+                        if (Instance?.Config?.DependsOnTheRound == true)
+                        {
+                            Server.ExecuteCommand(
+                                $"mp_maxrounds {(int)timeLeft + Instance?.Config?.ExtendMapTime ?? 5}"
+                            );
+                        }
+                        else
+                        {
+                            Server.ExecuteCommand(
+                                $"mp_timelimit {Math.Ceiling((float)timeLeft / 60) + Instance?.Config?.ExtendMapTime ?? 5}"
+                            );
+                        }
+                        GlobalVariables.VotedForExtendMap = true;
+                        GlobalVariables.VotedForCurrentMap = false;
+                    }
+                    else if (winningMap == null && type == "ignorevote")
+                    {
+                        GlobalVariables.NextMap = GlobalVariables.CycleMaps.FirstOrDefault();
+                    }
+                    else
+                    {
+                        GlobalVariables.NextMap = GlobalVariables.CycleMaps.FirstOrDefault();
+                    }
+
+                    var playersForVoteFinished = Utilities
+                        .GetPlayers()
+                        .Where(p => PlayerUtils.IsValidPlayer(p))
+                        .ToList();
+
+                    foreach (var player in playersForVoteFinished)
+                    {
+                        if (type == "extendmap")
+                        {
+                            if (Instance?.Config?.DependsOnTheRound == true)
+                            {
+                                player.PrintToChat(
+                                    Instance
+                                        ?.Localizer.ForPlayer(
+                                            player,
+                                            "vote.finished.extend.map.round"
+                                        )
+                                        .Replace(
+                                            "{EXTENDED_TIME}",
+                                            Instance?.Config?.ExtendMapTime.ToString()
+                                        )
+                                        ?? ""
+                                );
+                            }
+                            else
+                            {
+                                player.PrintToChat(
+                                    Instance
+                                        ?.Localizer.ForPlayer(
+                                            player,
+                                            "vote.finished.extend.map.timeleft"
+                                        )
+                                        .Replace(
+                                            "{EXTENDED_TIME}",
+                                            Instance?.Config?.ExtendMapTime.ToString()
+                                        )
+                                        ?? ""
+                                );
+                            }
+                        }
+                        else
+                        {
+                            player.PrintToChat(
+                                Instance
+                                    ?.Localizer.ForPlayer(player, "vote.finished")
+                                    .Replace("{MAP_NAME}", GlobalVariables.NextMap?.MapValue)
+                                    ?? ""
+                            );
+                        }
+                    }
+
+                    // Close all menus
+                    MenuUtils.CloseMenuForAll();
+
+                    GlobalVariables.VoteStarted = false;
+
+                    Instance?.AddTimer(1.0f, () => GlobalVariables.IsVotingInProgress = false);
+
+                    if (type != "extendmap")
+                    {
+                        GlobalVariables.VotedForCurrentMap = true;
+                    }
+
+                    // Reset freezetime to original value if in round mode
+                    if (Instance?.Config?.DependsOnTheRound == true)
+                    {
+                        Server.ExecuteCommand($"mp_freezetime {GlobalVariables.FreezeTime}");
+                    }
+
+                    // If RTV was triggered, change map immediately after vote
+                    if (
+                        GlobalVariables.RtvTriggered
+                        && type != "extendmap"
+                        && GlobalVariables.NextMap != null
+                    )
+                    {
+                        ServerUtils.ChangeMap(GlobalVariables.NextMap, 3.0f);
+                    }
+                },
+                TimerFlags.STOP_ON_MAPCHANGE
+            );
         }
 
         public static HookResult CheckAndStartMapVoting()
@@ -364,146 +563,8 @@ namespace MapManager_COFYYE.Utils
                         return HookResult.Continue;
                     }
 
-                    GlobalVariables.VoteStarted = true;
-                    GlobalVariables.IsVotingInProgress = true;
-
-                    var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
-
-                    string? soundToPlay = "";
-                    if (Instance?.Config?.Sounds.Count > 0)
-                    {
-                        soundToPlay = Instance
-                            ?.Config
-                            .Sounds[new Random().Next(Instance?.Config?.Sounds.Count ?? 1)];
-                    }
-
-                    foreach (var player in players)
-                    {
-                        player.PrintToChat(
-                            Instance?.Localizer.ForPlayer(player, "vote.started") ?? ""
-                        );
-
-                        if (!string.IsNullOrEmpty(soundToPlay))
-                        {
-                            player.ExecuteClientCommand($"play {soundToPlay}");
-                        }
-                    }
-
-                    // Open vote menu for all players
-                    MenuUtils.OpenVoteMenuForAll();
-
-                    float duration = Instance?.Config?.VoteMapDuration ?? 15;
-
-                    Instance?.AddTimer(
-                        duration,
-                        () =>
-                        {
-                            var (winningMap, type) = GetWinningMap();
-
-                            if (winningMap != null)
-                            {
-                                GlobalVariables.NextMap = winningMap;
-                            }
-                            else if (winningMap == null && type == "extendmap")
-                            {
-                                if (Instance?.Config?.DependsOnTheRound == true)
-                                {
-                                    Server.ExecuteCommand(
-                                        $"mp_maxrounds {(int)timeLeft + Instance?.Config?.ExtendMapTime ?? 5}"
-                                    );
-                                }
-                                else
-                                {
-                                    Server.ExecuteCommand(
-                                        $"mp_timelimit {Math.Ceiling((float)timeLeft / 60) + Instance?.Config?.ExtendMapTime ?? 5}"
-                                    );
-                                }
-                                GlobalVariables.VotedForExtendMap = true;
-                                GlobalVariables.VotedForCurrentMap = false;
-                            }
-                            else if (winningMap == null && type == "ignorevote")
-                            {
-                                GlobalVariables.NextMap =
-                                    GlobalVariables.CycleMaps.FirstOrDefault();
-                            }
-                            else
-                            {
-                                Instance?.Logger.LogInformation("Winning map is null.");
-                            }
-
-                            GlobalVariables.Votes.Clear();
-                            GlobalVariables.MapForVotes.Clear();
-
-                            var players = Utilities
-                                .GetPlayers()
-                                .Where(p => PlayerUtils.IsValidPlayer(p));
-
-                            foreach (var player in players)
-                            {
-                                if (type == "extendmap")
-                                {
-                                    if (Instance?.Config?.DependsOnTheRound == true)
-                                    {
-                                        player.PrintToChat(
-                                            Instance
-                                                ?.Localizer.ForPlayer(
-                                                    player,
-                                                    "vote.finished.extend.map.round"
-                                                )
-                                                .Replace(
-                                                    "{EXTENDED_TIME}",
-                                                    Instance?.Config?.ExtendMapTime.ToString()
-                                                )
-                                                ?? ""
-                                        );
-                                    }
-                                    else
-                                    {
-                                        player.PrintToChat(
-                                            Instance
-                                                ?.Localizer.ForPlayer(
-                                                    player,
-                                                    "vote.finished.extend.map.timeleft"
-                                                )
-                                                .Replace(
-                                                    "{EXTENDED_TIME}",
-                                                    Instance?.Config?.ExtendMapTime.ToString()
-                                                )
-                                                ?? ""
-                                        );
-                                    }
-                                }
-                                else
-                                {
-                                    player.PrintToChat(
-                                        Instance
-                                            ?.Localizer.ForPlayer(player, "vote.finished")
-                                            .Replace(
-                                                "{MAP_NAME}",
-                                                GlobalVariables.NextMap?.MapValue
-                                            )
-                                            ?? ""
-                                    );
-                                }
-                            }
-
-                            // Close all menus
-                            MenuUtils.CloseMenuForAll();
-
-                            GlobalVariables.VoteStarted = false;
-
-                            Instance?.AddTimer(
-                                1.0f,
-                                () => GlobalVariables.IsVotingInProgress = false
-                            );
-
-                            if (type != "extendmap")
-                            {
-                                GlobalVariables.VotedForCurrentMap = true;
-                            }
-                        },
-                        TimerFlags.STOP_ON_MAPCHANGE
-                    );
+                    // Use the existing StartMapVoting function
+                    StartMapVoting();
                 }
             }
 

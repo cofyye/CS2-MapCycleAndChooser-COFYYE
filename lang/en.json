@@ -20,6 +20,17 @@
   "timeleft.get.command.info": "{lightpurple}[MapInfo] {yellow}If you want to see the time left, say {lime}!timeleft",
   "timeleft.get.command.disabled": "{lightpurple}[MapInfo] {yellow}The time left command is currently {lightred}disabled",
 
+  "rtv.info": "{lightpurple}[MapInfo] {yellow}Don't like the map? Trigger a vote with {lime}!rtv",
+  "rtv.disabled": "{lightpurple}[MapInfo] {yellow}The {lime}!rtv {yellow}command is currently {lightred}disabled",
+  "rtv.not.enough.players": "{lightpurple}[MapInfo] {yellow}Cannot use {lime}!rtv {yellow}command. Need at least {lime}{MIN_PLAYERS} {yellow}players on the server",
+  "rtv.too.early": "{lightpurple}[MapInfo] {yellow}Cannot use {lime}!rtv {yellow}command. Wait {lime}{TIME_LEFT} {yellow}more minute(s) since map start",
+  "rtv.vote.already.done": "{lightpurple}[MapInfo] {yellow}Cannot use {lime}!rtv {yellow}command. Map vote already happened",
+  "rtv.already.voted": "{lightpurple}[MapInfo] {yellow}You already voted for {lime}RTV{yellow}. You can only vote once per map",
+  "rtv.player.voted": "{lightpurple}[MapInfo] {yellow}Player {lime}{PLAYER_NAME} {yellow}voted for {lime}RTV {yellow}({lime}{CURRENT_VOTES}/{NEEDED_VOTES}{yellow})",
+  "rtv.triggered": "{lightpurple}[MapInfo] {yellow}RTV vote threshold reached! Map voting will start soon",
+  "rtv.vote.next.round": "{lightpurple}[MapInfo] {yellow}Map voting will start on the next round freeze time",
+  "rtv.cancelled.normal.vote": "{lightpurple}[MapInfo] {yellow}RTV cancelled. Map vote will happen naturally at the end of the map",
+
   "admin.change.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{PLAYER_NAME} {yellow}changed the map to {lime}{MAP_NAME}",
   "map.not.found": "{lightpurple}[MapInfo] {yellow}Map not found",
   "command.no.perm": "[MapInfo] You do not have permission for this command",

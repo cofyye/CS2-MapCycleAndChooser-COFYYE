@@ -317,31 +317,7 @@ namespace MapManager_COFYYE.Utils
                 );
             }
 
-            Instance?.AddTimer(
-                2.0f,
-                () =>
-                {
-                    GlobalVariables.LastMap = Server.MapName;
-                    if (selectedMap.MapIsWorkshop)
-                    {
-                        if (string.IsNullOrEmpty(selectedMap.MapWorkshopId))
-                        {
-                            Server.ExecuteCommand(
-                                $"ds_workshop_changelevel {selectedMap.MapValue}"
-                            );
-                        }
-                        else
-                        {
-                            Server.ExecuteCommand($"host_workshop_map {selectedMap.MapWorkshopId}");
-                        }
-                    }
-                    else
-                    {
-                        Server.ExecuteCommand($"changelevel {selectedMap.MapValue}");
-                    }
-                },
-                TimerFlags.STOP_ON_MAPCHANGE
-            );
+            ServerUtils.ChangeMap(selectedMap, 2.0f);
         }
 
         public static void OpenVoteMenuForAll()

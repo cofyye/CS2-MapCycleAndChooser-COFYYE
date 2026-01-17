@@ -16,7 +16,7 @@ namespace MapManager_COFYYE;
 public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 {
     public override string ModuleName => "MapManager";
-    public override string ModuleVersion => "1.3";
+    public override string ModuleVersion => "1.4";
     public override string ModuleAuthor => "cofyye";
     public override string ModuleDescription => "https://github.com/cofyye";
 
@@ -114,6 +114,14 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
                                 );
                                 break;
                             }
+                            case 4:
+                            {
+                                if (Config?.RtvEnable == true)
+                                {
+                                    player.PrintToChat(Localizer.ForPlayer(player, "rtv.info"));
+                                }
+                                break;
+                            }
                             default:
                             {
                                 GlobalVariables.MessageIndex = 0;
@@ -122,7 +130,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
                         }
                     }
 
-                    if (GlobalVariables.MessageIndex + 1 >= 3)
+                    if (GlobalVariables.MessageIndex + 1 >= 4)
                     {
                         GlobalVariables.MessageIndex = 0;
                     }
@@ -231,6 +239,12 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         if (@event == null)
             return HookResult.Continue;
 
+        var player = @event.Userid;
+        if (PlayerUtils.IsValidPlayer(player))
+        {
+            RtvUtils.HandlePlayerDisconnect(player!.SteamID.ToString());
+        }
+
         return HookResult.Continue;
     }
 
@@ -277,36 +291,13 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         if (@event == null)
             return HookResult.Continue;
 
-        AddTimer(
-            (Config?.DelayToChangeMapInTheEnd ?? 10.0f) - 3.0f,
-            () =>
-            {
-                if (GlobalVariables.NextMap != null)
-                {
-                    GlobalVariables.LastMap = Server.MapName;
-                    if (GlobalVariables.NextMap.MapIsWorkshop)
-                    {
-                        if (string.IsNullOrEmpty(GlobalVariables.NextMap.MapWorkshopId))
-                        {
-                            Server.ExecuteCommand(
-                                $"ds_workshop_changelevel {GlobalVariables.NextMap.MapValue}"
-                            );
-                        }
-                        else
-                        {
-                            Server.ExecuteCommand(
-                                $"host_workshop_map {GlobalVariables.NextMap.MapWorkshopId}"
-                            );
-                        }
-                    }
-                    else
-                    {
-                        Server.ExecuteCommand($"changelevel {GlobalVariables.NextMap.MapValue}");
-                    }
-                }
-            },
-            TimerFlags.STOP_ON_MAPCHANGE
-        );
+        if (GlobalVariables.NextMap != null)
+        {
+            ServerUtils.ChangeMap(
+                GlobalVariables.NextMap,
+                (Config?.DelayToChangeMapInTheEnd ?? 10.0f) - 3.0f
+            );
+        }
 
         return HookResult.Continue;
     }
@@ -320,7 +311,18 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 
         if (Config?.DependsOnTheRound == true)
         {
-            return MapUtils.CheckAndStartMapVoting();
+            // Check if RTV was triggered - if so, start voting immediately
+            if (GlobalVariables.RtvTriggered)
+            {
+                MapUtils.StartMapVoting();
+                return HookResult.Continue;
+            }
+
+            // Only check for natural vote if RTV hasn't been triggered
+            if (!GlobalVariables.RtvTriggered)
+            {
+                return MapUtils.CheckAndStartMapVoting();
+            }
         }
 
         return HookResult.Continue;
@@ -333,7 +335,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         if (@event == null)
             return HookResult.Continue;
 
-        if (Config?.DependsOnTheRound == true)
+        if (Config?.DependsOnTheRound == true && !GlobalVariables.RtvTriggered)
         {
             return MapUtils.CheckAndPickMapsForVoting();
         }
@@ -450,6 +452,13 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
             }
         }
 
+        if (Config?.CommandsRtv?.Contains(@event.Text.Trim()) == true)
+        {
+            var player = Utilities.GetPlayerFromUserid(@event.Userid);
+            if (player != null)
+                RtvUtils.HandleRtvCommand(player);
+        }
+
         if (Config?.CommandsLastMap?.Contains(@event.Text.Trim()) == true)
         {
             var players = Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p)).ToList();
@@ -492,6 +501,9 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
         }
 
         MapUtils.AutoSetNextMap();
+        RtvUtils.ResetRtv();
+
+        GlobalVariables.MapsPicked = false;
 
         if (Config?.DependsOnTheRound == true)
         {
@@ -520,6 +532,7 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 
         GlobalVariables.Votes.Clear();
         GlobalVariables.MapForVotes.Clear();
+        GlobalVariables.MapsPicked = false;
         GlobalVariables.CurrentTime = 0.0f;
         GlobalVariables.NextMap = null;
         GlobalVariables.TimeLeftTimer?.Kill();

@@ -60,6 +60,18 @@ namespace MapManager_COFYYE.Config
         [JsonPropertyName("display_map_by_value")]
         public bool DisplayMapByValue { get; init; } = true;
 
+        [JsonPropertyName("rtv_enable")]
+        public bool RtvEnable { get; init; } = true;
+
+        [JsonPropertyName("rtv_min_players")]
+        public int RtvMinPlayers { get; init; } = 0;
+
+        [JsonPropertyName("rtv_time_after_map_start")]
+        public int RtvTimeAfterMapStart { get; init; } = 3; // in minutes
+
+        [JsonPropertyName("rtv_minimum_votes_percent")]
+        public int RtvMinimumVotesPercent { get; init; } = 60; // percentage (1-100)
+
         [JsonPropertyName("commands_css_nextmap")]
         public List<string> CommandsCSSNextmap { get; init; } = ["css_nextmap", "css_sledecamapa"];
 
@@ -77,6 +89,9 @@ namespace MapManager_COFYYE.Config
 
         [JsonPropertyName("commands_timeleft")]
         public List<string> CommandsTimeLeft { get; init; } = ["!timeleft", "!preostalovreme"];
+
+        [JsonPropertyName("commands_rtv")]
+        public List<string> CommandsRtv { get; init; } = ["!rtv", "!rockthevote"];
 
         [JsonPropertyName("sounds")]
         public List<string> Sounds { get; init; } =

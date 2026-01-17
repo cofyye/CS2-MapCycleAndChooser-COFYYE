@@ -20,6 +20,17 @@
   "timeleft.get.command.info": "{lightpurple}[MapInfo] {yellow}Da vidis preostalo vreme, kucaj {lime}!timeleft",
   "timeleft.get.command.disabled": "{lightpurple}[MapInfo] {yellow}Ova komanda trenutno nije dostupna",
 
+  "rtv.info": "{lightpurple}[MapInfo] {yellow}Ne svidja ti se mapa? Triggeruj glasanje sa {lime}!rtv",
+  "rtv.disabled": "{lightpurple}[MapInfo] {yellow}Komanda {lime}!rtv {yellow}je trenutno {lightred}iskljucena",
+  "rtv.not.enough.players": "{lightpurple}[MapInfo] {yellow}Ne mozes koristiti {lime}!rtv {yellow}komandu. Potrebno je najmanje {lime}{MIN_PLAYERS} {yellow}igraca na serveru",
+  "rtv.too.early": "{lightpurple}[MapInfo] {yellow}Ne mozes koristiti {lime}!rtv {yellow}komandu. Sacekaj jos {lime}{TIME_LEFT} {yellow}minut(a) od pocetka mape",
+  "rtv.vote.already.done": "{lightpurple}[MapInfo] {yellow}Ne mozes koristiti {lime}!rtv {yellow}komandu. Glasanje za mape je vec bilo",
+  "rtv.already.voted": "{lightpurple}[MapInfo] {yellow}Vec si glasao za {lime}RTV{yellow}. Mozes glasati samo jednom po mapi",
+  "rtv.player.voted": "{lightpurple}[MapInfo] {yellow}Igrac {lime}{PLAYER_NAME} {yellow}je glasao za {lime}RTV {yellow}({lime}{CURRENT_VOTES}/{NEEDED_VOTES}{yellow})",
+  "rtv.triggered": "{lightpurple}[MapInfo] {yellow}RTV prag glasova je dostignut! Glasanje za mapu ce uskoro poceti",
+  "rtv.vote.next.round": "{lightpurple}[MapInfo] {yellow}Glasanje za mapu ce poceti na freezetime-u sledece runde",
+  "rtv.cancelled.normal.vote": "{lightpurple}[MapInfo] {yellow}RTV otkazan. Glasanje za mapu ce se desiti prirodno na kraju mape",
+
   "admin.change.map": "{lightpurple}[MapInfo] {yellow}Admin {lime}{PLAYER_NAME} {yellow}je promenio mapu na {lime}{MAP_NAME}",
   "map.not.found": "{lightpurple}[MapInfo] {yellow}Mapa nije pronadjena",
   "command.no.perm": "[MapInfo] Nemas permisiju da koristis ovu komandu",
