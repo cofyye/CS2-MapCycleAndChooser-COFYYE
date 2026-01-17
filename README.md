@@ -1,33 +1,38 @@
-# MapManager
+![GitHub Repo stars](https://img.shields.io/github/stars/cofyye/CS2-MapManager-COFYYE?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues/cofyye/CS2-MapManager-COFYYE?style=for-the-badge)
+![GitHub](https://img.shields.io/github/license/cofyye/CS2-MapManager-COFYYE?style=for-the-badge)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=for-the-badge&logo=paypal)](https://paypal.me/cofyye)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/xPTZ2uFgCt)
 
-## 📊 Plugin Statistics
+<div align="center">
+  <strong>⭐ Star this repo if you find it useful!</strong>
+</div>
 
-<p align="center">
-  <img src="https://img.shields.io/github/downloads/cofyye/CS2-MapManager-COFYYE/total" alt="Total Downloads">
-  <img src="https://img.shields.io/github/stars/cofyye/CS2-MapManager-COFYYE" alt="GitHub Stars">
-  <img src="https://img.shields.io/github/last-commit/cofyye/CS2-MapManager-COFYYE" alt="Last Update">
-  <img src="https://img.shields.io/github/issues/cofyye/CS2-MapManager-COFYYE" alt="Open Issues">
-</p>
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <h1 align="center">CS2 MapManager</h1>
+  <h3 align="center">Advanced Map Management Plugin</h3>
+  <a align="center">Complete map management solution for CS2 servers with voting system, RTV, and advanced configuration options.</a>
 
-## 📌 Overview
-
-MapManager is a CS2 plugin designed to give server admins complete control over map rotations and player interactions. With this plugin, you can manage map cycles, enable map voting, and customize various settings to optimize gameplay for all players.
-
----
-
-## 🚀 Join Our Community
-
-Join our **Discord server** to get support, share feedback, and stay updated with the latest plugin releases!
-
-🔹 **Discord**: [https://discord.gg/xPTZ2uFgCt](https://discord.gg/xPTZ2uFgCt)
-
----
+  <p align="center">
+    <br />
+    <a href="https://github.com/cofyye/CS2-MapManager-COFYYE/releases">Download</a>
+    ·
+    <a href="https://github.com/cofyye/CS2-MapManager-COFYYE/issues/new?labels=bug&template=bug_report.md&title=%5BBUG%5D">Report Bug</a>
+    ·
+    <a href="https://github.com/cofyye/CS2-MapManager-COFYYE/issues/new?labels=enhancement&template=feature_request.md&title=%5BREQ%5D">Request Feature</a>
+    ·
+    <a href="https://paypal.me/cofyye">Donate</a>
+  </p>
+</div>
 
 ## Features
 
 - **Next Map Configuration & Display**: Set the next map in the cycle and display it for players.
 - **Map Voting**: Players can vote for a new map towards the end of the current map.
 - **Real-time Voting Percentages**: View the percentage of votes for each map in real time.
+- **Rock The Vote (RTV)**: Players can vote to trigger a map change vote, with configurable thresholds and timing restrictions.
 - **Admin Map List**: Admins can access a list of available maps and instantly change the current map.
 - **Dynamic Map Cycle**: Set which maps are part of the cycle and which ones can be changed from the map list.
 - **Dynamic Map Selection**: Maps are selected based on the current number of players, with options for max and min player thresholds.
@@ -158,11 +163,15 @@ To run this plugin, you need the following dependencies:
    - **Description**: Displays the last played map.
    - **Access**: Available to all players.
 
-5. **`css_nextmap`**
+5. **`!rtv`**
+   - **Description**: Vote to trigger a map change vote (Rock The Vote).
+   - **Access**: Available to all players.
+
+6. **`css_nextmap`**
    - **Description**: Sets the next map in the rotation.
    - **Access**: Admins only, requires `@css/changemap` permission.
 
-6. **`css_maps`**
+7. **`css_maps`**
    - **Description**: Lists all maps and allows instant map changes.
    - **Access**: Admins only, requires `@css/changemap` permission.
 
@@ -190,108 +199,128 @@ Below is a step-by-step guide explaining the available configuration options for
      - `true`: The plugin uses `mp_maxrounds` to trigger voting. Voting will automatically start during freeze time of the next round with extended freeze time.
      - `false`: The plugin uses `mp_timelimit` to trigger voting. Voting will start immediately without freeze time extension.
 
-4. **`enable_player_voting_in_chat`**
-   - **Possible Values**: `true`, `false`
-   - **Description**: Logs in the chat which player voted for which map.
-     - `true`: Displays voting logs in the chat.
-     - `false`: Disables voting logs.
-
-5. **`display_map_by_value`**
-   - **Possible Values**: `true`, `false`
-   - **Description**: Defines how maps are displayed.
-     - `true`: Displays the map by its technical name (e.g., `de_dust2`).
-     - `false`: Displays the map by its custom tag (e.g., `Dust II`).
-
-6. **`enable_random_nextmap`**
+4. **`enable_random_nextmap`**
    - **Possible Values**: `true`, `false`
    - **Description**: Determines if the next map is selected randomly or cyclically.
      - `true`: The next map will be chosen randomly.
      - `false`: The next map will follow a cyclic order.
 
-7. **`enable_nextmap_command`**
+5. **`enable_player_voting_in_chat`**
+   - **Possible Values**: `true`, `false`
+   - **Description**: Logs in the chat which player voted for which map.
+     - `true`: Displays voting logs in the chat.
+     - `false`: Disables voting logs.
+
+6. **`enable_nextmap_command`**
    - **Possible Values**: `true`, `false`
    - **Description**: Enables or disables the `!nextmap` command.
 
-8. **`enable_lastmap_command`**
+7. **`enable_lastmap_command`**
    - **Possible Values**: `true`, `false`
    - **Description**: Enables or disables the `!lastmap` command.
 
-9. **`enable_currentmap_command`**
+8. **`enable_currentmap_command`**
    - **Possible Values**: `true`, `false`
    - **Description**: Enables or disables the `!currentmap` command.
 
-10. **`enable_timeleft_command`**
-    - **Possible Values**: `true`, `false`
-    - **Description**: Enables or disables the `!timeleft` command.
+9. **`enable_timeleft_command`**
+   - **Possible Values**: `true`, `false`
+   - **Description**: Enables or disables the `!timeleft` command.
 
-11. **`enable_command_ads_in_chat`**
+10. **`enable_command_ads_in_chat`**
     - **Possible Values**: `true`, `false`
     - **Description**: Displays command advertisements in chat every 5 minutes if enabled.
 
-12. **`enable_ignore_vote`**
+11. **`enable_ignore_vote`**
     - **Possible Values**: `true`, `false`
     - **Description**: Adds an "Ignore Vote" option to the map voting menu.
 
-13. **`ignore_vote_position`**
+12. **`ignore_vote_position`**
     - **Possible Values**: `"top"`, `"bottom"`
     - **Description**: Defines whether the "Ignore Vote" option appears at the top or bottom of the voting menu.
 
-14. **`enable_extend_map`**
+13. **`enable_extend_map`**
     - **Possible Values**: `true`, `false`
     - **Description**: Adds an "Extend Map" option to the map voting menu.
 
-15. **`extend_map_time`**
+14. **`extend_map_time`**
     - **Possible Values**: Integer values greater than `0`
     - **Description**: Defines how much time the map will be extended.
       - If `depends_on_round` is `true`, the value represents rounds.
       - If `depends_on_round` is `false`, the value represents minutes.
 
-16. **`extend_map_position`**
+15. **`extend_map_position`**
     - **Possible Values**: `"top"`, `"bottom"`
     - **Description**: Defines whether the "Extend Map" option appears at the top or bottom of the voting menu.
 
-17. **`delay_to_change_map_in_the_end`**
+16. **`delay_to_change_map_in_the_end`**
     - **Possible Values**: Integer values greater than `5`
     - **Description**: Defines the delay (in seconds) between the end of the current map and the actual map change.
 
-18. **`vote_trigger_time_before_map_end`**
+17. **`vote_trigger_time_before_map_end`**
     - **Possible Values**: Integer values greater than `2`
     - **Description**: Defines how long before the end of the current map the vote is triggered.
       - If `depends_on_round` is `true`, the value is in rounds.
       - If `depends_on_round` is `false`, the value is in minutes.
 
-19. **`commands_css_nextmap`**
+18. **`display_map_by_value`**
+    - **Possible Values**: `true`, `false`
+    - **Description**: Defines how maps are displayed.
+      - `true`: Displays the map by its technical name (e.g., `de_dust2`).
+      - `false`: Displays the map by its custom tag (e.g., `Dust II`).
+
+19. **`rtv_enable`**
+    - **Possible Values**: `true`, `false`
+    - **Description**: Enables or disables the Rock The Vote (RTV) feature.
+
+20. **`rtv_min_players`**
+    - **Possible Values**: Integer values between `0` and `64`
+    - **Description**: Minimum number of players required for RTV to be available.
+
+21. **`rtv_time_after_map_start`**
+    - **Possible Values**: Integer values between `0` and `300`
+    - **Description**: Time (in minutes) that must pass after map start before RTV can be triggered.
+
+22. **`rtv_minimum_votes_percent`**
+    - **Possible Values**: Integer values between `0` and `100`
+    - **Description**: Percentage of players required to vote for RTV to trigger a map vote.
+
+23. **`commands_css_nextmap`**
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `css_nextmap`.
 
-20. **`commands_css_maps`**
+24. **`commands_css_maps`**
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `css_maps`.
 
-21. **`commands_nextmap`**
+25. **`commands_nextmap`**
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!nextmap`.
 
-22. **`commands_lastmap`**
+26. **`commands_lastmap`**
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!lastmap`.
 
-23. **`commands_currentmap`**
+27. **`commands_currentmap`**
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!currentmap`.
 
-24. **`commands_timeleft`**
+28. **`commands_timeleft`**
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!timeleft`.
 
-25. **`sounds`**
+29. **`commands_rtv`**
+    - **Possible Values**: List of strings
+    - **Description**: Defines alias commands for `!rtv`.
+
+30. **`sounds`**
 
 - **Possible Values**: An array of string paths to sound files.
 - **Description**: Specifies the sounds that play when map voting begins.
   - Add as many sounds as you'd like, and the plugin will play one randomly.
   - Leave this field empty (`[]`) to disable sounds.
 
-26. **`maps`**
+31. **`maps`**
 
 - **Description**: A list of maps with customizable settings for each map. Each map entry contains the following:
   - **`map_value`**: The technical name of the map (e.g., `de_dust2`).
@@ -360,19 +389,6 @@ If you encounter any bugs or issues while using the plugin, please report them o
 
 Feel free to submit any suggestions for improvements or new features you'd like to see in future releases. Your feedback is highly appreciated!
 
-## Important Notes
-
-- **Missing Features**: The following features are not yet implemented in this version of the plugin but will be available in future updates:
-  - `!rtv`
-  - `!nominate`
-
-  These features are planned for inclusion, so stay tuned for upcoming versions!
-
-- **ScreenMenuAPI Not Included**:  
-  The **ScreenMenuAPI** is not included in this version of the plugin due to necessary adjustments required for full compatibility. Additional refinements are needed to ensure seamless functionality with this plugin.
-
-  Please be patient, and expect an update in the near future that will introduce **ScreenMenuAPI**, along with the `!rtv` and `!nominate` commands! 🚀
-
 ## Credits
 
 - **Code Snippets for Menu (v1.0 - v1.2)**: The menu code snippets used in versions 1.0 through 1.2 were sourced from [oqyh's GitHub](https://github.com/oqyh). I would like to thank him for providing valuable resources that helped in building the initial menu system of this plugin.
@@ -380,11 +396,3 @@ Feel free to submit any suggestions for improvements or new features you'd like 
 - **Other Contributors**: A big thank you to all other authors and contributors of similar plugins that inspired the creation of this MapManager plugin. Their work was a key part of shaping the final version of this plugin.
 
 This plugin is my version of the MapManager functionality, combining various elements from the community to provide a better and more customizable experience for server admins and players alike.
-
-## Donation
-
-If you would like to support me and help maintain and improve this plugin, you can donate via PayPal:
-
-[Donate on PayPal](https://paypal.me/cofyye)
-
-Your support is greatly appreciated!
