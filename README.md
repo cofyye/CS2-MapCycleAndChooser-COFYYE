@@ -15,9 +15,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <h1 align="center">MapManager For Counter-Strike 2</h1>
-  <p><i>Built for CounterStrikeSharp Framework</i></p>
-  <hr>
+  <h1 align="center">MapManager for Counter-Strike 2</h1>
   <h3 align="center">Advanced Map Management Plugin</h3>
   <a align="center">Complete map management solution for CS2 servers with voting system, RTV, and advanced configuration options.</a>
 
