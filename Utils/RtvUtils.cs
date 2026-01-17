@@ -28,6 +28,7 @@ namespace MapManager_COFYYE.Utils
                 || GlobalVariables.VotedForExtendMap == true
                 || GlobalVariables.RtvTriggered == true
                 || GlobalVariables.IsVotingInProgress == true
+                || GlobalVariables.VoteStarted == true
             )
             {
                 player.PrintToChat(
