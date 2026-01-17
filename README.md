@@ -130,12 +130,10 @@ To run this plugin, you need the following dependencies:
 
 4. **MultiAddonManager** _(optional)_  
    Download from: [MultiAddonManager GitHub Releases](https://github.com/Source2ZE/MultiAddonManager/releases)
-
    - If you want to play a sound when map voting begins, this dependency is required. You can use your own custom sounds, though no tutorial is provided. Search online for guidance.
    - Alternatively, if you'd like to use pre-configured sounds, visit this link: [Steam Workshop Sounds](https://steamcommunity.com/sharedfiles/filedetails/?id=3420306144).
 
    **Setup for Sounds:**
-
    - To enable the sounds, you must add the `3420306144` ID to the `multiaddonmanager.cfg` file.
    - Path to file: `game/csgo/cfg/multiaddonmanager/multiaddonmanager.cfg`.
    - Add the ID under the `mm_extra_addons` section, for example:
@@ -149,22 +147,18 @@ To run this plugin, you need the following dependencies:
    - **Description**: Displays the next map in the cycle.
    - **Access**: Available to all players.
 2. **`!timeleft`**
-
    - **Description**: Displays the remaining time before the current map ends (rounds/minutes).
    - **Access**: Available to all players.
 
 3. **`!currentmap`**
-
    - **Description**: Displays the current map name.
    - **Access**: Available to all players.
 
 4. **`!lastmap`**
-
    - **Description**: Displays the last played map.
    - **Access**: Available to all players.
 
 5. **`css_nextmap`**
-
    - **Description**: Sets the next map in the rotation.
    - **Access**: Admins only, requires `@css/changemap` permission.
 
@@ -181,136 +175,112 @@ Below is a step-by-step guide explaining the available configuration options for
 ## Configuration Options
 
 1. **`vote_map_enable`**
-
    - **Possible Values**: `true`, `false`
    - **Description**: Enables or disables the voting system for a new map.
      - `true`: Voting is enabled.
      - `false`: Voting is disabled.
 
 2. **`vote_map_duration`**
-
    - **Possible Values**: Integer values between `1` and `45` (e.g., `15`, `30`, etc.)
    - **Description**: Specifies the duration (in seconds) for the map voting period. Must be greater than `0` and less than `45`, otherwise an error will occur.
 
 3. **`depends_on_the_round`**
-
    - **Possible Values**: `true`, `false`
    - **Description**: Determines whether map voting is based on rounds or time.
      - `true`: The plugin uses `mp_maxrounds` to trigger voting. Voting will automatically start during freeze time of the next round with extended freeze time.
      - `false`: The plugin uses `mp_timelimit` to trigger voting. Voting will start immediately without freeze time extension.
 
 4. **`enable_player_voting_in_chat`**
-
    - **Possible Values**: `true`, `false`
    - **Description**: Logs in the chat which player voted for which map.
      - `true`: Displays voting logs in the chat.
      - `false`: Disables voting logs.
 
 5. **`display_map_by_value`**
-
    - **Possible Values**: `true`, `false`
    - **Description**: Defines how maps are displayed.
      - `true`: Displays the map by its technical name (e.g., `de_dust2`).
      - `false`: Displays the map by its custom tag (e.g., `Dust II`).
 
 6. **`enable_random_nextmap`**
-
    - **Possible Values**: `true`, `false`
    - **Description**: Determines if the next map is selected randomly or cyclically.
      - `true`: The next map will be chosen randomly.
      - `false`: The next map will follow a cyclic order.
 
 7. **`enable_nextmap_command`**
-
    - **Possible Values**: `true`, `false`
    - **Description**: Enables or disables the `!nextmap` command.
 
 8. **`enable_lastmap_command`**
-
    - **Possible Values**: `true`, `false`
    - **Description**: Enables or disables the `!lastmap` command.
 
 9. **`enable_currentmap_command`**
-
    - **Possible Values**: `true`, `false`
    - **Description**: Enables or disables the `!currentmap` command.
 
 10. **`enable_timeleft_command`**
-
     - **Possible Values**: `true`, `false`
     - **Description**: Enables or disables the `!timeleft` command.
 
 11. **`enable_command_ads_in_chat`**
-
     - **Possible Values**: `true`, `false`
     - **Description**: Displays command advertisements in chat every 5 minutes if enabled.
 
 12. **`enable_ignore_vote`**
-
     - **Possible Values**: `true`, `false`
     - **Description**: Adds an "Ignore Vote" option to the map voting menu.
 
 13. **`ignore_vote_position`**
-
     - **Possible Values**: `"top"`, `"bottom"`
     - **Description**: Defines whether the "Ignore Vote" option appears at the top or bottom of the voting menu.
 
 14. **`enable_extend_map`**
-
     - **Possible Values**: `true`, `false`
     - **Description**: Adds an "Extend Map" option to the map voting menu.
 
 15. **`extend_map_time`**
-
     - **Possible Values**: Integer values greater than `0`
     - **Description**: Defines how much time the map will be extended.
       - If `depends_on_round` is `true`, the value represents rounds.
       - If `depends_on_round` is `false`, the value represents minutes.
 
 16. **`extend_map_position`**
-
     - **Possible Values**: `"top"`, `"bottom"`
     - **Description**: Defines whether the "Extend Map" option appears at the top or bottom of the voting menu.
 
 17. **`delay_to_change_map_in_the_end`**
-
     - **Possible Values**: Integer values greater than `5`
     - **Description**: Defines the delay (in seconds) between the end of the current map and the actual map change.
 
 18. **`vote_trigger_time_before_map_end`**
-
     - **Possible Values**: Integer values greater than `2`
     - **Description**: Defines how long before the end of the current map the vote is triggered.
       - If `depends_on_round` is `true`, the value is in rounds.
       - If `depends_on_round` is `false`, the value is in minutes.
 
 19. **`commands_css_nextmap`**
-
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `css_nextmap`.
 
 20. **`commands_css_maps`**
-
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `css_maps`.
 
 21. **`commands_nextmap`**
-
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!nextmap`.
 
 22. **`commands_lastmap`**
-
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!lastmap`.
 
 23. **`commands_currentmap`**
-
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!currentmap`.
 
 24. **`commands_timeleft`**
-
     - **Possible Values**: List of strings
     - **Description**: Defines alias commands for `!timeleft`.
 
@@ -365,7 +335,7 @@ These parameters will conflict with the plugin's map management system and must 
 
 ### Installation
 
-1. Download the **[MapManager v1.3](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/1.3/MapManager-COFYYE-v1.3.zip)** plugin as a `.zip` file.
+1. Download the **[MapManager v1.4](https://github.com/cofyye/CS2-MapManager-COFYYE/releases/download/1.4/MapManager-COFYYE-v1.4.zip)** plugin as a `.zip` file.
 2. Upload the contents of the `.zip` file into the following directory on your server:
    > game/csgo/addons/counterstrikesharp/plugins
 3. After uploading, change the map or restart your server to activate the plugin.
@@ -393,7 +363,6 @@ Feel free to submit any suggestions for improvements or new features you'd like 
 ## Important Notes
 
 - **Missing Features**: The following features are not yet implemented in this version of the plugin but will be available in future updates:
-
   - `!rtv`
   - `!nominate`
 

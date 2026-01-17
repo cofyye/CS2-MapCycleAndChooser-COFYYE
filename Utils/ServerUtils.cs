@@ -197,6 +197,39 @@ namespace MapManager_COFYYE.Utils
                 );
                 throw new ArgumentException(nameof(Instance.Config));
             }
+
+            // RtvMinPlayers
+            if (Instance?.Config?.RtvMinPlayers < 0 || Instance?.Config?.RtvMinPlayers > 64)
+            {
+                Instance?.Logger.LogError(
+                    "rtv_min_players has bad value. Value must be between 0 and 64"
+                );
+                throw new ArgumentException(nameof(Instance.Config));
+            }
+
+            // RtvTimeAfterMapStart
+            if (
+                Instance?.Config?.RtvTimeAfterMapStart < 0
+                || Instance?.Config?.RtvTimeAfterMapStart > 300
+            )
+            {
+                Instance?.Logger.LogError(
+                    "rtv_time_after_map_start has bad value. Value must be between 0 and 300"
+                );
+                throw new ArgumentException(nameof(Instance.Config));
+            }
+
+            // RtvMinimumVotesPercent
+            if (
+                Instance?.Config?.RtvMinimumVotesPercent < 0
+                || Instance?.Config?.RtvMinimumVotesPercent > 100
+            )
+            {
+                Instance?.Logger.LogError(
+                    "rtv_minimum_votes_percent has bad value. Value must be between 0 and 100"
+                );
+                throw new ArgumentException(nameof(Instance.Config));
+            }
         }
     }
 }
