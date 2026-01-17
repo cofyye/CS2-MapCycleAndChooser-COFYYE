@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Events;
 using CounterStrikeSharp.API.Modules.Timers;
 using MapManager_COFYYE.Classes;
@@ -454,16 +455,9 @@ public class MapManager : BasePlugin, IPluginConfig<Config.Config>
 
         if (Config?.CommandsRtv?.Contains(@event.Text.Trim()) == true)
         {
-            var player = (CCSPlayerController)
-                Utilities.GetPlayers().Where(p => PlayerUtils.IsValidPlayer(p));
+            var player = Utilities.GetPlayerFromUserid(@event.Userid);
             if (player != null)
-            {
                 RtvUtils.HandleRtvCommand(player);
-            }
-            else
-            {
-                Server.PrintToChatAll("Player not found.");
-            }
         }
 
         if (Config?.CommandsLastMap?.Contains(@event.Text.Trim()) == true)

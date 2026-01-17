@@ -13,10 +13,7 @@ namespace MapManager_COFYYE.Utils
         public static void HandleRtvCommand(CCSPlayerController player)
         {
             if (!PlayerUtils.IsValidPlayer(player))
-            {
-                Server.PrintToChatAll("Player is not valid to rtv.");
                 return;
-            }
 
             // Check if RTV is enabled
             if (Instance?.Config?.RtvEnable != true)
@@ -30,6 +27,7 @@ namespace MapManager_COFYYE.Utils
                 GlobalVariables.VotedForCurrentMap == true
                 || GlobalVariables.VotedForExtendMap == true
                 || GlobalVariables.RtvTriggered == true
+                || GlobalVariables.IsVotingInProgress == true
             )
             {
                 player.PrintToChat(
