@@ -1,8 +1,12 @@
+<div align="center">
+
 ![GitHub Repo stars](https://img.shields.io/github/stars/cofyye/CS2-MapManager-COFYYE?style=for-the-badge)
+![GitHub Downloads](https://img.shields.io/github/downloads/cofyye/CS2-MapManager-COFYYE/total?style=for-the-badge)
 ![GitHub issues](https://img.shields.io/github/issues/cofyye/CS2-MapManager-COFYYE?style=for-the-badge)
-![GitHub](https://img.shields.io/github/license/cofyye/CS2-MapManager-COFYYE?style=for-the-badge)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=for-the-badge&logo=paypal)](https://paypal.me/cofyye)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/xPTZ2uFgCt)
+
+</div>
 
 <div align="center">
   <strong>⭐ Star this repo if you find it useful!</strong>
@@ -11,8 +15,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <h1 align="center">CS2 MapManager</h1>
-  <h3 align="center">Advanced Map Management Plugin</h3>
+  <h1 align="center">MapManager for Counter-Strike 2</h1>
+  <h3 align="center">Built for CounterStrikeSharp Framework</h3>
   <a align="center">Complete map management solution for CS2 servers with voting system, RTV, and advanced configuration options.</a>
 
   <p align="center">
